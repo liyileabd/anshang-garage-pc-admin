@@ -161,10 +161,6 @@
 .invoice-field-table th, .invoice-field-table td { padding: 9px 12px; border: 1px solid var(--as-border); text-align: left; vertical-align: top; line-height: 1.6; }
 .invoice-field-table th { background: #f6f8fb; color: var(--as-text-sub); font-weight: 500; }
 .invoice-field-table .invoice-field-sample { color: var(--as-text-muted); overflow-wrap: anywhere; }
-.invoice-export-modal { width: 520px; max-width: calc(100vw - 48px); }
-.invoice-export-type { display: flex; align-items: center; gap: 24px; padding: 12px 0 18px; color: var(--as-text-sub); }
-.invoice-export-type label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
-.invoice-export-type input { width: 15px; height: 15px; margin: 0; accent-color: var(--as-primary); }
 
 @media (max-width: 720px) {
   .refund-application-modal { max-width: calc(100vw - 24px); }
