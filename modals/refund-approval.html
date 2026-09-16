@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>退款审核 - 安商房车库月租PC管理后台</title>
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/pages/refunds.css">
+  <style>
+    body { background: rgba(20, 30, 55, .22); display: grid; place-items: center; min-height: 100vh; overflow: auto; }
+    .modal-mask { display: block; position: static; }
+    .modal { position: static; transform: none; }
+    textarea.form-control { height: 96px; resize: none; padding-top: 10px; line-height: 1.5; }
+    .create-help { color: var(--as-text-muted); font-size: 13px; line-height: 1.7; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="modal-mask">
+    <div class="modal refund-approval-modal">
+      <div class="modal-head">
+        <span>退款审核</span>
+      </div>
+      <div class="modal-body">
+        <div class="approval-summary">
+          <div class="approval-summary-title">请确认这笔退款申请</div>
+          <div class="approval-summary-grid">
+            <div class="approval-summary-item">
+              <span class="approval-summary-label">退款单号</span>
+              <span class="approval-summary-value">RF2026090800012</span>
+            </div>
+            <div class="approval-summary-item">
+              <span class="approval-summary-label">原订单号</span>
+              <span class="approval-summary-value">OD2026090100007</span>
+            </div>
+            <div class="approval-summary-item">
+              <span class="approval-summary-label">申请用户</span>
+              <span class="approval-summary-value">张伟</span>
+            </div>
+            <div class="approval-summary-item">
+              <span class="approval-summary-label">小区项目</span>
+              <span class="approval-summary-value">安商花园</span>
+            </div>
+            <div class="approval-summary-item">
+              <span class="approval-summary-label">退款车辆</span>
+              <span class="approval-summary-value">沪A12345</span>
+            </div>
+            <div class="approval-summary-item">
+              <span class="approval-summary-label">预计退款金额</span>
+              <span class="approval-summary-value">¥360.00</span>
+            </div>
+            <div class="approval-summary-item">
+              <span class="approval-summary-label">申请时间</span>
+              <span class="approval-summary-value">2026-09-07 14:32</span>
+            </div>
+            <div class="approval-summary-item">
+              <span class="approval-summary-label">退款原因</span>
+              <span class="approval-summary-value">车辆已出售，不再需要月租车位，申请退还剩余月份费用。</span>
+            </div>
+          </div>
+        </div>
+        <label class="approval-reject-label" for="refundRejectReason">驳回原因</label>
+        <textarea id="refundRejectReason" class="form-control approval-reject-control" placeholder="如选择驳回，请填写具体原因"></textarea>
+        <div class="approval-error"></div>
+        <div class="create-help">通过后退款单状态将变更为"待退款"，再由财务登记实际退款结果；驳回后需填写驳回原因。</div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn">取消</button>
+        <button class="btn btn-danger">驳回</button>
+        <button class="btn btn-primary">通过</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

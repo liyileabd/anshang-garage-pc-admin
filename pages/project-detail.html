@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>项目详情 - 安商房车库月租PC管理后台</title>
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/pages/projects.css">
+  <link rel="stylesheet" href="../css/pages/create-flow.css">
+</head>
+<body>
+  <section class="app">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><div class="logo-mark">安</div><span>月租车管理后台</span></div>
+      <nav class="menu">
+        <a class="menu-item" href="dashboard.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span><span>数据总览</span></a>
+        <a class="menu-item active" href="project-list.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M4 21V8l8-5 8 5v13"/><path d="M8 21v-8h8v8"/><path d="M10 17h4"/></svg></span><span>项目管理</span></a>
+        <a class="menu-item" href="user-list.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span>用户管理</span></a>
+        <a class="menu-item" href="order-list.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></span><span>订单查询</span></a>
+        <a class="menu-item" href="passage-list.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10" rx="2"/><path d="M7 12h3"/><path d="M14 12h3"/><path d="M7 3l-3 4"/><path d="M17 3l3 4"/></svg></span><span>通行记录</span></a>
+        <button class="menu-item menu-parent expanded"><span class="menu-parent-main"><span class="menu-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M7 15h4"/></svg></span><span>财务管理</span></span><span class="menu-parent-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="menu-submenu">
+          <a class="menu-subitem" href="#"><span class="menu-subitem-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M7 15h4"/></svg></span><span>支付与清分</span></a>
+          <a class="menu-subitem" href="#"><span class="menu-subitem-icon"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 1 1 0 10H8"/></svg></span><span>退款处理</span></a>
+        </div>
+        <button class="menu-item menu-parent expanded"><span class="menu-parent-main"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21a2 2 0 0 1-4 0v-.1A1.7 1.7 0 0 0 8.6 19a1.7 1.7 0 0 0-1.88.34l-.06.06A2 2 0 1 1 3.83 16.57l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3a2 2 0 0 1 0-4h.1A1.7 1.7 0 0 0 5 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06A2 2 0 1 1 7.43 3.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3a2 2 0 0 1 4 0v.1A1.7 1.7 0 0 0 15 5a1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9c.08.35.28.7.6 1 .32.32.68.52 1.1.6h.1a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.7.4Z"/></svg></span><span>系统管理</span></span><span class="menu-parent-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="menu-submenu">
+          <a class="menu-subitem" href="#"><span class="menu-subitem-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span>账号管理</span></a>
+          <a class="menu-subitem" href="#"><span class="menu-subitem-icon"><svg viewBox="0 0 24 24"><path d="M9 3h6l1 2h3v16H5V5h3z"/><path d="M9 14l2 2 4-5"/></svg></span><span>操作日志</span></a>
+        </div>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="breadcrumb">项目管理 / 锦绣安置房详情</div>
+        <div class="topbar-actions"><span>消息 6</span><span>帮助</span><div class="account"><span class="avatar">管</span><span>超级管理员</span></div></div>
+      </header>
+      <section class="page">
+        <div class="inner-page-head">
+          <a class="inner-page-back" href="project-list.html"><span class="inner-page-back-arrow">←</span><span>返回</span></a>
+          <h2 class="inner-page-title">锦绣安置房详情</h2>
+        </div>
+        <section class="detail-page-section">
+          <h3 class="detail-page-title">基本信息</h3>
+          <div class="detail-info-grid">
+            <div class="detail-info-item"><div class="detail-info-label">小区名称</div><div class="detail-info-value">锦绣安置房</div></div>
+            <div class="detail-info-item"><div class="detail-info-label">项目类型</div><div class="detail-info-value">公司自营项目</div></div>
+            <div class="detail-info-item"><div class="detail-info-label">地理位置</div><div class="detail-info-value">厦门市湖里区</div></div>
+            <div class="detail-info-item"><div class="detail-info-label">一路停车车场编号</div><div class="detail-info-value">YL-PARK-330102-001</div></div>
+            <div class="detail-info-item"><div class="detail-info-label">清分市场编号</div><div class="detail-info-value">330102000001</div></div>
+            <div class="detail-info-item"><div class="detail-info-label">发布状态</div><div class="detail-info-value"><span class="tag tag-success">已发布</span></div></div>
+            <div class="detail-info-item"><div class="detail-info-label">办理状态</div><div class="detail-info-value"><span class="tag tag-success">可办理</span></div></div>
+            <div class="detail-info-item"><div class="detail-info-label">总车位数</div><div class="detail-info-value">320</div></div>
+            <div class="detail-info-item"><div class="detail-info-label">已租车位数</div><div class="detail-info-value">246</div></div>
+            <div class="detail-info-item"><div class="detail-info-label">维修中车位数</div><div class="detail-info-value">8</div></div>
+            <div class="detail-info-item"><div class="detail-info-label">可办理数量</div><div class="detail-info-value">66</div></div>
+            <div class="detail-info-item"><div class="detail-info-label">最后编辑</div><div class="detail-info-value">超级管理员 · 2026-08-28 13:40</div></div>
+          </div>
+        </section>
+        <section class="detail-page-section">
+          <h3 class="detail-page-title">收费与结算</h3>
+          <div class="detail-fee-list">
+            <div class="detail-fee-item">
+              <div class="detail-fee-field"><div class="detail-fee-label">收费项</div><div class="detail-fee-value">月租车费</div></div>
+              <div class="detail-fee-field"><div class="detail-fee-label">收费金额</div><div class="detail-fee-value">¥400.00 / 月</div></div>
+              <div class="detail-fee-field"><div class="detail-fee-label">清分比例</div><div class="detail-fee-value">86.96%</div></div>
+              <div class="detail-fee-field"><div class="detail-fee-label">负责人</div><div class="detail-fee-value">刘经理</div></div>
+            </div>
+            <div class="detail-fee-item">
+              <div class="detail-fee-field"><div class="detail-fee-label">收费项</div><div class="detail-fee-value">物业费</div></div>
+              <div class="detail-fee-field"><div class="detail-fee-label">收费金额</div><div class="detail-fee-value">¥60.00 / 月</div></div>
+              <div class="detail-fee-field"><div class="detail-fee-label">清分比例</div><div class="detail-fee-value">13.04%</div></div>
+              <div class="detail-fee-field"><div class="detail-fee-label">负责人</div><div class="detail-fee-value">陈经理</div></div>
+            </div>
+          </div>
+        </section>
+        <section class="detail-page-section">
+          <h3 class="detail-page-title">项目告知书</h3>
+          <div class="detail-notice-list">
+            <div class="detail-notice-item">
+              <div class="detail-notice-name">月租车办理告知书</div>
+              <div class="detail-notice-file">月租车办理告知书.pdf</div>
+              <button class="btn-text">查看</button>
+            </div>
+            <div class="detail-notice-item">
+              <div class="detail-notice-name">物业服务告知书</div>
+              <div class="detail-notice-file">物业服务告知书.pdf</div>
+              <button class="btn-text">查看</button>
+            </div>
+          </div>
+        </section>
+        <section class="detail-page-section">
+          <h3 class="detail-page-title">客服渠道</h3>
+          <div class="detail-info-grid">
+            <div class="detail-info-item"><div class="detail-info-label">客服电话</div><div class="detail-info-value">0592-12345678</div></div>
+            <div class="detail-info-item"><div class="detail-info-label">微信客服</div><div class="detail-info-value">anshang-kefu</div></div>
+            <div class="detail-info-item"><div class="detail-info-label">服务时间</div><div class="detail-info-value">工作日 09:00-18:00</div></div>
+            <div class="detail-info-item"><div class="detail-info-label">是否展示</div><div class="detail-info-value"><span class="tag tag-success">启用</span></div></div>
+            <div class="detail-info-item"><div class="detail-info-label">服务说明</div><div class="detail-info-value">可咨询月租办理、退款和通行异常等问题。</div></div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </section>
+</body>
+</html>

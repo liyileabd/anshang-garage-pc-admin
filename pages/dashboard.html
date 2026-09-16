@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>数据总览 - 安商房车库月租PC管理后台</title>
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/pages/dashboard.css">
+</head>
+<body>
+  <section class="app">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><div class="logo-mark">安</div><span>月租车管理后台</span></div>
+      <nav class="menu">
+        <a class="menu-item active" href="dashboard.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span><span>数据总览</span></a>
+        <a class="menu-item" href="project-list.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M4 21V8l8-5 8 5v13"/><path d="M8 21v-8h8v8"/><path d="M10 17h4"/></svg></span><span>项目管理</span></a>
+        <a class="menu-item" href="user-list.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span>用户管理</span></a>
+        <a class="menu-item" href="order-list.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></span><span>订单查询</span></a>
+        <a class="menu-item" href="passage-list.html"><span class="menu-icon"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10" rx="2"/><path d="M7 12h3"/><path d="M14 12h3"/><path d="M7 3l-3 4"/><path d="M17 3l3 4"/></svg></span><span>通行记录</span></a>
+        <button class="menu-item menu-parent expanded"><span class="menu-parent-main"><span class="menu-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M7 15h4"/></svg></span><span>财务管理</span></span><span class="menu-parent-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="menu-submenu">
+          <a class="menu-subitem" href="#"><span class="menu-subitem-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M7 15h4"/></svg></span><span>支付与清分</span></a>
+          <a class="menu-subitem" href="#"><span class="menu-subitem-icon"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 1 1 0 10H8"/></svg></span><span>退款处理</span></a>
+        </div>
+        <button class="menu-item menu-parent expanded"><span class="menu-parent-main"><span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21a2 2 0 0 1-4 0v-.1A1.7 1.7 0 0 0 8.6 19a1.7 1.7 0 0 0-1.88.34l-.06.06A2 2 0 1 1 3.83 16.57l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3a2 2 0 0 1 0-4h.1A1.7 1.7 0 0 0 5 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06A2 2 0 1 1 7.43 3.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3a2 2 0 0 1 4 0v.1A1.7 1.7 0 0 0 15 5a1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9c.08.35.28.7.6 1 .32.32.68.52 1.1.6h.1a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.7.4Z"/></svg></span><span>系统管理</span></span><span class="menu-parent-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></button>
+        <div class="menu-submenu">
+          <a class="menu-subitem" href="#"><span class="menu-subitem-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span>账号管理</span></a>
+          <a class="menu-subitem" href="#"><span class="menu-subitem-icon"><svg viewBox="0 0 24 24"><path d="M9 3h6l1 2h3v16H5V5h3z"/><path d="M9 14l2 2 4-5"/></svg></span><span>操作日志</span></a>
+        </div>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="breadcrumb">数据总览</div>
+        <div class="topbar-actions"><span>消息 6</span><span>帮助</span><div class="account"><span class="avatar">管</span><span>超级管理员</span></div></div>
+      </header>
+      <section class="page">
+        <div class="dashboard-page">
+          <div class="dashboard-page-head">
+            <h1 class="dashboard-page-title">数据总览</h1>
+            <span class="dashboard-page-date">数据更新至 2026-09-04</span>
+          </div>
+          <section class="dashboard-section dashboard-overview-panel">
+            <div class="dashboard-metric-grid">
+              <div class="dashboard-metric" style="--dashboard-accent:#3475d7;--dashboard-icon-bg:rgba(52,117,215,.08);--dashboard-icon-border:rgba(52,117,215,.22)">
+                <div class="dashboard-metric-head">
+                  <div class="dashboard-metric-label">本月缴费金额</div>
+                  <div class="dashboard-metric-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M7 15h4"/></svg></div>
+                </div>
+                <div class="dashboard-metric-main">
+                  <div class="dashboard-metric-value">86.4<span class="dashboard-metric-unit">万</span></div>
+                  <div class="dashboard-metric-change"><span class="dashboard-metric-change-arrow">↑</span><span>12% 较上月</span></div>
+                </div>
+                <div class="dashboard-metric-sparkline"><svg viewBox="0 0 320 68" preserveAspectRatio="none" role="img" aria-label="本月缴费金额趋势"><path d="M 4 48 C 50 48, 50 46, 97 46 C 143 46, 143 44, 190 42 C 236 40, 236 43, 283 38 C 313 38, 313 38, 316 35" fill="none" stroke="#3475d7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg></div>
+              </div>
+              <div class="dashboard-metric" style="--dashboard-accent:#18bfc4;--dashboard-icon-bg:rgba(24,191,196,.08);--dashboard-icon-border:rgba(24,191,196,.22)">
+                <div class="dashboard-metric-head">
+                  <div class="dashboard-metric-label">本月订单数</div>
+                  <div class="dashboard-metric-icon"><svg viewBox="0 0 24 24"><path d="M9 3h6l1 2h3v16H5V5h3z"/><path d="M9 14l2 2 4-5"/></svg></div>
+                </div>
+                <div class="dashboard-metric-main">
+                  <div class="dashboard-metric-value">402<span class="dashboard-metric-unit">笔</span></div>
+                  <div class="dashboard-metric-change"><span class="dashboard-metric-change-arrow">↑</span><span>11% 较上月</span></div>
+                </div>
+                <div class="dashboard-metric-sparkline"><svg viewBox="0 0 320 68" preserveAspectRatio="none" role="img" aria-label="本月订单数趋势"><path d="M 4 30 C 50 30, 50 48, 97 44 C 143 40, 143 42, 190 36 C 236 28, 236 22, 283 32 C 313 32, 313 36, 316 38" fill="none" stroke="#18bfc4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg></div>
+              </div>
+              <div class="dashboard-metric" style="--dashboard-accent:#f88a33;--dashboard-icon-bg:rgba(248,138,51,.08);--dashboard-icon-border:rgba(248,138,51,.22)">
+                <div class="dashboard-metric-head">
+                  <div class="dashboard-metric-label">本月退款申请</div>
+                  <div class="dashboard-metric-icon"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 1 1 0 10H8"/></svg></div>
+                </div>
+                <div class="dashboard-metric-main">
+                  <div class="dashboard-metric-value">18<span class="dashboard-metric-unit">笔</span></div>
+                  <div class="dashboard-metric-change"><span class="dashboard-metric-change-arrow">↓</span><span>4% 较上月</span></div>
+                </div>
+                <div class="dashboard-metric-sparkline"><svg viewBox="0 0 320 68" preserveAspectRatio="none" role="img" aria-label="本月退款申请趋势"><path d="M 4 52 C 50 52, 50 40, 97 44 C 143 48, 143 36, 190 42 C 236 48, 236 32, 283 40 C 313 40, 313 44, 316 46" fill="none" stroke="#f88a33" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg></div>
+              </div>
+            </div>
+          </section>
+          <section class="dashboard-section dashboard-trend-panel">
+            <div class="dashboard-trend-head">
+              <h2 class="dashboard-trend-title">订单趋势</h2>
+              <div class="dashboard-trend-meta">
+                <span>单位：订单数</span>
+                <div class="dashboard-trend-legend">
+                  <span class="dashboard-trend-legend-item"><i class="dashboard-trend-legend-dot" style="background:#3475d7"></i>新办订单</span>
+                  <span class="dashboard-trend-legend-item"><i class="dashboard-trend-legend-dot" style="background:#18bfc4"></i>续费订单</span>
+                </div>
+              </div>
+            </div>
+            <div class="dashboard-trend-chart">
+              <svg class="dashboard-trend-svg" viewBox="0 0 1120 330" role="img" aria-label="2026-08-06 至 2026-09-04 新办订单和续费订单趋势">
+                <g>
+                  <line class="dashboard-chart-grid" x1="52" y1="18" x2="1102" y2="18"/><text class="dashboard-chart-axis" x="8" y="22">80</text>
+                  <line class="dashboard-chart-grid" x1="52" y1="80" x2="1102" y2="80"/><text class="dashboard-chart-axis" x="8" y="84">70</text>
+                  <line class="dashboard-chart-grid" x1="52" y1="142" x2="1102" y2="142"/><text class="dashboard-chart-axis" x="8" y="146">50</text>
+                  <line class="dashboard-chart-grid" x1="52" y1="204" x2="1102" y2="204"/><text class="dashboard-chart-axis" x="8" y="208">30</text>
+                  <line class="dashboard-chart-grid" x1="52" y1="266" x2="1102" y2="266"/><text class="dashboard-chart-axis" x="8" y="270">20</text>
+                  <line class="dashboard-chart-grid" x1="52" y1="288" x2="1102" y2="288"/><text class="dashboard-chart-axis" x="8" y="292">0</text>
+                </g>
+                <polygon class="dashboard-chart-area" style="fill:#3475d7" points="52,288 87.4,271 122.8,276 158.2,261 193.6,246 229,250 264.4,235 299.8,261 335.2,257 370.6,250 406,243 441.4,230 476.8,239 512.2,235 547.6,221 583,235 618.4,213 653.8,221 689.2,199 724.6,206 760,185 795.4,193 830.8,171 866.2,178 901.6,157 937,164 972.4,142 1007.8,150 1043.2,128 1078.6,135 1102,288"/>
+                <polyline class="dashboard-chart-line" style="stroke:#3475d7" points="87.4,271 122.8,276 158.2,261 193.6,246 229,250 264.4,235 299.8,261 335.2,257 370.6,250 406,243 441.4,230 476.8,239 512.2,235 547.6,221 583,235 618.4,213 653.8,221 689.2,199 724.6,206 760,185 795.4,193 830.8,171 866.2,178 901.6,157 937,164 972.4,142 1007.8,150 1043.2,128 1078.6,135"/>
+                <polygon class="dashboard-chart-area" style="fill:#18bfc4" points="52,288 87.4,257 122.8,250 158.2,243 193.6,235 229,239 264.4,221 299.8,250 335.2,243 370.6,235 406,228 441.4,214 476.8,221 512.2,214 547.6,199 583,206 618.4,185 653.8,192 689.2,171 724.6,178 760,157 795.4,164 830.8,143 866.2,150 901.6,128 937,135 972.4,114 1007.8,121 1043.2,99 1078.6,106 1102,288"/>
+                <polyline class="dashboard-chart-line" style="stroke:#18bfc4" points="87.4,257 122.8,250 158.2,243 193.6,235 229,239 264.4,221 299.8,250 335.2,243 370.6,235 406,228 441.4,214 476.8,221 512.2,214 547.6,199 583,206 618.4,185 653.8,192 689.2,171 724.6,178 760,157 795.4,164 830.8,143 866.2,150 901.6,128 937,135 972.4,114 1007.8,121 1043.2,99 1078.6,106"/>
+                <g>
+                  <text class="dashboard-chart-axis" text-anchor="middle" x="87.4" y="320">6日</text>
+                  <text class="dashboard-chart-axis" text-anchor="middle" x="229" y="320">8日</text>
+                  <text class="dashboard-chart-axis" text-anchor="middle" x="370.6" y="320">10日</text>
+                  <text class="dashboard-chart-axis" text-anchor="middle" x="512.2" y="320">12日</text>
+                  <text class="dashboard-chart-axis" text-anchor="middle" x="653.8" y="320">14日</text>
+                  <text class="dashboard-chart-axis" text-anchor="middle" x="795.4" y="320">16日</text>
+                  <text class="dashboard-chart-axis" text-anchor="middle" x="937" y="320">18日</text>
+                  <text class="dashboard-chart-axis" text-anchor="middle" x="1078.6" y="320">20日</text>
+                </g>
+              </svg>
+            </div>
+          </section>
+          <section class="dashboard-section dashboard-pending-panel">
+            <div class="dashboard-pending-head">
+              <h2 class="dashboard-trend-title">待处理事项</h2>
+              <div class="dashboard-pending-head-actions">
+                <div class="filter-dropdown">
+                  <button class="select-trigger" type="button"><span>全部事项类型</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+                  <div class="select-menu" role="listbox">
+                    <button type="button" class="select-option active">全部事项类型</button>
+                    <button type="button" class="select-option">通行同步异常</button>
+                    <button type="button" class="select-option">退款待审批</button>
+                    <button type="button" class="select-option">退款待线下处理</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="dashboard-pending-table-wrap">
+              <table class="dashboard-pending-table">
+                <thead>
+                  <tr>
+                    <th style="width:150px">事项类型</th>
+                    <th style="width:180px">订单号</th>
+                    <th style="width:100px">用户</th>
+                    <th>问题</th>
+                    <th style="width:160px">提交时间</th>
+                    <th style="width:90px">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="tag tag-warning">通行同步异常</span></td>
+                    <td>AS202608280017</td>
+                    <td>陈涛</td>
+                    <td class="pending-issue">等待一路停车平台回执，支持重新同步</td>
+                    <td>2026-08-28 11:30</td>
+                    <td><button class="btn-text pending-action">去处理</button></td>
+                  </tr>
+                  <tr>
+                    <td><span class="tag tag-warning">退款待审批</span></td>
+                    <td>AS20260812009</td>
+                    <td>周伟</td>
+                    <td class="pending-issue">车辆出售，提前结束月租，预计退款 ¥860.00</td>
+                    <td>2026-08-28 10:16</td>
+                    <td><button class="btn-text pending-action">去审核</button></td>
+                  </tr>
+                  <tr>
+                    <td><span class="tag tag-warning">退款待线下处理</span></td>
+                    <td>AS202608280017</td>
+                    <td>陈涛</td>
+                    <td class="pending-issue">退款审批已通过，等待登记线下退款结果</td>
+                    <td>2026-08-29 09:18</td>
+                    <td><button class="btn-text pending-action">去登记</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </section>
+</body>
+</html>

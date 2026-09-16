@@ -1,0 +1,15 @@
+.account-create-modal .modal-form-grid { grid-template-columns: 1fr; gap: 16px; }
+
+.account-create-modal .modal-form-field.full { grid-column: auto; }
+
+.initial-password { display: inline-flex; align-items: center; gap: 10px; margin-top: 8px; color: var(--as-text-main); font-size: 18px; letter-spacing: 1px; }
+
+.copy-password { height: 28px; padding: 0 10px; border: 1px solid #cfe3ff; border-radius: 4px; background: #fff; color: var(--as-primary); font-size: 12px; letter-spacing: 0; }
+
+.copy-password:hover { border-color: var(--as-primary); background: var(--as-primary-light); }
+
+/* 系统管理下的列表页：筛选条与订单/用户等页面保持一致（无白底、无内边距、无下边框） */
+.filter-bar.garage-filter-bar { background: transparent; border-bottom: 0; padding: 0; }
+
+/* 操作日志列较多，允许横向滚动，避免最后一列被裁切 */
+.log-table-panel { overflow-x: auto; }

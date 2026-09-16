@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+<rect width="1200" height="760" fill="#fbfefa"/>
+<g font-family="PingFang SC,Microsoft YaHei,sans-serif" fill="#385d58">
+<text x="600" y="66" text-anchor="middle" font-size="34" letter-spacing="4">非税收入电子票据</text>
+<text x="600" y="103" text-anchor="middle" font-size="18" fill="#b84f46">演示样票 · 非真实财政票据 · 不可报销</text>
+<path d="M45 125H1155 M45 131H1155" stroke="#739d91"/>
+<text x="50" y="168" font-size="18">演示编号：DEMO-NS-202609080002</text><text x="862" y="168" font-size="18">开票日期：2026年09月08日</text>
+<g fill="none" stroke="#86a99b" stroke-width="1.2"><rect x="45" y="192" width="1110" height="442"/><path d="M45 252H1155 M45 312H1155 M45 360H1155 M45 454H1155 M45 512H1155 M45 570H1155 M590 192V312 M485 312V454 M650 312V454 M825 312V454"/></g>
+<g font-size="18"><text x="65" y="230">缴款人：陈涛（演示）</text><text x="612" y="230">缴款人类型：个人</text><text x="65" y="290">执收单位：文庭项目管理单位（虚构）</text><text x="612" y="290">项目名称：文庭商房</text>
+<text x="65" y="344">收款项目</text><text x="515" y="344">单位</text><text x="705" y="344">数量</text><text x="935" y="344">金额（元）</text>
+<text x="65" y="406">停车月租费（演示项目）</text><text x="529" y="406">项</text><text x="721" y="406">1</text><text x="958" y="406">960.00</text>
+<text x="65" y="490">合计金额（大写）：玖佰陆拾元整</text><text x="862" y="490">（小写）¥960.00</text>
+<text x="65" y="549">关联订单：AS202608280017</text><text x="660" y="549">办理车辆：浙A36M2Q</text>
+<text x="65" y="608">备注：本票据仅用于产品原型展示，不具备缴款、报销或财政票据效力。</text>
+<text x="50" y="682">经办人：演示人员</text><text x="842" y="682">收款信息及项目均为演示数据</text></g>
+<text x="600" y="431" transform="rotate(-15 600 400)" text-anchor="middle" font-size="70" font-weight="600" opacity="0.14" fill="#b94b45">演示样票 · 不可报销</text>
+<text x="600" y="730" text-anchor="middle" font-size="15" fill="#879a92">PROTOTYPE SAMPLE / NOT AN OFFICIAL RECEIPT</text>
+</g></svg>

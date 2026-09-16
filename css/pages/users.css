@@ -1,0 +1,17 @@
+.user-filter-bar .select { min-width: 164px; }
+
+.user-empty { color: var(--as-text-muted); }
+
+.user-detail-vehicle { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 42px; padding: 0 0 20px; }
+
+.user-detail-vehicle + .user-detail-vehicle { padding-top: 20px; border-top: 1px solid var(--as-border-light); }
+
+.user-detail-empty { padding: 26px 14px; color: var(--as-text-muted); text-align: center; }
+
+.user-rent-record-table { min-width: 1060px; }
+
+.user-rent-period { white-space: nowrap; }
+.sensitive-reveal { margin-top: 18px; }
+.detail-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.detail-section-heading .detail-page-title { margin-bottom: 0; }
+.detail-section-heading .sensitive-reveal { margin-top: 0; }

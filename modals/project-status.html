@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>项目发布/停用确认 - 安商房车库月租PC管理后台</title>
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/pages/modals.css">
+  <style>
+    body { background: rgba(20, 30, 55, .22); display: grid; place-items: center; min-height: 100vh; overflow: auto; }
+    .modal-mask { display: block; position: static; }
+    .modal { position: static; transform: none; }
+    .modal-group { display: grid; gap: 28px; }
+    .modal-group-label { font-size: 13px; color: var(--as-text-muted); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="modal-group">
+    <!-- 发布确认弹窗 -->
+    <div>
+      <div class="modal-group-label">状态一：发布确认</div>
+      <div class="modal-mask">
+        <div class="modal project-status-modal">
+          <div class="modal-head">
+            <span>发布项目</span>
+          </div>
+          <div class="modal-body">
+            <div class="project-status-icon" aria-hidden="true">i</div>
+            <div>确认发布"安商花园"项目吗？发布后用户端将展示该项目的月租办理入口。</div>
+          </div>
+          <div class="modal-foot">
+            <button class="btn">取消</button>
+            <button class="btn btn-primary">确认发布</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 停用确认弹窗 -->
+    <div>
+      <div class="modal-group-label">状态二：停用确认</div>
+      <div class="modal-mask">
+        <div class="modal project-status-modal project-stop-modal">
+          <div class="modal-head">
+            <span>停用确认</span>
+          </div>
+          <div class="modal-body">
+            <div class="project-status-icon" aria-hidden="true">!</div>
+            <div>停用"安商花园"后，用户端将不再展示新的月租办理入口，历史订单、通行记录和财务记录继续保留。</div>
+          </div>
+          <div class="modal-foot">
+            <button class="btn">取消</button>
+            <button class="btn btn-primary">确认停用</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

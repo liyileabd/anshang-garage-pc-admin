@@ -1,0 +1,67 @@
+.login-screen {
+      min-height: 100vh;
+      background: #f7f8fa;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(420px, 520px);
+    }
+
+.login-brand {
+      padding: 64px 72px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+.login-brand h1 {
+      margin: 0 0 12px;
+      font-size: 30px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+.login-brand p {
+      margin: 0;
+      color: var(--as-text-sub);
+      line-height: 1.8;
+      max-width: 560px;
+    }
+
+.login-preview {
+      margin-top: 36px;
+      background: #fff;
+      border: 1px solid var(--as-border-light);
+      box-shadow: var(--as-shadow);
+      border-radius: 4px;
+      padding: 24px;
+      width: 100%;
+      max-width: 520px;
+    }
+
+.mini-row { display: flex; gap: 12px; margin-bottom: 12px; }
+
+.mini-card { flex: 1; height: 72px; border-radius: 4px; background: #f8faff; border: 1px solid var(--as-border-light); padding: 12px; }
+
+.mini-title { color: var(--as-text-muted); font-size: 12px; }
+
+.mini-num { margin-top: 8px; color: var(--as-text-main); font-size: 22px; font-weight: 700; }
+
+.mini-line { height: 12px; border-radius: 2px; background: #ecf5ff; margin: 12px 0; }
+
+.mini-line:nth-child(2n) { width: 82%; }
+
+.mini-line:nth-child(2n+1) { width: 62%; }
+
+.login-panel-wrap { display: flex; align-items: center; justify-content: center; padding: 32px; }
+
+.login-panel {
+      width: min(420px, 100%);
+      background: #fff;
+      border: 1px solid var(--as-border-light);
+      border-radius: 4px;
+      box-shadow: 0 12px 36px rgba(36, 56, 128, 0.08);
+      padding: 36px;
+    }
+
+.login-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+
+.login-sub { color: var(--as-text-muted); margin-bottom: 28px; }

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+<rect width="1200" height="760" fill="#fffefb"/>
+<g font-family="PingFang SC,Microsoft YaHei,sans-serif" fill="#79524e">
+<text x="600" y="65" text-anchor="middle" font-size="32" letter-spacing="3">电子发票（普通发票）</text>
+<text x="600" y="103" text-anchor="middle" font-size="18" fill="#ba433e">演示样票 · 非真实发票 · 不可报销</text>
+<path d="M45 123H1155 M45 129H1155" fill="none" stroke="#ab6e64"/>
+<text x="50" y="165" font-size="18">演示编号：DEMO-202609070006</text><text x="890" y="165" font-size="18">开票日期：2026年09月07日</text>
+<g fill="none" stroke="#b58c83" stroke-width="1.2"><rect x="45" y="192" width="1110" height="444"/><path d="M45 322H1155 M45 370H1155 M45 491H1155 M45 542H1155 M600 192V322 M100 192V322 M655 192V322 M100 542V636"/></g>
+<g font-size="18"><text x="65" y="229">购</text><text x="65" y="261">买</text><text x="65" y="293">方</text><text x="620" y="229">销</text><text x="620" y="261">售</text><text x="620" y="293">方</text>
+<text x="122" y="231">名称：王敏（演示）</text><text x="122" y="272">纳税人识别号：个人</text><text x="677" y="231">名称：安商房运营公司（虚构）</text><text x="677" y="272">纳税人识别号：DEMO-NOT-VALID</text>
+<text x="66" y="352">项目名称</text><text x="500" y="352">单位</text><text x="605" y="352">数量</text><text x="710" y="352">单价</text><text x="835" y="352">金额</text><text x="967" y="352">税率</text><text x="1070" y="352">税额</text>
+<text x="66" y="413">停车服务 · 月租停车费</text><text x="511" y="413">项</text><text x="627" y="413">1</text><text x="701" y="413">800.00</text><text x="830" y="413">800.00</text><text x="972" y="413">—</text><text x="1073" y="413">—</text>
+<text x="66" y="466" fill="#8e8e8e" font-size="15">锦绣安置房 · 浙A8P62K（演示信息）</text>
+<text x="66" y="524">价税合计（大写）</text><text x="320" y="524">捌佰元整</text><text x="825" y="524">（小写）¥800.00</text>
+<text x="65" y="580">备</text><text x="65" y="613">注</text><text x="122" y="578">关联订单：AS202608270012</text><text x="122" y="613">本图仅用于管理后台原型演示，不具备任何票据效力。</text>
+<text x="50" y="680">开票人：演示人员</text><text x="870" y="680">金额及税务信息仅为占位展示</text></g>
+<text x="600" y="457" text-anchor="middle" transform="rotate(-16 600 400)" font-size="72" fill="#cb4b43" opacity="0.14" font-weight="600">演示样票 · 不可报销</text>
+<text x="600" y="730" text-anchor="middle" font-size="15" fill="#a8a09c">PROTOTYPE SAMPLE / NOT A VALID INVOICE</text>
+</g></svg>

@@ -1,0 +1,9 @@
+# macOS 系统文件
+.DS_Store
+
+# Open Design / 编辑器自动生成的工具链目录，不入库
+.agents/
+.od-skills/
+
+# 备份压缩包
+*.zip

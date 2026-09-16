@@ -1,0 +1,163 @@
+.order-filter-bar .filter-dropdown { min-width: 164px; }
+
+.settlement-section-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
+.settlement-section-head .detail-page-title { margin-bottom: 0; }
+.settlement-rule { padding: 16px 18px; margin-bottom: 20px; border: 1px solid #dce9fa; border-radius: 6px; background: #f5f9ff; color: #526479; line-height: 1.9; }
+.settlement-rule strong { color: #26364a; }
+.settlement-table-wrap { overflow-x: auto; }
+.settlement-table { min-width: 1120px; table-layout: auto; }
+.settlement-table td, .settlement-table th { padding: 14px 16px; white-space: normal; }
+.settlement-table small { display: block; margin-top: 5px; color: #8491a3; }
+.settlement-table .settlement-amount { color: #2b75c6; font-weight: 600; white-space: nowrap; }
+.settlement-table tfoot td { background: #f7f9fc; font-weight: 600; }
+.settlement-note { margin: 14px 0 0; color: #8491a3; font-size: 12px; line-height: 1.8; }
+.settlement-account + .settlement-account { border-top: 1px solid var(--as-border-light); margin-top: 24px; padding-top: 24px; }
+.settlement-account h4 { margin: 0 0 20px; font-size: 14px; color: #35506d; }
+.settlement-detail .detail-info-value { overflow-wrap: anywhere; }
+
+.push-config-modal-body { padding: 4px 30px 8px; }
+
+.push-config-form { padding-top: 0; }
+
+.push-config-field { min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 16px; }
+
+.push-config-field .form-label { margin: 0; color: var(--as-text-sub); }
+
+.push-config-days-field { align-items: flex-start; }
+
+.push-config-days-field > .form-label { padding-top: 10px; flex: 0 0 84px; }
+
+.push-config-days-list { flex: 1; }
+
+.push-config-day-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+
+.push-config-day-row .form-control { width: 100px; }
+
+.push-config-day-row .btn-text { margin-left: 8px; }
+
+.push-config-add-day { padding: 0; }
+
+.push-config-field select.form-control { width: 210px; }
+
+.switch-control { position: relative; width: 40px; height: 22px; display: inline-block; flex: 0 0 auto; }
+
+.switch-control input { position: absolute; opacity: 0; }
+
+.switch-slider { position: absolute; inset: 0; border-radius: 11px; background: #c8ced8; transition: .2s; cursor: pointer; }
+
+.switch-slider::after { content: ''; position: absolute; width: 18px; height: 18px; top: 2px; left: 2px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.16); transition: .2s; }
+
+.switch-control input:checked + .switch-slider { background: var(--as-primary); }
+
+.switch-control input:checked + .switch-slider::after { transform: translateX(18px); }
+
+.order-table-panel { overflow-x: auto; }
+
+.order-table-panel table { min-width: 1180px; }
+
+.order-table-panel .table-actions { flex-wrap: wrap; gap: 8px 12px; }
+
+.order-checkbox { display: block; width: 15px; height: 15px; margin: 0 auto; accent-color: var(--as-primary); }
+
+.table-checkbox-cell { width: 44px; padding: 0 14px; font-size: 0; line-height: 0; text-align: center; }
+
+.order-table-panel .table-actions { min-width: 220px; }
+
+.renew-order-modal { max-width: calc(100vw - 24px); }
+
+.renew-order-modal .filter-dropdown { width: 100%; min-width: 0; }
+
+.renew-order-modal .select-trigger { height: 38px; }
+
+.renew-order-modal .select-menu { top: calc(100% + 5px); }
+
+.renew-order-result-time { margin-top: 14px; color: var(--as-text-main); }
+
+.order-vehicle-manage-list { border-top: 0; }
+
+.order-vehicle-manage-row { min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+
+.order-vehicle-plate { color: var(--as-text-main); font-weight: 700; }
+
+.order-vehicle-actions { display: inline-flex; align-items: center; gap: 18px; flex: 0 0 auto; }
+
+.order-vehicle-actions .btn-text:disabled { color: var(--as-text-muted); cursor: not-allowed; }
+
+.order-vehicle-add { margin-top: 16px; }
+
+.order-vehicle-add-btn {
+  height: 34px;
+  padding: 0 16px;
+  border-color: #b8d8ff;
+  background: #eef6ff;
+  color: var(--as-primary);
+  font-weight: 600;
+  gap: 7px;
+}
+
+.order-vehicle-add-btn:hover,
+.order-vehicle-add-btn:focus {
+  border-color: #8fc0ff;
+  background: #e4f1ff;
+  color: var(--as-primary-hover);
+}
+
+.order-vehicle-add-icon {
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.order-vehicle-current { min-height: 38px; display: flex; align-items: center; padding: 0 12px; border: 1px solid var(--as-border-light); background: #f7f8fa; color: var(--as-text-main); font-weight: 700; }
+
+.invoice-application-modal { width: min(560px, calc(100vw - 32px)); }
+
+.invoice-application-modal .modal-body { max-height: calc(100vh - 168px); overflow-y: auto; padding: 0 30px 22px; }
+
+.invoice-form-section { padding: 20px 0 2px; }
+
+.invoice-form-section + .invoice-form-section { padding-top: 22px; border-top: 1px solid var(--as-border-light); }
+
+.invoice-form-section-title { margin-bottom: 16px; color: var(--as-text-main); font-size: 15px; font-weight: 700; }
+
+.invoice-type-options { display: flex; gap: 12px; }
+
+.invoice-type-option { width: 168px; min-height: 62px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 4px; padding: 10px 14px; border: 1px solid var(--as-border); border-radius: 4px; background: #fff; color: var(--as-text-main); text-align: left; }
+
+.invoice-type-option:hover { border-color: #9fc5f8; }
+
+.invoice-type-option.active { border-color: #8ebcff; background: var(--as-primary-light); color: var(--as-primary); }
+
+.invoice-type-option strong { font-weight: 700; }
+
+.invoice-type-option span { color: var(--as-text-muted); font-size: 12px; }
+
+.invoice-form-section .modal-form-grid { grid-template-columns: 1fr; gap: 16px; }
+
+.invoice-application .modal-form-field {
+  display: grid;
+  grid-template-columns: 108px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 12px;
+}
+
+.invoice-application .modal-form-field label {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.invoice-application .modal-form-field .form-control {
+  min-width: 0;
+}
+
+.invoice-application .modal-form-field .modal-field-error {
+  grid-column: 2;
+}
+
+.invoice-form-section .modal-form-field label.required::before { content: '*'; margin-right: 4px; color: var(--as-danger); }
+
+@media (max-width: 720px) {
+  .order-vehicle-actions { gap: 12px; }
+  .invoice-application-modal .modal-body { padding: 0 22px 18px; }
+  .invoice-type-options { flex-wrap: wrap; }
+  .invoice-application .modal-form-field { grid-template-columns: 92px minmax(0, 1fr); }}

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登记退款 - 安商房车库月租PC管理后台</title>
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/pages/refunds.css">
+  <style>
+    body { background: rgba(20, 30, 55, .22); display: grid; place-items: center; min-height: 100vh; overflow: auto; }
+    .modal-mask { display: block; position: static; }
+    .modal { position: static; transform: none; }
+    .create-help { color: var(--as-text-muted); font-size: 13px; line-height: 1.7; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="modal-mask">
+    <div class="modal refund-approval-modal">
+      <div class="modal-head">
+        <span>登记已退款</span>
+      </div>
+      <div class="modal-body">
+        <div class="approval-summary">
+          <div class="approval-summary-title">登记线下退款结果</div>
+          <div class="approval-summary-grid">
+            <div class="approval-summary-item">
+              <span class="approval-summary-label">退款单号</span>
+              <span class="approval-summary-value">RF2026090800012</span>
+            </div>
+            <div class="approval-summary-item">
+              <span class="approval-summary-label">原订单号</span>
+              <span class="approval-summary-value">OD2026090100007</span>
+            </div>
+            <div class="approval-summary-item">
+              <span class="approval-summary-label">预计退款</span>
+              <span class="approval-summary-value">¥360.00</span>
+            </div>
+            <div class="approval-summary-item">
+              <span class="approval-summary-label">当前处理人</span>
+              <span class="approval-summary-value">超级管理员</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-form-grid">
+          <div class="modal-form-field">
+            <label for="refundActualAmount">实际退款金额</label>
+            <input id="refundActualAmount" class="form-control" type="number" min="0.01" step="0.01" value="360" placeholder="请输入实际退款金额">
+            <div class="modal-field-error"></div>
+          </div>
+          <div class="modal-form-field">
+            <label for="refundCompletedAt">退款时间</label>
+            <input id="refundCompletedAt" class="form-control" type="datetime-local" value="2026-09-08T10:30">
+            <div class="modal-field-error"></div>
+          </div>
+          <div class="modal-form-field">
+            <label for="refundProcessedBy">处理人</label>
+            <input id="refundProcessedBy" class="form-control" value="超级管理员" readonly>
+          </div>
+          <div class="modal-form-field">
+            <label for="refundFlowNo">退款流水号</label>
+            <input id="refundFlowNo" class="form-control" placeholder="请输入线下退款流水或凭证号">
+            <div class="modal-field-error"></div>
+          </div>
+        </div>
+        <div class="create-help">只有实际退款已完成并能提供线下退款流水或凭证号时，才可将状态更新为"已退款"。</div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn">取消</button>
+        <button class="btn btn-primary">确认已退款</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

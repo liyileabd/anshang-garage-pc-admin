@@ -1,0 +1,15 @@
+.modal.project-status-modal { width: 520px; }
+
+.project-status-modal .modal-head { height: 58px; padding: 0 22px; font-size: 16px; }
+
+.project-status-modal .modal-head .btn-text { color: var(--as-primary); font-size: 13px; }
+
+.project-status-modal .modal-body { min-height: 96px; display: flex; align-items: flex-start; gap: 14px; padding: 28px 22px 24px; color: var(--as-text-main); line-height: 1.8; }
+
+.project-status-modal .modal-foot { height: 68px; padding: 0 22px; gap: 10px; }
+
+.project-status-modal .modal-foot .btn { min-width: 78px; height: 36px; }
+
+.project-status-icon { flex: 0 0 28px; width: 28px; height: 28px; display: inline-grid; place-items: center; border: 1px solid #9fc5f8; border-radius: 50%; color: var(--as-primary); font-weight: 700; line-height: 1; }
+
+.project-status-modal.project-stop-modal .project-status-icon { border-color: #f2b7b7; color: var(--as-danger); }

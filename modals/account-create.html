@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>新增账号 - 安商房车库月租PC管理后台</title>
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/pages/system.css">
+  <style>
+    body { background: rgba(20, 30, 55, .22); display: grid; place-items: center; min-height: 100vh; overflow: auto; }
+    .modal-mask { display: block; position: static; }
+    .modal { position: static; transform: none; }
+  </style>
+</head>
+<body>
+  <div class="modal-mask">
+    <div class="modal account-create-modal">
+      <div class="modal-head">
+        <span>新增账号</span>
+      </div>
+      <div class="modal-body">
+        <div class="modal-form-grid">
+          <div class="modal-form-field">
+            <label for="accountLoginName">登录名</label>
+            <input id="accountLoginName" class="form-control" placeholder="请输入登录名">
+          </div>
+          <div class="modal-form-field">
+            <label for="accountInitialPassword">初始密码</label>
+            <input id="accountInitialPassword" class="form-control" value="123456" readonly>
+          </div>
+        </div>
+        <div class="account-password-note">
+          工作人员姓名、手机号等个人信息由工作人员首次登录后自行补充。<strong>首次登录必须修改初始密码。</strong>
+        </div>
+        <div class="initial-password">
+          <strong>123456</strong>
+          <button class="copy-password" type="button">复制密码</button>
+        </div>
+        <div id="accountFormError" class="approval-error"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn">取消</button>
+        <button class="btn btn-primary">保存</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

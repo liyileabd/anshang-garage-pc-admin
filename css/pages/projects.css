@@ -1,0 +1,9 @@
+
+
+.garage-filter-bar { min-height: 36px; margin-bottom: 14px; padding: 0; gap: 8px 10px; background: transparent; border-bottom: 0; }
+
+.garage-filter-bar .input { width: 220px; }
+
+.garage-filter-bar .btn { padding-left: 13px; padding-right: 13px; }
+
+.garage-table-panel { background: #fff; }
