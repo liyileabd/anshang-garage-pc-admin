@@ -201,6 +201,31 @@
       ['property01','普通账号','启用','2026-08-28 10:18'],
       ['ops02','普通账号','停用','2026-08-20 15:02']
     ];
+    // 个人中心：账号资料（登录账号不可改，其余可在个人中心维护）、登录密码、头像
+    let currentPassword = DEFAULT_INITIAL_PASSWORD;
+    const userProfiles = {
+      admin: { company: '安商房运营公司', position: '平台管理员', name: '系统管理员', nickname: '管理员', phone: '13800138000', email: 'admin@anshangfang.com' },
+      finance01: { company: '安商房运营公司', position: '财务管理员', name: '张敏', nickname: '张敏', phone: '13800138001', email: 'finance01@anshangfang.com' },
+      property01: { company: '安商房运营公司', position: '物业管理员', name: '刘伟', nickname: '刘伟', phone: '13800138002', email: 'property01@anshangfang.com' },
+      ops02: { company: '安商房运营公司', position: '运营专员', name: '陈露', nickname: '陈露', phone: '13800138003', email: 'ops02@anshangfang.com' }
+    };
+    const profileAvatars = {};
+    function profileOf(loginName) {
+      if (!userProfiles[loginName]) {
+        const account = systemAccounts.find(item => item[0] === loginName);
+        userProfiles[loginName] = { company: '安商房运营公司', position: account && account[1] === '超级管理员' ? '平台管理员' : '普通管理员', name: loginName, nickname: loginName, phone: '', email: '' };
+      }
+      return userProfiles[loginName];
+    }
+    function accountAvatarLetter(loginName) {
+      const account = systemAccounts.find(item => item[0] === loginName);
+      return account && account[1] === '超级管理员' ? '管' : String(loginName || '').charAt(0).toUpperCase();
+    }
+    function accountAvatarHtml(loginName, extraClass = '', id = '') {
+      const url = profileAvatars[loginName];
+      const inner = url ? `<img src="${url}" alt="">` : accountAvatarLetter(loginName);
+      return `<span class="avatar${extraClass ? ` ${extraClass}` : ''}"${id ? ` id="${id}"` : ''}>${inner}</span>`;
+    }
     let selectedGarageProjectType = '';
     let garageCreateStep = 1;
     const newGarageForm = {

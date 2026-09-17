@@ -23,3 +23,55 @@
 
 .account-table-panel .account-checkbox,
 .account-table-panel #selectAllCheckbox { width: 14px; height: 14px; margin: 0; vertical-align: middle; accent-color: var(--as-primary); }
+
+/* 个人中心：头部资料卡 + 个人信息 / 账号安全两个分区 */
+.profile-card { background: #fff; border: 1px solid #dbe5f2; border-radius: 10px; box-shadow: 0 10px 26px rgba(39, 79, 143, .06); margin-bottom: 18px; overflow: hidden; }
+
+.profile-head { display: flex; align-items: center; gap: 26px; padding: 28px 32px; }
+
+.profile-avatar, .avatar-upload-preview { flex: none; width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; overflow: hidden; color: #2f6bd8; font-size: 28px; font-weight: 600; background: radial-gradient(circle at 50% 42%, #f4f8ff 0%, #dde9ff 62%, #c8dcff 100%); }
+
+.profile-avatar.has-image { background: #eef3fb; }
+
+.profile-avatar img, .avatar-upload-preview img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+.profile-head-main { flex: 1; min-width: 0; }
+
+.profile-name { font-size: 22px; line-height: 1.3; font-weight: 700; }
+
+.profile-sub { margin-top: 6px; color: var(--as-text-sub); }
+
+.profile-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+.profile-tags .tag { height: 26px; padding: 0 10px; border-radius: 4px; }
+
+.profile-section-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 24px 32px 14px; }
+
+.profile-section-head.is-plain { padding-top: 44px; padding-bottom: 12px; }
+
+.profile-section-title { font-size: 18px; font-weight: 700; }
+
+.profile-error { margin: 0 32px; }
+
+.profile-rows { padding: 0 32px 20px; }
+
+.profile-row { display: grid; grid-template-columns: 120px minmax(0, 1fr) auto; align-items: center; gap: 24px; min-height: 58px; border-bottom: 1px solid var(--as-border-light); }
+
+.profile-row-label { color: var(--as-text-sub); }
+
+.profile-row-value { min-width: 0; }
+
+.profile-password-value { display: flex; align-items: center; gap: 10px; }
+
+/* 资料行默认是纯文本外观，悬停/聚焦才显出输入框边框 */
+.profile-input { width: 100%; height: 36px; margin-left: -10px; padding: 0 10px; border: 1px solid transparent; border-radius: 4px; background: transparent; color: var(--as-text-main); outline: none; }
+
+.profile-input:hover { border-color: var(--as-border); background: #fff; }
+
+.profile-input:focus { border-color: var(--as-primary); background: #fff; box-shadow: 0 0 0 3px var(--as-primary-soft); }
+
+.profile-input.has-error { border-color: var(--as-danger); background: #fff; }
+
+.avatar-upload { display: flex; align-items: center; gap: 22px; }
+
+.avatar-upload .create-upload { flex: 1; min-width: 0; }

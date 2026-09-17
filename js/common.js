@@ -4,7 +4,7 @@
       const password = document.getElementById('loginPassword')?.value || '';
       const account = systemAccounts.find(item => item[0] === loginName && item[2] === '启用');
       const error = document.getElementById('loginError');
-      if (!account || password !== DEFAULT_INITIAL_PASSWORD) {
+      if (!account || password !== currentPassword) {
         if (error) error.textContent = '用户名或密码错误';
         return;
       }
@@ -26,8 +26,90 @@
       if (menu) menu.classList.remove('open');
     }
     function openProfile() {
-      // 个人中心页面暂未实现（人类要求先不画），此处只收起菜单
       closeAccountMenu();
+      current = 'profile'; garageSubpage = 'list'; userSubpage = 'list'; orderSubpage = 'list'; passageSubpage = 'list'; refundSubpage = 'list'; invoiceSubpage = 'list'; settlementSubpage = 'list';
+      render();
+    }
+    function saveProfile() {
+      const profile = profileOf(currentLoginName);
+      const error = document.getElementById('profileError');
+      if (error) error.textContent = '';
+      document.querySelectorAll('.profile-input.has-error').forEach(input => input.classList.remove('has-error'));
+      const fail = (field, message) => {
+        document.getElementById(field)?.classList.add('has-error');
+        if (error) error.textContent = message;
+      };
+      const value = field => (document.getElementById(field)?.value || '').trim();
+      const values = { name: value('name'), nickname: value('nickname'), phone: value('phone'), email: value('email') };
+      if (!values.name) return fail('name', '请填写姓名');
+      if (values.phone && !/^1[3-9]\d{9}$/.test(values.phone)) return fail('phone', '手机号格式不正确，请填写 11 位手机号');
+      if (values.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) return fail('email', '邮箱格式不正确');
+      Object.assign(profile, values);
+      const nameNode = document.getElementById('profileName');
+      if (nameNode) nameNode.textContent = profile.name;
+      showModal('资料已保存', '<div class="modal-tip">个人信息已更新。登录账号由系统分配，不支持修改。</div>');
+      const confirmButton = document.getElementById('modalConfirmButton');
+      if (confirmButton) { confirmButton.textContent = '完成'; confirmButton.onclick = hideModal; }
+    }
+    let pendingAvatarUrl = '';
+    function openAvatarModal() {
+      pendingAvatarUrl = '';
+      const avatar = profileAvatars[currentLoginName];
+      showModal('更换头像', `<div class="modal-tip">请上传 1:1 的 JPG、JPEG 或 PNG 图片，大小不超过 2MB。更换后顶栏与账号管理列表同步生效。</div><div class="avatar-upload"><div class="avatar-upload-preview" id="avatarPreview">${avatar ? `<img src="${avatar}" alt="头像预览">` : accountAvatarLetter(currentLoginName)}</div><label class="create-upload"><input id="avatarFile" type="file" accept="image/png,image/jpeg" onchange="previewAvatarFile(this)"><button type="button" class="btn" onclick="document.getElementById('avatarFile').click()">选择图片</button><span id="avatarFileName" class="create-upload-name">未选择文件</span></label></div><div id="avatarError" class="approval-error"></div>`);
+      const cancelButton = document.getElementById('modalCancelButton');
+      const confirmButton = document.getElementById('modalConfirmButton');
+      if (cancelButton) { cancelButton.textContent = '取消'; cancelButton.onclick = () => { pendingAvatarUrl = ''; hideModal(); }; }
+      if (confirmButton) { confirmButton.textContent = '确认更换'; confirmButton.onclick = saveAvatar; }
+    }
+    function previewAvatarFile(input) {
+      const file = input?.files?.[0];
+      const error = document.getElementById('avatarError');
+      const nameNode = document.getElementById('avatarFileName');
+      if (nameNode) nameNode.textContent = file ? file.name : '未选择文件';
+      if (error) error.textContent = '';
+      pendingAvatarUrl = '';
+      if (!file) return;
+      if (!/^image\/(png|jpe?g)$/i.test(file.type)) { if (error) error.textContent = '仅支持 JPG、JPEG、PNG 图片'; return; }
+      if (file.size > 2 * 1024 * 1024) { if (error) error.textContent = '图片大小不能超过 2MB'; return; }
+      pendingAvatarUrl = URL.createObjectURL(file);
+      const preview = document.getElementById('avatarPreview');
+      if (preview) preview.innerHTML = `<img src="${pendingAvatarUrl}" alt="头像预览">`;
+    }
+    function saveAvatar() {
+      const error = document.getElementById('avatarError');
+      if (!pendingAvatarUrl) { if (error) error.textContent = '请先选择头像图片'; return; }
+      const previous = profileAvatars[currentLoginName];
+      if (previous && previous !== pendingAvatarUrl && previous.startsWith('blob:')) URL.revokeObjectURL(previous);
+      profileAvatars[currentLoginName] = pendingAvatarUrl;
+      pendingAvatarUrl = '';
+      hideModal();
+      render();
+    }
+    function openChangePasswordModal() {
+      showModal('修改登录密码', `<div class="modal-tip">修改后立即生效，下次登录请使用新密码。</div><div class="modal-form-row"><label for="profileOldPassword">当前密码</label><input id="profileOldPassword" class="form-control" type="password" placeholder="请输入当前密码"></div><div class="modal-form-row"><label for="profileNewPassword">新密码</label><input id="profileNewPassword" class="form-control" type="password" placeholder="至少 6 位字符"></div><div class="modal-form-row"><label for="profileConfirmPassword">确认新密码</label><input id="profileConfirmPassword" class="form-control" type="password" placeholder="请再次输入新密码"></div><div id="profilePasswordError" class="approval-error"></div>`);
+      const cancelButton = document.getElementById('modalCancelButton');
+      const confirmButton = document.getElementById('modalConfirmButton');
+      if (cancelButton) { cancelButton.textContent = '取消'; cancelButton.onclick = hideModal; }
+      if (confirmButton) { confirmButton.textContent = '确认修改'; confirmButton.onclick = saveNewPassword; }
+    }
+    function saveNewPassword() {
+      const oldPassword = document.getElementById('profileOldPassword')?.value || '';
+      const newPassword = document.getElementById('profileNewPassword')?.value || '';
+      const confirmPassword = document.getElementById('profileConfirmPassword')?.value || '';
+      const error = document.getElementById('profilePasswordError');
+      const fail = message => { if (error) error.textContent = message; };
+      if (!oldPassword) return fail('请输入当前密码');
+      if (oldPassword !== currentPassword) return fail('当前密码不正确');
+      if (newPassword.length < 6) return fail('新密码长度不能少于 6 位');
+      if (newPassword === currentPassword) return fail('新密码不能与当前密码相同');
+      if (newPassword !== confirmPassword) return fail('两次输入的新密码不一致');
+      currentPassword = newPassword;
+      const loginInput = document.getElementById('loginPassword');
+      if (loginInput) loginInput.value = currentPassword;
+      hideModal();
+      showModal('密码修改成功', '<div class="modal-tip">新密码已生效，下次登录请使用新密码。</div>');
+      const confirmButton = document.getElementById('modalConfirmButton');
+      if (confirmButton) { confirmButton.textContent = '完成'; confirmButton.onclick = hideModal; }
     }
     function logout() {
       closeAccountMenu();
