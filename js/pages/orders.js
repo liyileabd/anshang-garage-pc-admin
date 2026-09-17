@@ -417,17 +417,12 @@
     function openManualSettlement(orderNo) {
       const row = settlementRecords.find(item => item[0] === orderNo);
       if (!row || row[6] !== '清分异常') return;
-      showModal('确认已清分', `<div class="modal-tip">本操作仅登记线下收款结果，不阻止线上分账。</div><div class="modal-order-summary">订单 ${orderNo}，清分金额 <strong>${row[4]}</strong>。</div><div class="modal-form-field" style="margin-bottom:16px"><label for="manualSettlementDate">实际清分日期</label><input id="manualSettlementDate" class="form-control" type="date" required></div><label style="display:flex;align-items:center;gap:8px"><input id="manualSettlementConfirmed" type="checkbox">确认线下已全部清分</label><div id="manualSettlementError" class="approval-error"></div>`);
+      showModal('确认已清分', `<div class="modal-tip">本操作仅登记线下收款结果，不阻止线上分账。</div><div class="modal-order-summary">订单 ${orderNo}，清分金额 ${row[4]}。</div><div class="modal-form-field" style="margin-bottom:16px"><label for="manualSettlementDate">实际清分日期</label><input id="manualSettlementDate" class="form-control" type="date" required></div><div id="manualSettlementError" class="approval-error"></div>`);
       const confirm = document.getElementById('modalConfirmButton');
       if (confirm) {
         confirm.textContent = '确认已清分';
         confirm.onclick = () => {
           if (row[6] !== '清分异常') { hideModal(); return; }
-          if (!document.getElementById('manualSettlementConfirmed')?.checked) {
-            const error = document.getElementById('manualSettlementError');
-            if (error) error.textContent = '请先确认线下已全部清分';
-            return;
-          }
           const dateField = document.getElementById('manualSettlementDate');
           const completedDate = dateField?.value || '';
           const now = new Date();
