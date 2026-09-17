@@ -198,33 +198,31 @@
 
 .dashboard-finance-table-wrap { overflow-x: auto; }
 
-.dashboard-finance-summary-table { width: 100%; min-width: 900px; border-collapse: collapse; table-layout: fixed; color: #425873; font-size: 14px; font-weight: 400; }
+/* 收支汇总表沿用全局表格样式（css/common.css 的 table / th / td），
+   这里只负责最小宽度与各列宽度，保持与订单、用户等列表页一致的外观 */
+.dashboard-finance-table-wrap table { min-width: 1088px; }
 
-.dashboard-finance-summary-table th { height: 46px; padding: 0 14px; background: #f7f9fc; color: #6f7f95; font-size: 14px; font-weight: 400; text-align: left; white-space: nowrap; }
+.dashboard-finance-table-wrap table th:nth-child(1),
+.dashboard-finance-table-wrap table td:nth-child(1) { width: 112px; }
 
-.dashboard-finance-summary-table td { height: 52px; padding: 0 14px; border-top: 1px solid #edf1f7; color: #425873; font-size: 14px; font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dashboard-finance-table-wrap table th:nth-child(2),
+.dashboard-finance-table-wrap table td:nth-child(2) { width: 142px; }
 
-.dashboard-finance-summary-table th:nth-child(1),
-.dashboard-finance-summary-table td:nth-child(1) { width: 86px; }
+.dashboard-finance-table-wrap table th:nth-child(3),
+.dashboard-finance-table-wrap table td:nth-child(3),
+.dashboard-finance-table-wrap table th:nth-child(5),
+.dashboard-finance-table-wrap table td:nth-child(5),
+.dashboard-finance-table-wrap table th:nth-child(7),
+.dashboard-finance-table-wrap table td:nth-child(7),
+.dashboard-finance-table-wrap table th:nth-child(9),
+.dashboard-finance-table-wrap table td:nth-child(9) { width: 96px; }
 
-.dashboard-finance-summary-table th:nth-child(2),
-.dashboard-finance-summary-table td:nth-child(2) { width: 124px; }
-
-.dashboard-finance-summary-table th:nth-child(3),
-.dashboard-finance-summary-table td:nth-child(3),
-.dashboard-finance-summary-table th:nth-child(5),
-.dashboard-finance-summary-table td:nth-child(5),
-.dashboard-finance-summary-table th:nth-child(7),
-.dashboard-finance-summary-table td:nth-child(7),
-.dashboard-finance-summary-table th:nth-child(9),
-.dashboard-finance-summary-table td:nth-child(9) { width: 82px; }
-
-.dashboard-finance-summary-table th:nth-child(4),
-.dashboard-finance-summary-table td:nth-child(4),
-.dashboard-finance-summary-table th:nth-child(6),
-.dashboard-finance-summary-table td:nth-child(6),
-.dashboard-finance-summary-table th:nth-child(8),
-.dashboard-finance-summary-table td:nth-child(8) { width: 126px; }
+.dashboard-finance-table-wrap table th:nth-child(4),
+.dashboard-finance-table-wrap table td:nth-child(4),
+.dashboard-finance-table-wrap table th:nth-child(6),
+.dashboard-finance-table-wrap table td:nth-child(6),
+.dashboard-finance-table-wrap table th:nth-child(8),
+.dashboard-finance-table-wrap table td:nth-child(8) { width: 152px; }
 
 .dashboard-finance-change { color: #6f7f95; font-size: 13px; font-weight: 400; }
 

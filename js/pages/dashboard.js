@@ -161,7 +161,7 @@
         const previous = previousRow(row.date);
         return `<tr><td>${financeDateLabel(row.date)}</td><td>${row.paidOrders} 笔</td><td>${financeChangeHtml(row.paidOrders, previous?.paidOrders)}</td><td>${financeCurrency(row.paidAmount)}</td><td>${financeChangeHtml(row.paidAmount, previous?.paidAmount)}</td><td>${financeCurrency(row.actualRefundAmount)}</td><td>${financeChangeHtml(row.actualRefundAmount, previous?.actualRefundAmount)}</td><td>${financeCurrency(row.netAmount)}</td><td>${financeChangeHtml(row.netAmount, previous?.netAmount)}</td></tr>`;
       }).join('');
-      return `<table class="dashboard-finance-summary-table"><thead><tr><th>日期</th><th>支付成功笔数</th><th>较昨日</th><th>缴费金额</th><th>较昨日</th><th>退款金额</th><th>较昨日</th><th>净收款</th><th>较昨日</th></tr></thead><tbody>${tableRows || '<tr><td colspan="9"><div class="empty">暂无数据</div></td></tr>'}</tbody></table>`;
+      return `<table><thead><tr><th>日期</th><th>支付成功笔数</th><th>较昨日</th><th>缴费金额</th><th>较昨日</th><th>退款金额</th><th>较昨日</th><th>净收款</th><th>较昨日</th></tr></thead><tbody>${tableRows || '<tr><td colspan="9"><div class="empty">暂无数据</div></td></tr>'}</tbody></table>`;
     }
 
     function dashboardPage() {
