@@ -304,7 +304,7 @@
       if (rejectButton) { rejectButton.style.display = 'none'; rejectButton.onclick = null; }
       document.getElementById('modalTitle').textContent = title;
       document.getElementById('modalBody').innerHTML = body;
-      document.querySelector('#modalMask .modal')?.classList.remove('refund-approval-modal', 'refund-application-modal', 'project-status-modal', 'project-stop-modal', 'renew-order-modal', 'invoice-application-modal', 'refund-export-modal', 'invoice-preview-modal');
+      document.querySelector('#modalMask .modal')?.classList.remove('refund-approval-modal', 'refund-application-modal', 'project-status-modal', 'project-stop-modal', 'renew-order-modal', 'invoice-application-modal', 'invoice-preview-modal');
       const cancelButton = document.getElementById('modalCancelButton');
       const confirmButton = document.getElementById('modalConfirmButton');
       if (cancelButton) { cancelButton.textContent = '取消'; cancelButton.className = 'btn'; cancelButton.onclick = hideModal; }

@@ -131,20 +131,6 @@
 
 .refund-table-panel table { min-width: 1300px; }
 
-.modal.refund-export-modal { width: 520px; max-width: calc(100vw - 48px); }
-
-.refund-export-modal .modal-body { padding: 24px 28px; }
-
-.export-summary { margin-bottom: 18px; }
-
-.export-summary-title { color: var(--as-text-main); font-size: 16px; font-weight: 400; }
-
-.export-field-list { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 24px; row-gap: 12px; padding-top: 4px; }
-
-.export-field-option { width: 100%; min-height: 36px; display: flex !important; align-items: center; gap: 10px; padding: 6px 0; color: var(--as-text-main); cursor: pointer; box-sizing: border-box; }
-
-.export-field-option input { width: 15px; height: 15px; margin: 0; accent-color: var(--as-primary); }
-
 .invoice-filter-bar { flex-wrap: wrap; }
 .invoice-upload-form { padding: 4px 0 10px; }
 .invoice-upload-title { margin-bottom: 16px; color: var(--as-text-sub); }

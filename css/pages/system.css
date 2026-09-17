@@ -13,3 +13,13 @@
 
 /* 操作日志列较多，允许横向滚动，避免最后一列被裁切 */
 .log-table-panel { overflow-x: auto; }
+
+/* 账号管理：复选框列（表头全选 + 行内勾选）。
+   原来这一列宽 40px，而 td 自带左右各 18px 内边距、共占 36px，内容区只剩 4px，
+   再加上 td 上的 text-overflow: ellipsis，浏览器就会在复选框右侧渲染出一个多余的省略号。
+   处理：列宽加到 56px、去掉右侧内边距，并把该列的 text-overflow 改回 clip。 */
+.account-table-panel table th:first-child,
+.account-table-panel table td:first-child { width: 56px; padding: 0 0 0 16px; text-overflow: clip; }
+
+.account-table-panel .account-checkbox,
+.account-table-panel #selectAllCheckbox { width: 14px; height: 14px; margin: 0; vertical-align: middle; accent-color: var(--as-primary); }

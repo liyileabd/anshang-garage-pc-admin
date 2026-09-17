@@ -168,10 +168,6 @@
     function toggleAllOrders(checked) {
       document.querySelectorAll('.order-checkbox[data-order-id]').forEach(input => { input.checked = checked; if (checked) selectedOrderIds.add(input.dataset.orderId); else selectedOrderIds.delete(input.dataset.orderId); });
     }
-    function batchExportOrders() {
-      if (!selectedOrderIds.size) { showModal('请选择订单', '请先勾选需要导出的订单。'); return; }
-      showModal('批量导出订单', `已选中 ${selectedOrderIds.size} 条订单，将按当前列表字段生成订单台账，并记录导出人、时间和筛选条件。`);
-    }
     function revokeRefundApplication(orderNo) {
       const refund = refunds.find(item => item[1] === orderNo && item[7] === '待审批');
       if (!refund) return;

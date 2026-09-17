@@ -61,62 +61,6 @@
       resetFilterDropdown('refundStatusFilter');
       filterRefunds();
     }
-    function batchExportRefunds() {
-      const selected = filteredRefundRecords();
-      if (!selected.length) {
-        showModal('暂无可导出的退款记录', '当前筛选条件下没有退款申请。');
-        return;
-      }
-      const eligible = selected.filter(refund => refund[7] === '已通过');
-      if (!eligible.length) {
-        showModal('暂无可导出的退款记录', '只有状态为“已通过”的退款申请可以导出为退款审批台账。');
-        return;
-      }
-      const excluded = selected.length - eligible.length;
-      const fieldRows = refundExportFields.map(([key, label]) => `<label class="export-field-option"><input type="checkbox" name="refundExportField" value="${key}"${refundExportDefaultFields.has(key) ? ' checked' : ''}> <span>${label}</span></label>`).join('');
-      showModal('自定义导出退款记录', `<div class="modal-tip">仅导出状态为“已通过”的记录${excluded ? `，已忽略 ${excluded} 条其他状态记录` : ''}。</div><div class="export-summary"><div class="export-summary-title">选择导出内容</div></div><div class="export-field-list">${fieldRows}</div>`);
-      const modal = document.querySelector('#modalMask .modal');
-      if (modal) modal.classList.add('refund-export-modal');
-      const confirmButton = document.getElementById('modalConfirmButton');
-      if (confirmButton) {
-        confirmButton.textContent = '确认导出';
-        confirmButton.onclick = () => {
-          exportRefunds(eligible);
-        };
-      }
-    }
-    const refundExportFields = [
-      ['refundNo', '退款单号'], ['orderNo', '原订单号'], ['project', '小区项目'], ['owner', '申请用户'], ['plate', '退款车辆'],
-      ['account', '收款账户摘要'], ['originalPaidAmount', '原支付金额'], ['remainingTerm', '剩余租期'], ['estimatedAmount', '预计退款金额'],
-      ['approvedAmount', '审批后金额'], ['reason', '退款原因'], ['submittedAt', '申请时间']
-    ];
-    const refundExportDefaultFields = new Set(['refundNo', 'owner', 'plate', 'orderNo', 'project', 'account', 'estimatedAmount', 'approvedAmount', 'reason', 'submittedAt']);
-    function refundExportValue(refund, key) {
-      const detail = refundRequestDetails[refund[0]] || {};
-      const values = {
-        refundNo: refund[0], orderNo: refund[1], project: refund[2], owner: refund[3], plate: refund[4], account: refund[5],
-        originalPaidAmount: detail.originalPaidAmount ?? '', remainingTerm: detail.remainingTerm ?? '', estimatedAmount: detail.estimatedAmount ?? refund[6],
-        approvedAmount: detail.approvedAmount ?? '', reason: refund[9], submittedAt: refund[10]
-      };
-      return values[key] ?? '';
-    }
-    function exportRefunds(records) {
-      const approvedRecords = records.filter(refund => refund[7] === '已通过');
-      if (!approvedRecords.length) {
-        showModal('暂无可导出的退款记录', '只有审批状态为“已通过”的退款申请可以导出。');
-        return;
-      }
-      const selected = [...document.querySelectorAll('input[name="refundExportField"]:checked')].map(input => input.value);
-      if (!selected.length) {
-        showModal('请选择导出字段', '至少选择一个字段后再导出。');
-        return;
-      }
-      const fields = refundExportFields.filter(([key]) => selected.includes(key));
-      const lines = [fields.map(([, label]) => label), ...approvedRecords.map(refund => fields.map(([key]) => refundExportValue(refund, key)))].map(row => row.map(csvCell).join(','));
-      downloadCsv(`退款审批记录_${new Date().toISOString().slice(0, 10)}.csv`, lines);
-      hideModal();
-      showModal('导出成功', `已生成 ${approvedRecords.length} 条已通过的退款审批记录。`);
-    }
     function refundActions(refund) {
       const status = refund[7];
       const actions = [`<button class="btn-text" onclick="openRefund('${refund[0]}')">详情</button>`];
