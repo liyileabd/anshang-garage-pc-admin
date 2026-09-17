@@ -16,6 +16,34 @@
       document.getElementById('app').classList.remove('hidden');
       render();
     }
+    function toggleAccountMenu(event) {
+      if (event && event.target && event.target.closest && event.target.closest('.account-menu')) return;
+      const menu = document.getElementById('accountMenu');
+      if (menu) menu.classList.toggle('open');
+    }
+    function closeAccountMenu() {
+      const menu = document.getElementById('accountMenu');
+      if (menu) menu.classList.remove('open');
+    }
+    function openProfile() {
+      // 个人中心页面暂未实现（人类要求先不画），此处只收起菜单
+      closeAccountMenu();
+    }
+    function logout() {
+      closeAccountMenu();
+      current = 'projects'; garageSubpage = 'list'; userSubpage = 'list'; orderSubpage = 'list'; passageSubpage = 'list'; refundSubpage = 'list';
+      if (typeof selectedOrderIds !== 'undefined' && selectedOrderIds.clear) selectedOrderIds.clear();
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('login').classList.remove('hidden');
+      const loginError = document.getElementById('loginError');
+      if (loginError) loginError.textContent = '';
+    }
+    document.addEventListener('click', function (event) {
+      if (!event.target || !event.target.closest || !event.target.closest('#accountBox')) closeAccountMenu();
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') closeAccountMenu();
+    });
     function openCreateAccountModal() {
       showModal('新增账号', `<div class="modal-tip">工作人员姓名、手机号等个人信息由工作人员首次登录后自行补充。首次登录必须修改初始密码。</div><div class="modal-form-grid">
         <div class="modal-form-field"><label for="accountLoginName">用户名</label><input id="accountLoginName" class="form-control" placeholder="请输入用户名"></div>
