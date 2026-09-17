@@ -31,11 +31,6 @@
         rentedSpaces,
         maintenanceSpaces: String(Math.max(0, Number(totalSpaces) - Number(rentedSpaces) - Number(availableSpaces))),
         availableSpaces,
-        servicePhone: '0592-12345678',
-        serviceWechat: 'anshang-kefu',
-        serviceHours: '工作日 09:00-18:00',
-        serviceDescription: '可咨询月租办理、退款和通行异常等问题。',
-        serviceEnabled: '启用',
         monthlyAmount: '400',
         quarterlyAmount: '1140',
         halfYearAmount: '2160',
@@ -85,11 +80,6 @@
         rentedSpaces: '246',
         maintenanceSpaces: '8',
         availableSpaces: '66',
-        servicePhone: '0592-12345678',
-        serviceWechat: 'anshang-kefu',
-        serviceHours: '工作日 09:00-18:00',
-        serviceDescription: '可咨询月租办理、退款和通行异常等问题。',
-        serviceEnabled: '启用',
         monthlyAmount: '400',
         quarterlyAmount: '1140',
         halfYearAmount: '2160',
@@ -280,7 +270,7 @@
       createNoticeItems.splice(index, 1);
       render();
     }
-    const garageCreateStepLabels = ['基本信息', '收费规则', '告知书', '客服渠道'];
+    const garageCreateStepLabels = ['基本信息', '收费规则', '告知书'];
     function createStepper() {
       const steps = garageCreateStepLabels;
       return `<div class="create-stepper">${steps.map((label, index) => { const number = index + 1; const state = number < garageCreateStep ? 'done' : number === garageCreateStep ? 'active' : ''; return `<div class="create-step ${state}"><span class="create-step-index">${number}</span><span class="create-step-label">${label}</span></div>`; }).join('')}</div>`;
@@ -294,8 +284,6 @@
         body = createFeeGrid();
       } else if (garageCreateStep === 3) {
         body = `<div class="create-info"><div>用户进入月租办理流程后，会按顺序查看并确认这里配置的全部告知书。</div></div><h3 class="create-section-title">告知书配置</h3>${createNoticeGrid()}`;
-      } else if (garageCreateStep === 4) {
-        body = `<div class="create-info"><div>客服渠道会展示在小程序个人中心、订单详情和退款结果页，保存后随项目一起生效。</div></div><h3 class="create-section-title">客服渠道</h3><div class="create-form-grid">${createInput('servicePhone','客服电话',{required:true,placeholder:'请输入客服电话'})}${createInput('serviceWechat','微信客服入口',{placeholder:'请输入微信号或企业微信客服入口'})}${createInput('serviceHours','服务时间',{required:true,placeholder:'例如：工作日 09:00-18:00'})}${createSelect('serviceEnabled','是否展示',['启用','停用'],{required:true})}${createInput('serviceDescription','服务说明',{placeholder:'可咨询月租办理、退款和通行异常等问题'})}</div>`;
       }
       const foot = garageCreateStep === 1
         ? `<button class="btn" onclick="backToGarage()">取消</button><span class="foot-spacer"></span><button class="btn btn-primary" onclick="nextCreateGarageStep()">下一步</button>`
@@ -398,17 +386,6 @@
           }
           required(`notice-${item.id}-file`, `第${index + 1}份告知书文件`, item.file);
         });
-      } else if (step === 4) {
-        required('servicePhone', '客服电话', newGarageForm.servicePhone);
-        required('serviceHours', '服务时间', newGarageForm.serviceHours);
-        required('serviceEnabled', '是否展示', newGarageForm.serviceEnabled);
-        if (hasCreateValue(newGarageForm.servicePhone)) {
-          const servicePhone = String(newGarageForm.servicePhone).trim();
-          if (!/^(1\d{10}|0\d{2,3}-?\d{7,8}|400-?\d{3}-?\d{4})$/.test(servicePhone)) {
-            setCreateError('servicePhone', '请输入正确的客服电话，例如 0592-12345678');
-            valid = false;
-          }
-        }
       }
       if (!valid && renderErrors) render();
       return valid;
@@ -697,12 +674,7 @@
           dailyAmount: '14',
           propertyAmount: companyProject ? '60' : '',
           monthlyResponsible: '刘经理',
-          propertyResponsible: companyProject ? '陈经理' : '',
-          servicePhone: '0592-12345678',
-          serviceWechat: 'anshang-kefu',
-          serviceHours: '工作日 09:00-18:00',
-          serviceDescription: '可咨询月租办理、退款和通行异常等问题。',
-          serviceEnabled: '启用'
+          propertyResponsible: companyProject ? '陈经理' : ''
         },
         feeItems: [
           { key: 'monthlyAmount', label: '月租车费', responsibleKey: 'monthlyResponsible' },
@@ -740,10 +712,10 @@
         owner: form[item.responsibleKey] || '未配置'
       }));
       const notices = (config.notices || []).slice().sort((a, b) => (Number(a.sort) || 0) - (Number(b.sort) || 0) || a.id - b.id);
-      return innerPageHead(`${garage[0]}详情`) + `<section class="detail-page-section"><h3 class="detail-page-title">基本信息</h3><div class="detail-info-grid">${infoItem('小区名称', garage[0])}${infoItem('项目类型', garage[1])}${infoItem('地理位置', form.location || '未配置')}${infoItem('一路停车车场编号', garage[2])}${infoItem('清分市场编号', form.marketId || '未配置')}${infoItem('发布状态', tag(garage[5]))}${infoItem('办理状态', tag(garage[4]))}${infoItem('总车位数', totalSpaces)}${infoItem('已租车位数', rentedSpaces)}${infoItem('维修中车位数', maintenance)}${infoItem('可办理数量', availableSpaces)}${infoItem('最后编辑', '超级管理员 · 2026-08-28 13:40')}</div></section><section class="detail-page-section"><h3 class="detail-page-title">收费与结算</h3><div class="detail-fee-list">${feeRows.map(detailFeeItem).join('')}</div></section><section class="detail-page-section"><h3 class="detail-page-title">项目告知书</h3><div class="detail-notice-list">${notices.map(item => detailNoticeItem(item.name, item.file)).join('')}</div></section><section class="detail-page-section"><h3 class="detail-page-title">客服渠道</h3><div class="detail-info-grid">${infoItem('客服电话', form.servicePhone || '未配置')}${infoItem('微信客服', form.serviceWechat || '未配置')}${infoItem('服务时间', form.serviceHours || '未配置')}${infoItem('是否展示', tag(form.serviceEnabled || '停用'))}${infoItem('服务说明', form.serviceDescription || '未配置')}</div></section>`;
+      return innerPageHead(`${garage[0]}详情`) + `<section class="detail-page-section"><h3 class="detail-page-title">基本信息</h3><div class="detail-info-grid">${infoItem('小区名称', garage[0])}${infoItem('项目类型', garage[1])}${infoItem('地理位置', form.location || '未配置')}${infoItem('一路停车车场编号', garage[2])}${infoItem('清分市场编号', form.marketId || '未配置')}${infoItem('发布状态', tag(garage[5]))}${infoItem('办理状态', tag(garage[4]))}${infoItem('总车位数', totalSpaces)}${infoItem('已租车位数', rentedSpaces)}${infoItem('维修中车位数', maintenance)}${infoItem('可办理数量', availableSpaces)}${infoItem('最后编辑', '超级管理员 · 2026-08-28 13:40')}</div></section><section class="detail-page-section"><h3 class="detail-page-title">收费与结算</h3><div class="detail-fee-list">${feeRows.map(detailFeeItem).join('')}</div></section><section class="detail-page-section"><h3 class="detail-page-title">项目告知书</h3><div class="detail-notice-list">${notices.map(item => detailNoticeItem(item.name, item.file)).join('')}</div></section>`;
     }
 
     function garageEditPage() {
       const garage = selectedGarage();
-      return `${innerPageHead(`${garage[0]}编辑`)}<section class="create-flow edit-create-flow"><div class="create-step-panel edit-create-panel"><div class="create-info"><div>编辑项目基础信息、车位数据、收费规则、告知书和客服渠道，保存前会校验所有必填项及数据格式。</div></div><h3 class="create-section-title">项目基础信息</h3><div class="create-form-grid create-basic-info-grid">${createInput('communityName','小区名称',{required:true,placeholder:'请输入小区名称'})}${createSelect('projectType','项目类型',['公司自营项目','区财政代管项目'],{required:true})}${createInput('parkCode','一路停车车场编号',{required:true,placeholder:'请输入一路停车平台提供的车场编号'})}${createInput('marketId','清分市场编号',{required:true,placeholder:'请输入清分平台提供的市场编号'})}${createSelect('location','地理位置',['厦门市湖里区','厦门市思明区'],{required:true})}${createInput('totalSpaces','总车位数',{required:true,type:'number',placeholder:'请输入总车位数'})}${createInput('rentedSpaces','已租车位数',{required:true,type:'number',placeholder:'请输入已租车位数'})}${createInput('maintenanceSpaces','维修中车位数',{required:true,type:'number',placeholder:'请输入维修中车位数'})}${createInput('availableSpaces','可办理数量',{type:'number',id:'createAvailableSpaces',help:'系统按总车位数 - 已租车位数 - 维修中车位数自动带出，手动修改后以修改值为准。'})}</div><h3 class="create-section-title edit-module-title">收费规则</h3>${createFeeGrid()}<h3 class="create-section-title edit-module-title">告知书配置</h3><div class="create-info"><div>用户进入月租办理流程后，会按顺序查看并确认这里配置的全部告知书。</div></div>${createNoticeGrid()}<h3 class="create-section-title edit-module-title">客服渠道</h3><div class="create-info"><div>客服渠道会展示在小程序个人中心、订单详情和退款结果页。</div></div><div class="create-form-grid">${createInput('servicePhone','客服电话',{required:true,placeholder:'请输入客服电话'})}${createInput('serviceWechat','微信客服入口',{placeholder:'请输入微信号或企业微信客服入口'})}${createInput('serviceHours','服务时间',{required:true,placeholder:'例如：工作日 09:00-18:00'})}${createSelect('serviceEnabled','是否展示',['启用','停用'],{required:true})}${createInput('serviceDescription','服务说明',{placeholder:'可咨询退款和通行异常等问题'})}</div></div><div class="create-flow-foot"><button class="btn" onclick="backToGarage()">取消</button><span class="foot-spacer"></span><button class="btn btn-primary" onclick="saveEditedGarage()">保存</button></div></section>`;
+      return `${innerPageHead(`${garage[0]}编辑`)}<section class="create-flow edit-create-flow"><div class="create-step-panel edit-create-panel"><div class="create-info"><div>编辑项目基础信息、车位数据、收费规则和告知书，保存前会校验所有必填项及数据格式。</div></div><h3 class="create-section-title">项目基础信息</h3><div class="create-form-grid create-basic-info-grid">${createInput('communityName','小区名称',{required:true,placeholder:'请输入小区名称'})}${createSelect('projectType','项目类型',['公司自营项目','区财政代管项目'],{required:true})}${createInput('parkCode','一路停车车场编号',{required:true,placeholder:'请输入一路停车平台提供的车场编号'})}${createInput('marketId','清分市场编号',{required:true,placeholder:'请输入清分平台提供的市场编号'})}${createSelect('location','地理位置',['厦门市湖里区','厦门市思明区'],{required:true})}${createInput('totalSpaces','总车位数',{required:true,type:'number',placeholder:'请输入总车位数'})}${createInput('rentedSpaces','已租车位数',{required:true,type:'number',placeholder:'请输入已租车位数'})}${createInput('maintenanceSpaces','维修中车位数',{required:true,type:'number',placeholder:'请输入维修中车位数'})}${createInput('availableSpaces','可办理数量',{type:'number',id:'createAvailableSpaces',help:'系统按总车位数 - 已租车位数 - 维修中车位数自动带出，手动修改后以修改值为准。'})}</div><h3 class="create-section-title edit-module-title">收费规则</h3>${createFeeGrid()}<h3 class="create-section-title edit-module-title">告知书配置</h3><div class="create-info"><div>用户进入月租办理流程后，会按顺序查看并确认这里配置的全部告知书。</div></div>${createNoticeGrid()}</div><div class="create-flow-foot"><button class="btn" onclick="backToGarage()">取消</button><span class="foot-spacer"></span><button class="btn btn-primary" onclick="saveEditedGarage()">保存</button></div></section>`;
     }

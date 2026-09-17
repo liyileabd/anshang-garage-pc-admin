@@ -12,7 +12,7 @@
 
 .create-flow-title { margin: 0; font-size: 16px; line-height: 1.4; font-weight: 700; }
 
-.create-stepper { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 34px 18px 34px; }
+.create-stepper { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 34px 18px 34px; }
 
 .create-step { position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; color: var(--as-text-muted); }
 
