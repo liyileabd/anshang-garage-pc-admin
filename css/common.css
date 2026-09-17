@@ -346,11 +346,11 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
 
 table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px; border: 1px solid var(--as-border-light); }
 
-th { height: 54px; padding: 0 18px; background: var(--as-bg-table-head); color: var(--as-text-main); text-align: left; font-weight: 700; border-bottom: 1px solid var(--as-border-light); border-right: 1px solid var(--as-border-light); }
+th { height: 54px; padding: 0 18px; background: var(--as-bg-table-head); color: var(--as-text-main); text-align: left; font-weight: 700; border-bottom: 1px solid var(--as-border-light); }
 
 th:last-child { border-right: 0; }
 
-td { height: 56px; padding: 0 18px; color: var(--as-text-main); border-bottom: 1px solid var(--as-border-light); border-right: 1px solid var(--as-border-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+td { height: 56px; padding: 0 18px; color: var(--as-text-main); border-bottom: 1px solid var(--as-border-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 td:last-child { border-right: 0; }
 
