@@ -40,13 +40,11 @@
         if (error) error.textContent = message;
       };
       const value = field => (document.getElementById(field)?.value || '').trim();
-      const values = { name: value('name'), nickname: value('nickname'), phone: value('phone'), email: value('email') };
-      if (!values.name) return fail('name', '请填写姓名');
+      const values = { nickname: value('nickname'), phone: value('phone') };
       if (values.phone && !/^1[3-9]\d{9}$/.test(values.phone)) return fail('phone', '手机号格式不正确，请填写 11 位手机号');
-      if (values.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) return fail('email', '邮箱格式不正确');
       Object.assign(profile, values);
       const nameNode = document.getElementById('profileName');
-      if (nameNode) nameNode.textContent = profile.name;
+      if (nameNode) nameNode.textContent = profile.nickname || currentLoginName;
       showModal('资料已保存', '<div class="modal-tip">个人信息已更新。登录账号由系统分配，不支持修改。</div>');
       const confirmButton = document.getElementById('modalConfirmButton');
       if (confirmButton) { confirmButton.textContent = '完成'; confirmButton.onclick = hideModal; }
