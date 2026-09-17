@@ -566,6 +566,57 @@ textarea.form-control { height: 96px; resize: none; padding-top: 10px; line-heig
 
 .modal-field-error:empty { display: none; }
 
+/* 日期选择器：对齐 Ant Design DatePicker —— 点整块输入框弹出日历面板，点选日期回填 */
+.date-picker { position: relative; }
+
+.date-picker-trigger { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; text-align: left; cursor: pointer; }
+
+.date-picker-trigger:hover { border-color: var(--as-primary); }
+
+.date-picker-trigger.is-open { border-color: var(--as-primary); box-shadow: 0 0 0 3px var(--as-primary-soft); }
+
+.date-picker-text { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+.date-picker-text.is-placeholder { color: var(--as-text-muted); }
+
+.date-picker-icon { width: 16px; height: 16px; flex: none; stroke: var(--as-text-muted); stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+.date-picker-panel { position: fixed; z-index: 40; padding: 12px; background: #fff; border: 1px solid var(--as-border-light); border-radius: 8px; box-shadow: 0 8px 24px rgba(36, 56, 128, .16); }
+
+.date-picker-panel.hidden { display: none; }
+
+.date-picker-head { display: flex; align-items: center; gap: 2px; margin-bottom: 6px; }
+
+.date-picker-nav { width: 28px; height: 28px; display: grid; place-items: center; border: 0; background: transparent; border-radius: 4px; color: var(--as-text-sub); font-size: 14px; line-height: 1; }
+
+.date-picker-nav:hover { background: #f2f5fa; color: var(--as-primary); }
+
+.date-picker-title { flex: 1; text-align: center; color: var(--as-text-main); font-size: 14px; font-weight: 700; }
+
+.date-picker-week, .date-picker-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+
+.date-picker-week span { height: 28px; display: grid; place-items: center; color: var(--as-text-muted); font-size: 12px; }
+
+.date-picker-day { height: 32px; border: 0; background: transparent; border-radius: 4px; color: var(--as-text-main); font-size: 13px; }
+
+.date-picker-day:hover { background: #f2f5fa; }
+
+.date-picker-day.is-outside { color: var(--as-text-muted); }
+
+.date-picker-day.is-today { color: var(--as-primary); font-weight: 700; }
+
+.date-picker-day.is-selected { background: var(--as-primary); color: #fff; font-weight: 700; }
+
+.date-picker-day.is-selected:hover { background: var(--as-primary-hover); }
+
+.date-picker-day.is-disabled { color: #c9ced6; cursor: not-allowed; }
+
+.date-picker-day.is-disabled:hover { background: transparent; }
+
+.date-picker-foot { margin-top: 6px; padding-top: 8px; border-top: 1px solid var(--as-border-light); text-align: center; }
+
+.date-picker-foot .btn-text { color: var(--as-primary); }
+
 .empty { height: 180px; display: grid; place-items: center; color: var(--as-text-muted); }
 
 @media (max-width: 1180px) {

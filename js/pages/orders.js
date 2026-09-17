@@ -417,7 +417,7 @@
     function openManualSettlement(orderNo) {
       const row = settlementRecords.find(item => item[0] === orderNo);
       if (!row || row[6] !== '清分异常') return;
-      showModal('确认已清分', `<div class="modal-tip">本操作仅登记线下收款结果，不阻止线上分账。</div><div class="modal-order-summary">订单 ${orderNo}，清分金额 ${row[4]}。</div><div class="modal-form-field" style="margin-bottom:16px"><label for="manualSettlementDate">实际清分日期</label><input id="manualSettlementDate" class="form-control" type="date" required></div><div id="manualSettlementError" class="approval-error"></div>`);
+      showModal('确认已清分', `<div class="modal-tip">本操作仅登记线下收款结果，不阻止线上分账。</div><div class="modal-order-summary">订单 ${orderNo}，清分金额 ${row[4]}。</div><div class="modal-form-field" style="margin-bottom:16px"><label for="manualSettlementDateTrigger">实际清分日期</label><div class="date-picker" data-datepicker-target="manualSettlementDate" data-datepicker-placeholder="请选择实际清分日期"><button type="button" id="manualSettlementDateTrigger" class="form-control date-picker-trigger" onclick="toggleDatePicker('manualSettlementDate')"><span class="date-picker-text is-placeholder">请选择实际清分日期</span><svg class="date-picker-icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/><path d="M8 15h3"/></svg></button><input id="manualSettlementDate" type="hidden" value=""></div></div><div id="manualSettlementError" class="approval-error"></div>`);
       const confirm = document.getElementById('modalConfirmButton');
       if (confirm) {
         confirm.textContent = '确认已清分';

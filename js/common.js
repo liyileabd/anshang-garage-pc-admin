@@ -311,7 +311,7 @@
       if (confirmButton) { confirmButton.style.display = ''; confirmButton.textContent = '确认'; confirmButton.className = 'btn btn-primary'; confirmButton.onclick = hideModal; }
       document.getElementById('modalMask').classList.add('open');
     }
-    function hideModal() { document.getElementById('modalMask').classList.remove('open'); }
+    function hideModal() { closeDatePicker(); document.getElementById('modalMask').classList.remove('open'); }
     function closeModal(e) { if (e.target.id === 'modalMask') hideModal(); }
     function csvCell(value) { return `"${String(value ?? '').replace(/"/g, '""')}"`; }
     function downloadCsv(filename, lines, eol = '\n') {
@@ -325,3 +325,120 @@
       link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 0);
     }
+    // ===== 日期选择器：对齐 Ant Design DatePicker（点整块输入框弹出日历、点选日期回填）=====
+    const datePickerState = { targetId: '', view: '' };
+    let datePickerPanelNode = null;
+    let datePickerOutsideHandler = null;
+    function datePickerTodayIso() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
+    function datePickerPad(value) { return String(value).padStart(2, '0'); }
+    function datePickerPanel() {
+      if (!datePickerPanelNode) {
+        datePickerPanelNode = document.createElement('div');
+        datePickerPanelNode.className = 'date-picker-panel hidden';
+        datePickerPanelNode.addEventListener('click', event => event.stopPropagation());
+        document.body.appendChild(datePickerPanelNode);
+      }
+      return datePickerPanelNode;
+    }
+    function datePickerTrigger(targetId) { return document.querySelector(`[data-datepicker-target="${targetId}"]`); }
+    function datePickerSyncTrigger(targetId) {
+      const trigger = datePickerTrigger(targetId);
+      const input = document.getElementById(targetId);
+      if (!trigger) return;
+      const text = trigger.querySelector('.date-picker-text');
+      const value = input?.value || '';
+      if (!text) return;
+      text.textContent = value || trigger.dataset.datepickerPlaceholder || '请选择日期';
+      text.classList.toggle('is-placeholder', !value);
+    }
+    function toggleDatePicker(targetId) {
+      const panel = datePickerPanel();
+      if (datePickerState.targetId === targetId && !panel.classList.contains('hidden')) { closeDatePicker(); return; }
+      const value = document.getElementById(targetId)?.value || '';
+      datePickerState.targetId = targetId;
+      datePickerState.view = /^\d{4}-\d{2}/.test(value) ? value.slice(0, 7) : datePickerTodayIso().slice(0, 7);
+      panel.classList.remove('hidden');
+      renderDatePickerPanel();
+      datePickerTrigger(targetId)?.classList.add('is-open');
+      datePickerPosition();
+      datePickerBindOutside();
+    }
+    function closeDatePicker() {
+      if (!datePickerPanelNode) return;
+      datePickerPanelNode.classList.add('hidden');
+      datePickerTrigger(datePickerState.targetId)?.classList.remove('is-open');
+      datePickerState.targetId = '';
+      if (datePickerOutsideHandler) {
+        document.removeEventListener('click', datePickerOutsideHandler, true);
+        datePickerOutsideHandler = null;
+      }
+    }
+    function datePickerBindOutside() {
+      if (datePickerOutsideHandler) document.removeEventListener('click', datePickerOutsideHandler, true);
+      datePickerOutsideHandler = event => {
+        const panel = datePickerPanelNode;
+        const trigger = datePickerTrigger(datePickerState.targetId);
+        if (!panel || panel.contains(event.target)) return;
+        if (trigger && trigger.contains(event.target)) return;
+        closeDatePicker();
+      };
+      setTimeout(() => { if (datePickerOutsideHandler) document.addEventListener('click', datePickerOutsideHandler, true); }, 0);
+    }
+    function datePickerPosition() {
+      const panel = datePickerPanelNode;
+      const trigger = datePickerTrigger(datePickerState.targetId);
+      if (!panel || !trigger) return;
+      const rect = trigger.getBoundingClientRect();
+      const width = Math.min(Math.max(280, Math.round(rect.width)), 300); // 对齐 Ant Design：面板固定窄宽，不随输入框拉满
+      panel.style.width = `${width}px`;
+      const height = panel.offsetHeight || 328;
+      let top = rect.bottom + 6;
+      if (top + height > window.innerHeight - 8) top = Math.max(8, rect.top - height - 6);
+      const left = Math.min(Math.max(8, rect.left), Math.max(8, window.innerWidth - width - 8));
+      panel.style.left = `${left}px`;
+      panel.style.top = `${top}px`;
+    }
+    function shiftDatePicker(months) {
+      const [year, month] = datePickerState.view.split('-').map(Number);
+      const next = new Date(year, month - 1 + months, 1);
+      datePickerState.view = `${next.getFullYear()}-${datePickerPad(next.getMonth() + 1)}`;
+      renderDatePickerPanel();
+      datePickerPosition();
+    }
+    function renderDatePickerPanel() {
+      const panel = datePickerPanelNode;
+      if (!panel) return;
+      const [year, month] = datePickerState.view.split('-').map(Number);
+      const today = datePickerTodayIso();
+      const selected = document.getElementById(datePickerState.targetId)?.value || '';
+      const lead = (new Date(year, month - 1, 1).getDay() + 6) % 7; // 周一为第一列
+      const days = [];
+      for (let index = 0; index < 42; index += 1) {
+        const day = new Date(year, month - 1, 1 - lead + index);
+        const iso = `${day.getFullYear()}-${datePickerPad(day.getMonth() + 1)}-${datePickerPad(day.getDate())}`;
+        const disabled = iso > today;
+        const classes = ['date-picker-day'];
+        if (day.getMonth() !== month - 1) classes.push('is-outside');
+        if (iso === today) classes.push('is-today');
+        if (iso === selected) classes.push('is-selected');
+        if (disabled) classes.push('is-disabled');
+        days.push(`<button type="button" class="${classes.join(' ')}"${disabled ? ' disabled' : ''} onclick="pickDatePicker('${iso}')">${day.getDate()}</button>`);
+      }
+      const nav = (step, title, label) => `<button type="button" class="date-picker-nav" title="${title}" onclick="shiftDatePicker(${step})">${label}</button>`;
+      panel.innerHTML = `<div class="date-picker-head">${nav(-12, '上一年', '«')}${nav(-1, '上一月', '‹')}<div class="date-picker-title">${year}年${month}月</div>${nav(1, '下一月', '›')}${nav(12, '下一年', '»')}</div><div class="date-picker-week">${['一', '二', '三', '四', '五', '六', '日'].map(item => `<span>${item}</span>`).join('')}</div><div class="date-picker-grid">${days.join('')}</div><div class="date-picker-foot"><button type="button" class="btn-text" onclick="pickDatePicker('${today}')">今天</button></div>`;
+    }
+    function pickDatePicker(iso) {
+      const targetId = datePickerState.targetId;
+      const input = document.getElementById(targetId);
+      if (input) input.value = iso;
+      datePickerSyncTrigger(targetId);
+      const field = input?.closest('.modal-form-field');
+      field?.classList.remove('has-error');
+      const error = field?.querySelector('.approval-error, .modal-field-error') || field?.parentElement?.querySelector('.approval-error, .modal-field-error');
+      if (error) error.textContent = '';
+      closeDatePicker();
+    }
+    window.addEventListener('resize', () => { if (datePickerState.targetId) datePickerPosition(); });
