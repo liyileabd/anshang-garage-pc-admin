@@ -208,14 +208,16 @@
       const resetAction = typeof actions === 'string' ? actions : actions.reset;
       return `<div class="${className}">${items.map(filterControl).join('')}<button class="btn btn-primary"${queryAction ? ` onclick="${queryAction}()"` : ''}>查询</button><button class="btn"${resetAction ? ` onclick="${resetAction}()"` : ''}>重置</button>${extra}</div>`;
     }
-    function table(headers, rows, firstColRenderer, actionRenderer) {
+    function table(headers, rows, firstColRenderer, actionRenderer, tagColumns) {
       // 兼容旧的调用方式：table(headers, rows, actionRenderer)
       if (typeof firstColRenderer === 'function' && !actionRenderer) {
         actionRenderer = firstColRenderer;
         firstColRenderer = null;
       }
+      // tagColumns：仅这些「数据列下标」按状态标签渲染；不传则全部列沿用原逻辑
+      const canTag = (idx) => !tagColumns || tagColumns.indexOf(idx) > -1;
       const tableRows = rows.length
-        ? rows.map((r,i)=>`<tr>${firstColRenderer ? `<td>${firstColRenderer(r,i)}</td>` : ''}${r.map((c,idx)=>`<td>${statusCell(c, idx)}</td>`).join('')}<td><div class="table-actions">${actionRenderer ? actionRenderer(r,i) : defaultActions(r)}</div></td></tr>`).join('')
+        ? rows.map((r,i)=>`<tr>${firstColRenderer ? `<td>${firstColRenderer(r,i)}</td>` : ''}${r.map((c,idx)=>`<td>${statusCell(c, canTag(idx))}</td>`).join('')}<td><div class="table-actions">${actionRenderer ? actionRenderer(r,i) : defaultActions(r)}</div></td></tr>`).join('')
         : `<tr><td colspan="${headers.length + 1}"><div class="empty">暂无符合条件的数据</div></td></tr>`;
       const headerHtml = headers.map((h, idx) => {
         // 第一列且有 firstColRenderer，显示全选复选框
@@ -226,8 +228,9 @@
       }).join('');
       return `<table><thead><tr>${headerHtml}</tr></thead><tbody>${tableRows}</tbody></table><div class="pager"><span>共 ${rows.length} 条</span><span class="page-box">‹</span><span class="page-box active">1</span><span class="page-box">2</span><span class="page-box">3</span><span class="page-box">›</span></div>`;
     }
-    function statusCell(c) {
+    function statusCell(c, allowTag) {
       if (typeof c === 'string' && c.indexOf('__html__') === 0) return c.slice(8);
+      if (allowTag === false) return c;
       return /待|成功|有效|已同步|已开通|异常|失败|取消|发布|草稿|申请中|处理中|通过|驳回|完成|已退款|未推送|确认中|可办理|暂停|已满|启用|停用|新办|首次办理|已终止|已过期|已结束|通行失效|已清分/.test(c) && c.length < 10 ? tag(c) : c;
     }
     function defaultActions(r) { return `<button class="btn-text" onclick="openGeneric('${r[0]}')">查看</button><button class="btn-text" onclick="showModal('处理确认','将对 ${r[0]} 执行当前业务处理，并记录操作日志。')">处理</button>`; }
