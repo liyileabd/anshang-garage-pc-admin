@@ -280,12 +280,13 @@
       createNoticeItems.splice(index, 1);
       render();
     }
+    const garageCreateStepLabels = ['基本信息', '收费规则', '告知书', '客服渠道'];
     function createStepper() {
-      const steps = ['基本信息', '收费规则', '告知书'];
+      const steps = garageCreateStepLabels;
       return `<div class="create-stepper">${steps.map((label, index) => { const number = index + 1; const state = number < garageCreateStep ? 'done' : number === garageCreateStep ? 'active' : ''; return `<div class="create-step ${state}"><span class="create-step-index">${number}</span><span class="create-step-label">${label}</span></div>`; }).join('')}</div>`;
     }
     function createGaragePage() {
-      const stepTitle = ['基本信息', '收费规则', '告知书'][garageCreateStep - 1];
+      const stepTitle = garageCreateStepLabels[garageCreateStep - 1];
       let body = '';
       if (garageCreateStep === 1) {
         body = `<div class="create-info"><div>先填写项目基础信息和车位资源。可办理数量会根据车位数据自动带出，也可以人工调整，最终以人工调整值为准。</div></div><h3 class="create-section-title">项目基础信息</h3><div class="create-form-grid create-basic-info-grid">${createInput('communityName','小区名称',{required:true,placeholder:'请输入小区名称'})}${createSelect('projectType','项目类型',['公司自营项目','区财政代管项目'],{required:true})}${createInput('parkCode','一路停车车场编号',{required:true,placeholder:'请输入一路停车平台提供的车场编号'})}${createInput('marketId','清分市场编号',{required:true,placeholder:'请输入清分平台提供的市场编号'})}${createSelect('location','地理位置',['厦门市湖里区','厦门市思明区'],{required:true})}</div><h3 class="create-section-title" style="margin-top:32px">车位资源</h3><div class="create-form-grid">${createInput('totalSpaces','总车位数',{required:true,type:'number',placeholder:'请输入总车位数'})}${createInput('rentedSpaces','已租车位数',{required:true,type:'number',placeholder:'请输入已租车位数'})}${createInput('maintenanceSpaces','维修中车位数',{required:true,type:'number',placeholder:'请输入维修中车位数'})}${createInput('availableSpaces','可办理数量',{type:'number',id:'createAvailableSpaces'})}</div>`;
@@ -293,12 +294,14 @@
         body = createFeeGrid();
       } else if (garageCreateStep === 3) {
         body = `<div class="create-info"><div>用户进入月租办理流程后，会按顺序查看并确认这里配置的全部告知书。</div></div><h3 class="create-section-title">告知书配置</h3>${createNoticeGrid()}`;
+      } else if (garageCreateStep === 4) {
+        body = `<div class="create-info"><div>客服渠道会展示在小程序个人中心、订单详情和退款结果页，保存后随项目一起生效。</div></div><h3 class="create-section-title">客服渠道</h3><div class="create-form-grid">${createInput('servicePhone','客服电话',{required:true,placeholder:'请输入客服电话'})}${createInput('serviceWechat','微信客服入口',{placeholder:'请输入微信号或企业微信客服入口'})}${createInput('serviceHours','服务时间',{required:true,placeholder:'例如：工作日 09:00-18:00'})}${createSelect('serviceEnabled','是否展示',['启用','停用'],{required:true})}${createInput('serviceDescription','服务说明',{placeholder:'可咨询月租办理、退款和通行异常等问题'})}</div>`;
       }
       const foot = garageCreateStep === 1
         ? `<button class="btn" onclick="backToGarage()">取消</button><span class="foot-spacer"></span><button class="btn btn-primary" onclick="nextCreateGarageStep()">下一步</button>`
-        : garageCreateStep === 2
-          ? `<button class="btn" onclick="previousCreateGarageStep()">上一步</button><span class="foot-spacer"></span><button class="btn btn-primary" onclick="nextCreateGarageStep()">下一步</button>`
-          : `<button class="btn" onclick="previousCreateGarageStep()">上一步</button><span class="foot-spacer"></span><button class="btn btn-primary" onclick="saveNewGarage()">保存</button>`;
+        : garageCreateStep === garageCreateStepLabels.length
+          ? `<button class="btn" onclick="previousCreateGarageStep()">上一步</button><span class="foot-spacer"></span><button class="btn btn-primary" onclick="saveNewGarage()">保存</button>`
+          : `<button class="btn" onclick="previousCreateGarageStep()">上一步</button><span class="foot-spacer"></span><button class="btn btn-primary" onclick="nextCreateGarageStep()">下一步</button>`;
       return `${innerPageHead('新增小区项目')}<section class="create-flow"><div class="create-flow-head"><h2 class="create-flow-title">${stepTitle}</h2></div>${createStepper()}<div class="create-step-panel">${body}</div><div class="create-flow-foot">${foot}</div></section>`;
     }
     function hasCreateValue(value) { return String(value ?? '').trim() !== ''; }
@@ -395,18 +398,31 @@
           }
           required(`notice-${item.id}-file`, `第${index + 1}份告知书文件`, item.file);
         });
+      } else if (step === 4) {
+        required('servicePhone', '客服电话', newGarageForm.servicePhone);
+        required('serviceHours', '服务时间', newGarageForm.serviceHours);
+        required('serviceEnabled', '是否展示', newGarageForm.serviceEnabled);
+        if (hasCreateValue(newGarageForm.servicePhone)) {
+          const servicePhone = String(newGarageForm.servicePhone).trim();
+          if (!/^(1\d{10}|0\d{2,3}-?\d{7,8}|400-?\d{3}-?\d{4})$/.test(servicePhone)) {
+            setCreateError('servicePhone', '请输入正确的客服电话，例如 0592-12345678');
+            valid = false;
+          }
+        }
       }
       if (!valid && renderErrors) render();
       return valid;
     }
     function nextCreateGarageStep() {
       if (!validateCreateStep(garageCreateStep)) return;
-      garageCreateStep = Math.min(3, garageCreateStep + 1);
+      garageCreateStep = Math.min(garageCreateStepLabels.length, garageCreateStep + 1);
       render();
     }
     function previousCreateGarageStep() { garageCreateStep = Math.max(1, garageCreateStep - 1); render(); }
     function saveNewGarage() {
       if (!validateAllGarageForm()) {
+        const invalidStep = firstInvalidGarageStep();
+        if (invalidStep) garageCreateStep = invalidStep;
         render();
         return;
       }
@@ -435,9 +451,18 @@
       createErrors = {};
       render();
     }
+    function firstInvalidGarageStep() {
+      const snapshot = createErrors;
+      let target = 1;
+      for (let step = 1; step <= garageCreateStepLabels.length; step += 1) {
+        if (!validateCreateStep(step, false, true)) { target = step; break; }
+      }
+      createErrors = snapshot;
+      return target;
+    }
     function validateAllGarageForm() {
       createErrors = {};
-      for (let step = 1; step <= 3; step += 1) {
+      for (let step = 1; step <= garageCreateStepLabels.length; step += 1) {
         validateCreateStep(step, false, false);
       }
       const duplicate = hasCreateValue(newGarageForm.communityName)
