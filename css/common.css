@@ -448,6 +448,8 @@ tr:hover td { background: #f3f6ff; }
 
 .modal-tip strong { color: var(--as-text-main); }
 
+.modal-order-summary { margin: 0 0 18px; color: var(--as-text-main); font-size: 16px; font-weight: 700; line-height: 1.6; }
+
 .modal-form-field label { display: block; margin-bottom: 8px; color: var(--as-text-main); font-size: 15px; font-weight: 700; }
 
 .modal-form-field.full { grid-column: 1 / -1; }

@@ -417,7 +417,7 @@
     function openManualSettlement(orderNo) {
       const row = settlementRecords.find(item => item[0] === orderNo);
       if (!row || row[6] !== '清分异常') return;
-      showModal('确认已清分', `<div class="modal-tip">该笔订单线上清分异常，请核对各收款方已在线下全额收到应分金额后再登记。本操作仅登记线下收款结果，不阻止线上分账；若线上后续清分成功，需按重复收款发起退款。</div><div>订单 ${orderNo}，清分金额 <strong>${row[4]}</strong>。</div><div class="modal-form-field" style="margin-bottom:16px"><label for="manualSettlementDate">实际清分日期</label><input id="manualSettlementDate" class="form-control" type="date" required></div><label style="display:flex;align-items:center;gap:8px"><input id="manualSettlementConfirmed" type="checkbox">确认线下已全部清分</label><div id="manualSettlementError" class="approval-error"></div>`);
+      showModal('确认已清分', `<div class="modal-tip">本操作仅登记线下收款结果，不阻止线上分账。</div><div class="modal-order-summary">订单 ${orderNo}，清分金额 <strong>${row[4]}</strong>。</div><div class="modal-form-field" style="margin-bottom:16px"><label for="manualSettlementDate">实际清分日期</label><input id="manualSettlementDate" class="form-control" type="date" required></div><label style="display:flex;align-items:center;gap:8px"><input id="manualSettlementConfirmed" type="checkbox">确认线下已全部清分</label><div id="manualSettlementError" class="approval-error"></div>`);
       const confirm = document.getElementById('modalConfirmButton');
       if (confirm) {
         confirm.textContent = '确认已清分';
