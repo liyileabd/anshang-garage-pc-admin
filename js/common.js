@@ -188,12 +188,10 @@
       openChangePasswordModal(document.getElementById('loginUsername')?.value || '');
     }
     function openForgotPassword() {
-      const loginName = document.getElementById('loginUsername')?.value || '';
-      const adminPhone = (typeof profileOf === 'function' && profileOf('admin')?.phone) || '13800138000';
-      showModal('忘记密码', `<div class="modal-tip">后台账号由管理员统一创建，密码无法自助找回。请先联系系统管理员核验身份，由管理员重置为初始密码后再登录修改。</div><div class="modal-form-row"><label for="forgotLoginName">待重置账号</label><input id="forgotLoginName" class="form-control" value="${loginName}" readonly></div><div class="modal-form-row"><label for="forgotContact">系统管理员</label><input id="forgotContact" class="form-control" value="${adminPhone}" readonly></div>`);
+      showModal('忘记密码', '<div class="modal-tip">后台账号由管理员统一创建，密码无法自助找回，请联系系统管理员重置。</div>');
       const cancelButton = document.getElementById('modalCancelButton');
       const confirmButton = document.getElementById('modalConfirmButton');
-      if (cancelButton) { cancelButton.textContent = '关闭'; cancelButton.onclick = hideModal; }
+      if (cancelButton) cancelButton.style.display = 'none';
       if (confirmButton) { confirmButton.textContent = '知道了'; confirmButton.onclick = hideModal; }
     }
     function logout() {
@@ -505,7 +503,7 @@
       document.querySelector('#modalMask .modal')?.classList.remove('refund-approval-modal', 'refund-application-modal', 'project-status-modal', 'project-stop-modal', 'renew-order-modal', 'invoice-application-modal', 'invoice-preview-modal');
       const cancelButton = document.getElementById('modalCancelButton');
       const confirmButton = document.getElementById('modalConfirmButton');
-      if (cancelButton) { cancelButton.textContent = '取消'; cancelButton.className = 'btn'; cancelButton.onclick = hideModal; }
+      if (cancelButton) { cancelButton.textContent = '取消'; cancelButton.className = 'btn'; cancelButton.style.display = ''; cancelButton.onclick = hideModal; }
       if (confirmButton) { confirmButton.style.display = ''; confirmButton.textContent = '确认'; confirmButton.className = 'btn btn-primary'; confirmButton.onclick = hideModal; }
       document.getElementById('modalMask').classList.add('open');
     }
