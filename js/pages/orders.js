@@ -490,7 +490,9 @@
         </section>
         <section class="detail-page-section settlement-detail"><h3 class="detail-page-title">收款账户明细</h3>${accounts || '<div class="empty">暂无收款配置</div>'}</section>`;
     }
-    function openOrder(id) {
+    function openOrder(id, from) {
+      // 记住从哪进来：业务台账的「查看」传 'ledger'，返回时回到台账而不是订单列表
+      orderReturnPage = from === 'ledger' ? 'ledger' : 'orders';
       selectedOrderId = id;
       orderSubpage = 'detail';
       current = 'orders';

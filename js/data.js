@@ -200,6 +200,8 @@
     let userSubpage = 'list';
     let selectedOrderId = orders[0][0];
     let orderSubpage = 'list';
+    // 订单详情的返回去向：'orders' = 订单管理列表（默认），'ledger' = 业务台账（从台账「查看」进来时）
+    let orderReturnPage = 'orders';
     let selectedPassageId = '';
     let passageSubpage = 'list';
     let selectedRefundId = '';

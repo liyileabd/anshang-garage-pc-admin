@@ -394,7 +394,7 @@
     }
     function ledgerTableHtml(rows) {
       const dataRows = rows.map(row => [row[0], row[1], row[2], ledgerActionTag(row[3]), ledgerTargetCell(row[4]), ledgerAmountCell(row[5]), ledgerStatusTag(row[6])]);
-      return table(ledgerHeaders, dataRows, null, r => `<button class="btn-text" onclick="openOrder('${r[1]}')">查看</button>`, []);
+      return table(ledgerHeaders, dataRows, null, r => `<button class="btn-text" onclick="openOrder('${r[1]}','ledger')">查看</button>`, []);
     }
     function filterLedger() {
       const rows = ledgerRecords();

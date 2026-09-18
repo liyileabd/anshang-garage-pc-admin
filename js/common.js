@@ -378,7 +378,7 @@
     }
     function backToGarage() { garageSubpage = 'list'; current = 'projects'; render(); }
     function backToUsers() { userSubpage = 'list'; current = 'users'; render(); }
-    function backToOrders() { selectedOrderIds.clear(); orderSubpage = 'list'; current = 'orders'; render(); }
+    function backToOrders() { const backToLedger = orderReturnPage === 'ledger'; orderReturnPage = 'orders'; selectedOrderIds.clear(); orderSubpage = 'list'; current = backToLedger ? 'ledger' : 'orders'; render(); }
     function backToPassages() { passageSubpage = 'list'; current = 'passages'; render(); }
     function toggleFinanceMenu() { financeMenuExpanded = !financeMenuExpanded; render(); }
     function openFinancePage(id) { financeMenuExpanded = true; switchPage(id); }
