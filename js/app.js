@@ -383,7 +383,7 @@
       const split = total('分账');
       const refund = total('退款');
       const fmt = value => `¥${Math.abs(value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      return `<div style="display:flex;flex-wrap:wrap;gap:12px 32px;padding:14px 18px;background:#fafbfe;border-bottom:1px solid var(--as-border-light);font-size:13px;color:var(--as-text-muted)"><span>收款合计 <strong style="color:var(--as-text-main)">${fmt(income)}</strong></span><span>分账合计 <strong style="color:var(--as-text-main)">${fmt(split)}</strong></span><span>退款合计 <strong style="color:var(--as-text-main)">${fmt(refund)}</strong></span><span>待分账结存 <strong style="color:var(--as-primary)">${fmt(income + split)}</strong></span></div>`;
+      return `<div style="display:flex;flex-wrap:wrap;gap:12px 32px;padding:14px 18px;border-bottom:1px solid var(--as-border-light);font-size:13px;color:var(--as-text-muted)"><span>收款合计 <strong style="color:var(--as-text-main)">${fmt(income)}</strong></span><span>分账合计 <strong style="color:var(--as-text-main)">${fmt(split)}</strong></span><span>退款合计 <strong style="color:var(--as-text-main)">${fmt(refund)}</strong></span><span>待分账结存 <strong style="color:var(--as-primary)">${fmt(income + split)}</strong></span></div>`;
     }
     function ledgerTableHtml(rows) {
       const dataRows = rows.map(row => [row[0], row[1], row[2], ledgerActionTag(row[3]), ledgerTargetCell(row[4]), ledgerAmountCell(row[5]), ledgerStatusTag(row[6])]);
