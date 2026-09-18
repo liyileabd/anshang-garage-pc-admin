@@ -1,4 +1,46 @@
 
+    // 登录页：用户名下拉。选项 = 启用中的账号；普通账号登录后看不到「系统管理」
+    function loginAccountList() { return systemAccounts.filter(account => account[2] === '启用'); }
+    function setLoginAccount(name) {
+      const list = loginAccountList();
+      const account = list.find(item => item[0] === name) || list[0];
+      if (!account) return;
+      const dropdown = document.getElementById('loginAccountSelect');
+      const input = document.getElementById('loginUsername');
+      const text = document.getElementById('loginAccountText');
+      if (input) input.value = account[0];
+      if (text) text.textContent = account[0];
+      if (dropdown) dropdown.dataset.value = account[0];
+      document.querySelectorAll('#loginAccountMenu .select-option').forEach(option => option.classList.toggle('active', option.dataset.value === account[0]));
+    }
+    function toggleLoginAccountMenu(event) {
+      event.stopPropagation();
+      const dropdown = document.getElementById('loginAccountSelect');
+      if (!dropdown) return;
+      const isOpen = dropdown.classList.toggle('open');
+      const trigger = dropdown.querySelector('.select-trigger');
+      if (trigger) trigger.setAttribute('aria-expanded', String(isOpen));
+    }
+    function selectLoginAccount(event, name) {
+      event.stopPropagation();
+      setLoginAccount(name);
+      const dropdown = document.getElementById('loginAccountSelect');
+      if (dropdown) {
+        dropdown.classList.remove('open');
+        const trigger = dropdown.querySelector('.select-trigger');
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
+      }
+      const error = document.getElementById('loginError');
+      if (error) error.textContent = '';
+    }
+    function initLoginAccountSelect() {
+      const menu = document.getElementById('loginAccountMenu');
+      if (!menu) return;
+      menu.innerHTML = loginAccountList().map(([name, role]) => `<button type="button" class="select-option" data-value="${name}" onclick="selectLoginAccount(event, '${name}')"><span>${name}</span><span class="login-account-role">${role}</span></button>`).join('');
+      setLoginAccount('admin');
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initLoginAccountSelect); else initLoginAccountSelect();
+
     function login() {
       const loginName = document.getElementById('loginUsername')?.value.trim() || 'admin';
       const password = document.getElementById('loginPassword')?.value || '';

@@ -87,3 +87,24 @@
 .login-panel .form-control { height: 48px; font-size: 15px; border-radius: 6px; padding: 0 14px; }
 
 .login-panel .btn { font-size: 16px; }
+
+/* 登录卡内的账号下拉：尺寸对齐放大后的输入框；只作用于登录页，common.css 的通用尺寸不动 */
+.login-panel .filter-dropdown { width: 100%; min-width: 0; }
+
+.login-panel .select-trigger { height: 48px; font-size: 15px; border-radius: 6px; padding: 0 14px; }
+
+.login-panel .select-menu { max-height: 244px; overflow-y: auto; }
+
+.login-panel .select-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      height: 44px;
+      font-size: 15px;
+    }
+
+.login-account-role { font-size: 12px; color: var(--as-text-muted); }
+
+.login-panel .select-option.active .login-account-role { color: var(--as-primary); }
+
