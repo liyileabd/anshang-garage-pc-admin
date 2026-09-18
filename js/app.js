@@ -343,8 +343,75 @@
       },
       logs() {
         return pageShell('操作日志', '', `${filters([['input','操作人/编号'],['select','操作模块',['全部','支付与清分','退款处理','开票管理','项目管理','订单管理','用户管理','系统管理']]], '', 'filter-bar garage-filter-bar')}<section class="panel garage-table-panel log-table-panel"><div>${table([['操作人','120px'],['操作模块','130px'],['操作类型','120px'],['操作对象','150px'],['操作内容摘要','240px'],['结果','80px'],['操作时间','150px'],['操作','90px']], operationLogs, null, (r,i)=>`<button class="btn-text" onclick="showLogDetail(${i})">查看</button>`, [5])}</div></section>`);
+      },
+      ledger() {
+        return pageShell('业务台账', '', `${filters([['input','业务订单号/车主/车牌','', 'ledgerKeyword', 'filterLedger'],['select','小区项目',['全部小区','锦绣安置房','文庭商房','荣和家园'], 'ledgerProjectFilter', 'filterLedger'],['select','资金动作',['全部动作','收款','分账','退款'], 'ledgerActionFilter', 'filterLedger'],['select','状态',['全部状态','已入账','已到账','分账处理中','分账异常','待审批','已退款'], 'ledgerStatusFilter', 'filterLedger']], '<button class="btn btn-primary" onclick="exportLedger()">导出台账</button>', 'filter-bar garage-filter-bar finance-filter-bar', { query: 'filterLedger', reset: 'resetLedgerFilters' })}<section class="panel garage-table-panel"><div id="ledgerTable">${ledgerTableHtml(ledgerRecords())}</div></section>`);
       }
     };
+
+    // 业务台账：资金流水（一行 = 一笔资金动作）
+    const ledgerHeaders = [['发生时间','150px'],['业务订单号','150px'],['小区项目','110px'],['资金动作','80px'],['去向账户 / 分账明细','210px'],['金额','110px'],['状态','115px'],['操作','85px']];
+    function ledgerFilterValue(id) { const el = document.getElementById(id); if (!el) return ''; return el.dataset && el.dataset.value ? el.dataset.value : (el.value || ''); }
+    function ledgerRecords() {
+      const keyword = ledgerFilterValue('ledgerKeyword').trim();
+      const project = ledgerFilterValue('ledgerProjectFilter');
+      const action = ledgerFilterValue('ledgerActionFilter');
+      const status = ledgerFilterValue('ledgerStatusFilter');
+      return ledgerEntries.filter(row => {
+        if (project && row[2] !== project) return false;
+        if (action && row[3] !== action) return false;
+        if (status && row[6] !== status) return false;
+        if (keyword) {
+          const order = orders.find(item => item[0] === row[1]);
+          const haystack = [row[1], row[2], order ? order[2] : '', order ? order[3] : ''].join(' ');
+          if (haystack.indexOf(keyword) === -1) return false;
+        }
+        return true;
+      });
+    }
+    function ledgerActionTag(action) { const type = action === '收款' ? 'info' : (action === '分账' ? 'success' : 'danger'); return `__html__${tag(action, type)}`; }
+    function ledgerStatusTag(status) { const map = { '已入账': 'info', '已到账': 'success', '分账处理中': 'warning', '分账异常': 'danger', '待审批': 'warning', '已退款': 'success' }; return `__html__${tag(status, map[status] || 'info')}`; }
+    function ledgerTargetCell(target) {
+      if (!Array.isArray(target)) return `__html__${target}`;
+      return `__html__${target.map((item, index) => `<div style="display:flex;justify-content:space-between;gap:10px;${index ? 'margin-top:2px;' : ''}"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item[0]}</span><span style="color:var(--as-text-muted);font-variant-numeric:tabular-nums">${item[1]}</span></div>`).join('')}`;
+    }
+    function ledgerAmountCell(amount) { return `__html__<span style="font-variant-numeric:tabular-nums;color:${amount.charAt(0) === '+' ? 'var(--as-primary)' : 'var(--as-text-main)'}">${amount}</span>`; }
+    function ledgerSummaryHtml(rows) {
+      const toNumber = amount => Number(String(amount).replace(/[+,]/g, '')) || 0;
+      const total = action => rows.filter(row => row[3] === action && row[6].indexOf('异常') === -1).reduce((sum, row) => sum + toNumber(row[5]), 0);
+      const income = total('收款');
+      const split = total('分账');
+      const refund = total('退款');
+      const fmt = value => `¥${Math.abs(value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      return `<div style="display:flex;flex-wrap:wrap;gap:12px 32px;padding:14px 18px;background:#fafbfe;border-top:1px solid var(--as-border-light);font-size:13px;color:var(--as-text-muted)"><span>收款合计 <strong style="color:var(--as-text-main)">${fmt(income)}</strong></span><span>分账合计 <strong style="color:var(--as-text-main)">${fmt(split)}</strong></span><span>退款合计 <strong style="color:var(--as-text-main)">${fmt(refund)}</strong></span><span>待分账结存 <strong style="color:var(--as-primary)">${fmt(income + split)}</strong></span></div>`;
+    }
+    function ledgerTableHtml(rows) {
+      const dataRows = rows.map(row => [row[0], row[1], row[2], ledgerActionTag(row[3]), ledgerTargetCell(row[4]), ledgerAmountCell(row[5]), ledgerStatusTag(row[6])]);
+      return table(ledgerHeaders, dataRows, null, r => `<button class="btn-text" onclick="openOrder('${r[1]}')">查看</button>`, []) + ledgerSummaryHtml(rows);
+    }
+    function filterLedger() { const wrap = document.getElementById('ledgerTable'); if (wrap) wrap.innerHTML = ledgerTableHtml(ledgerRecords()); }
+    function resetLedgerFilters() {
+      const keyword = document.getElementById('ledgerKeyword');
+      if (keyword) keyword.value = '';
+      ['ledgerProjectFilter','ledgerActionFilter','ledgerStatusFilter'].forEach(resetFilterDropdown);
+      filterLedger();
+    }
+    function ledgerDateStamp() { const now = new Date(); const pad = n => String(n).padStart(2, '0'); return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`; }
+    function exportLedger() {
+      const rows = ledgerRecords();
+      const csvCell = value => { const text = String(value == null ? '' : value); return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text; };
+      const targetText = target => Array.isArray(target) ? target.map(item => `${item[0]} ${item[1]}`).join('、') : target;
+      const lines = [['发生时间','业务订单号','小区项目','资金动作','去向账户 / 分账明细','金额','状态'].join(',')].concat(rows.map(row => [row[0], row[1], row[2], row[3], targetText(row[4]), String(row[5]).replace(/[+,]/g, ''), row[6]].map(csvCell).join(',')));
+      const blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `业务台账_${ledgerDateStamp()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      showModal('导出完成', `<div class="modal-tip">已按当前筛选条件导出 ${rows.length} 条资金流水，文件名为 业务台账_${ledgerDateStamp()}.csv，可直接用 Excel 打开。</div>`);
+    }
 
     const leafPages = {
       projects: pages.projects,
