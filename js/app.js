@@ -345,7 +345,7 @@
         return pageShell('操作日志', '', `${filters([['input','操作人/编号'],['select','操作模块',['全部','支付与清分','退款处理','开票管理','项目管理','订单管理','用户管理','系统管理']]], '', 'filter-bar garage-filter-bar')}<section class="panel garage-table-panel log-table-panel"><div>${table([['操作人','120px'],['操作模块','130px'],['操作类型','120px'],['操作对象','150px'],['操作内容摘要','240px'],['结果','80px'],['操作时间','150px'],['操作','90px']], operationLogs, null, (r,i)=>`<button class="btn-text" onclick="showLogDetail(${i})">查看</button>`, [5])}</div></section>`);
       },
       ledger() {
-        return pageShell('业务台账', '', `${filters([['input','业务订单号/车主/车牌','', 'ledgerKeyword', 'filterLedger'],['select','小区项目',['全部小区','锦绣安置房','文庭商房','荣和家园'], 'ledgerProjectFilter', 'filterLedger'],['select','资金动作',['全部动作','收款','分账','退款'], 'ledgerActionFilter', 'filterLedger'],['select','状态',['全部状态','已入账','已到账','分账处理中','分账异常','待审批','已退款'], 'ledgerStatusFilter', 'filterLedger']], '<button class="btn btn-primary" onclick="exportLedger()">导出台账</button>', 'filter-bar garage-filter-bar finance-filter-bar', { query: 'filterLedger', reset: 'resetLedgerFilters' })}<section class="panel garage-table-panel"><div id="ledgerTable">${ledgerTableHtml(ledgerRecords())}</div></section>`);
+        return pageShell('业务台账', '', `${filters([['input','业务订单号/车主/车牌','', 'ledgerKeyword', 'filterLedger'],['select','小区项目',['全部小区','锦绣安置房','文庭商房','荣和家园'], 'ledgerProjectFilter', 'filterLedger'],['select','资金动作',['全部动作','收款','分账','退款'], 'ledgerActionFilter', 'filterLedger'],['select','状态',['全部状态','已入账','已到账','分账处理中','分账异常','待审批','已退款'], 'ledgerStatusFilter', 'filterLedger']], '<button class="btn btn-primary" onclick="exportLedger()">导出台账</button>', 'filter-bar garage-filter-bar finance-filter-bar', { query: 'filterLedger', reset: 'resetLedgerFilters' })}${ledgerSummaryHtml(ledgerRecords())}<section class="panel garage-table-panel"><div id="ledgerTable">${ledgerTableHtml(ledgerRecords())}</div></section>`);
       }
     };
 
@@ -376,20 +376,30 @@
       return `__html__${target.map((item, index) => `<div style="display:flex;justify-content:space-between;gap:10px;${index ? 'margin-top:2px;' : ''}"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item[0]}</span><span style="color:var(--as-text-muted);font-variant-numeric:tabular-nums">${item[1]}</span></div>`).join('')}`;
     }
     function ledgerAmountCell(amount) { return `__html__<span style="font-variant-numeric:tabular-nums;color:${amount.charAt(0) === '+' ? 'var(--as-primary)' : 'var(--as-text-main)'}">${amount}</span>`; }
-    function ledgerSummaryHtml(rows) {
+    function ledgerSummarySpans(rows) {
       const toNumber = amount => Number(String(amount).replace(/[+,]/g, '')) || 0;
       const total = action => rows.filter(row => row[3] === action && row[6].indexOf('异常') === -1).reduce((sum, row) => sum + toNumber(row[5]), 0);
       const income = total('收款');
       const split = total('分账');
       const refund = total('退款');
       const fmt = value => `¥${Math.abs(value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      return `<div style="display:flex;flex-wrap:wrap;gap:12px 32px;padding:14px 18px;border-bottom:1px solid var(--as-border-light);font-size:13px;color:var(--as-text-muted)"><span>收款合计 <strong style="color:var(--as-text-main)">${fmt(income)}</strong></span><span>分账合计 <strong style="color:var(--as-text-main)">${fmt(split)}</strong></span><span>退款合计 <strong style="color:var(--as-text-main)">${fmt(refund)}</strong></span><span>待分账结存 <strong style="color:var(--as-primary)">${fmt(income + split)}</strong></span></div>`;
+      return `<span>收款合计 <strong style="color:var(--as-text-main)">${fmt(income)}</strong></span><span>分账合计 <strong style="color:var(--as-text-main)">${fmt(split)}</strong></span><span>退款合计 <strong style="color:var(--as-text-main)">${fmt(refund)}</strong></span><span>待分账结存 <strong style="color:var(--as-primary)">${fmt(income + split)}</strong></span>`;
+    }
+    // 合计条是独立的一行，不属于列表面板：无底色、无边框，与列表只靠间距相邻
+    function ledgerSummaryHtml(rows) {
+      return `<div id="ledgerSummary" style="display:flex;flex-wrap:wrap;gap:12px 32px;margin:0 0 12px;font-size:13px;color:var(--as-text-muted)">${ledgerSummarySpans(rows)}</div>`;
     }
     function ledgerTableHtml(rows) {
       const dataRows = rows.map(row => [row[0], row[1], row[2], ledgerActionTag(row[3]), ledgerTargetCell(row[4]), ledgerAmountCell(row[5]), ledgerStatusTag(row[6])]);
-      return ledgerSummaryHtml(rows) + `<div style="padding-top:12px">${table(ledgerHeaders, dataRows, null, r => `<button class="btn-text" onclick="openOrder('${r[1]}')">查看</button>`, [])}</div>`;
+      return table(ledgerHeaders, dataRows, null, r => `<button class="btn-text" onclick="openOrder('${r[1]}')">查看</button>`, []);
     }
-    function filterLedger() { const wrap = document.getElementById('ledgerTable'); if (wrap) wrap.innerHTML = ledgerTableHtml(ledgerRecords()); }
+    function filterLedger() {
+      const rows = ledgerRecords();
+      const wrap = document.getElementById('ledgerTable');
+      if (wrap) wrap.innerHTML = ledgerTableHtml(rows);
+      const summary = document.getElementById('ledgerSummary');
+      if (summary) summary.innerHTML = ledgerSummarySpans(rows);
+    }
     function resetLedgerFilters() {
       const keyword = document.getElementById('ledgerKeyword');
       if (keyword) keyword.value = '';
