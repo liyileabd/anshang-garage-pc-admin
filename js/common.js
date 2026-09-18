@@ -156,8 +156,9 @@
       hideModal();
       render();
     }
-    function openChangePasswordModal() {
-      showModal('修改登录密码', `<div class="modal-tip">修改后立即生效，下次登录请使用新密码。</div><div class="modal-form-row"><label for="profileOldPassword">当前密码</label><input id="profileOldPassword" class="form-control" type="password" placeholder="请输入当前密码"></div><div class="modal-form-row"><label for="profileNewPassword">新密码</label><input id="profileNewPassword" class="form-control" type="password" placeholder="至少 6 位字符"></div><div class="modal-form-row"><label for="profileConfirmPassword">确认新密码</label><input id="profileConfirmPassword" class="form-control" type="password" placeholder="请再次输入新密码"></div><div id="profilePasswordError" class="approval-error"></div>`);
+    function openChangePasswordModal(loginName = '') {
+      const scopeTip = loginName ? `账号 <strong>${loginName}</strong>：` : '';
+      showModal('修改登录密码', `<div class="modal-tip">${scopeTip}修改后立即生效，下次登录请使用新密码。</div><div class="modal-form-row"><label for="profileOldPassword">当前密码</label><input id="profileOldPassword" class="form-control" type="password" placeholder="请输入当前密码"></div><div class="modal-form-row"><label for="profileNewPassword">新密码</label><input id="profileNewPassword" class="form-control" type="password" placeholder="至少 6 位字符"></div><div class="modal-form-row"><label for="profileConfirmPassword">确认新密码</label><input id="profileConfirmPassword" class="form-control" type="password" placeholder="请再次输入新密码"></div><div id="profilePasswordError" class="approval-error"></div>`);
       const cancelButton = document.getElementById('modalCancelButton');
       const confirmButton = document.getElementById('modalConfirmButton');
       if (cancelButton) { cancelButton.textContent = '取消'; cancelButton.onclick = hideModal; }
@@ -178,9 +179,22 @@
       const loginInput = document.getElementById('loginPassword');
       if (loginInput) loginInput.value = currentPassword;
       hideModal();
-      showModal('密码修改成功', '<div class="modal-tip">新密码已生效，下次登录请使用新密码。</div>');
+      showModal('密码修改成功', '<div class="modal-tip">新密码已生效，请使用新密码登录。</div>');
       const confirmButton = document.getElementById('modalConfirmButton');
       if (confirmButton) { confirmButton.textContent = '完成'; confirmButton.onclick = hideModal; }
+    }
+    // ===== 登录页底部辅助链接：修改密码 / 忘记密码 =====
+    function openLoginChangePassword() {
+      openChangePasswordModal(document.getElementById('loginUsername')?.value || '');
+    }
+    function openForgotPassword() {
+      const loginName = document.getElementById('loginUsername')?.value || '';
+      const adminPhone = (typeof profileOf === 'function' && profileOf('admin')?.phone) || '13800138000';
+      showModal('忘记密码', `<div class="modal-tip">后台账号由管理员统一创建，密码无法自助找回。请先联系系统管理员核验身份，由管理员重置为初始密码后再登录修改。</div><div class="modal-form-row"><label for="forgotLoginName">待重置账号</label><input id="forgotLoginName" class="form-control" value="${loginName}" readonly></div><div class="modal-form-row"><label for="forgotContact">系统管理员</label><input id="forgotContact" class="form-control" value="${adminPhone}" readonly></div>`);
+      const cancelButton = document.getElementById('modalCancelButton');
+      const confirmButton = document.getElementById('modalConfirmButton');
+      if (cancelButton) { cancelButton.textContent = '关闭'; cancelButton.onclick = hideModal; }
+      if (confirmButton) { confirmButton.textContent = '知道了'; confirmButton.onclick = hideModal; }
     }
     function logout() {
       closeAccountMenu();
