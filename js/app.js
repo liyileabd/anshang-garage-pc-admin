@@ -345,7 +345,7 @@
         return pageShell('操作日志', '', `${filters([['input','操作人/编号'],['select','操作模块',['全部','支付与清分','退款处理','开票管理','项目管理','订单管理','用户管理','系统管理']]], '', 'filter-bar garage-filter-bar')}<section class="panel garage-table-panel log-table-panel"><div>${table([['操作人','120px'],['操作模块','130px'],['操作类型','120px'],['操作对象','150px'],['操作内容摘要','240px'],['结果','80px'],['操作时间','150px'],['操作','90px']], operationLogs, null, (r,i)=>`<button class="btn-text" onclick="showLogDetail(${i})">查看</button>`, [5])}</div></section>`);
       },
       ledger() {
-        return pageShell('业务台账', '', `${filters([['input','业务订单号/车主/车牌','', 'ledgerKeyword', 'filterLedger'],['select','小区项目',['全部小区','锦绣安置房','文庭商房','荣和家园'], 'ledgerProjectFilter', 'filterLedger'],['select','资金动作',['全部动作','收款','退款'], 'ledgerActionFilter', 'filterLedger'],['select','状态',['全部状态','已入账','待审批','已退款'], 'ledgerStatusFilter', 'filterLedger']], '<button class="btn btn-primary" onclick="exportLedger()">导出台账</button>', 'filter-bar garage-filter-bar finance-filter-bar', { query: 'filterLedger', reset: 'resetLedgerFilters' })}${ledgerSummaryHtml(ledgerRecords())}<section class="panel garage-table-panel"><div id="ledgerTable">${ledgerTableHtml(ledgerRecords())}</div></section>`);
+        return pageShell('业务台账', '', `${filters([['input','业务订单号/车主/车牌','', 'ledgerKeyword', 'filterLedger'],['select','小区项目',['全部小区','锦绣安置房','文庭商房','荣和家园'], 'ledgerProjectFilter', 'filterLedger'],['select','资金动作',['全部动作','收款','退款'], 'ledgerActionFilter', 'filterLedger'],['select','状态',['全部状态','已入账','待审批','已退款'], 'ledgerStatusFilter', 'filterLedger']], '<button class="btn btn-primary" onclick="openLedgerExportModal()">导出台账</button>', 'filter-bar garage-filter-bar finance-filter-bar', { query: 'filterLedger', reset: 'resetLedgerFilters' })}${ledgerSummaryHtml(ledgerRecords())}<section class="panel garage-table-panel"><div id="ledgerTable">${ledgerTableHtml(ledgerRecords())}</div></section>`);
       }
     };
 
@@ -407,11 +407,45 @@
       filterLedger();
     }
     function ledgerDateStamp() { const now = new Date(); const pad = n => String(n).padStart(2, '0'); return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`; }
+    // 导出台账：先选字段（复选框），CSV 只输出勾选的列
+    const ledgerExportFields = ['发生时间','业务订单号','小区项目','资金动作','去向账户','金额','状态'];
+    function ledgerExportValue(row, field) {
+      if (field === '去向账户') return Array.isArray(row[4]) ? row[4].map(item => `${item[0]} ${item[1]}`).join('、') : row[4];
+      if (field === '金额') return String(row[5]).replace(/[+,]/g, '');
+      const index = { '发生时间': 0, '业务订单号': 1, '小区项目': 2, '资金动作': 3, '状态': 6 }[field];
+      return index === undefined ? '' : String(row[index]);
+    }
+    function ledgerExportBoxes() { return Array.prototype.slice.call(document.querySelectorAll('.ledger-export-field')); }
+    function ledgerExportPicked() { return ledgerExportFields.filter(field => ledgerExportBoxes().some(box => box.dataset.field === field && box.checked)); }
+    function syncLedgerExportAll() {
+      const all = document.getElementById('ledgerExportAll');
+      const boxes = ledgerExportBoxes();
+      if (!all || !boxes.length) return;
+      const checked = boxes.filter(box => box.checked).length;
+      all.checked = checked === boxes.length;
+      all.indeterminate = checked > 0 && checked < boxes.length;
+    }
+    function toggleLedgerExportAll(input) {
+      ledgerExportBoxes().forEach(box => { box.checked = input.checked; });
+      input.indeterminate = false;
+    }
+    function openLedgerExportModal() {
+      const rows = ledgerRecords();
+      const boxStyle = 'width:15px;height:15px;accent-color:var(--as-primary)';
+      const fieldBox = field => `<label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" class="ledger-export-field" data-field="${field}" checked onchange="syncLedgerExportAll()" style="${boxStyle}"> ${field}</label>`;
+      showModal('导出台账', `<div class="modal-tip">勾选需要导出的字段，CSV 只包含勾选列。当前筛选结果共 <strong>${rows.length}</strong> 条。</div><label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;padding-bottom:10px;margin-bottom:14px;border-bottom:1px solid var(--as-border-light);cursor:pointer"><input id="ledgerExportAll" type="checkbox" checked onchange="toggleLedgerExportAll(this)" style="${boxStyle}"> 全选字段</label><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px">${ledgerExportFields.map(fieldBox).join('')}</div><div id="ledgerExportError" class="approval-error"></div>`);
+      const cancelButton = document.getElementById('modalCancelButton');
+      const confirmButton = document.getElementById('modalConfirmButton');
+      if (cancelButton) { cancelButton.textContent = '取消'; cancelButton.onclick = hideModal; }
+      if (confirmButton) { confirmButton.textContent = '导出'; confirmButton.onclick = exportLedger; }
+    }
     function exportLedger() {
+      const picked = ledgerExportPicked();
+      const error = document.getElementById('ledgerExportError');
+      if (!picked.length) { if (error) error.textContent = '请至少勾选一个字段'; return; }
       const rows = ledgerRecords();
       const csvCell = value => { const text = String(value == null ? '' : value); return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text; };
-      const targetText = target => Array.isArray(target) ? target.map(item => `${item[0]} ${item[1]}`).join('、') : target;
-      const lines = [['发生时间','业务订单号','小区项目','资金动作','去向账户','金额','状态'].join(',')].concat(rows.map(row => [row[0], row[1], row[2], row[3], targetText(row[4]), String(row[5]).replace(/[+,]/g, ''), row[6]].map(csvCell).join(',')));
+      const lines = [picked.join(',')].concat(rows.map(row => picked.map(field => csvCell(ledgerExportValue(row, field))).join(',')));
       const blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
@@ -420,7 +454,7 @@
       link.click();
       link.remove();
       setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-      showModal('导出完成', `<div class="modal-tip">已按当前筛选条件导出 ${rows.length} 条资金流水，文件名为 业务台账_${ledgerDateStamp()}.csv，可直接用 Excel 打开。</div>`);
+      showModal('导出完成', `<div class="modal-tip">已按当前筛选条件导出 ${rows.length} 条资金流水、${picked.length} 个字段，文件名为 业务台账_${ledgerDateStamp()}.csv，可直接用 Excel 打开。</div>`);
     }
 
     const leafPages = {
