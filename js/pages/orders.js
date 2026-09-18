@@ -21,14 +21,13 @@
       const invoiceStatus = orderInvoiceStatus[r[0]];
       const invoiceData = invoiceOrderData(r[0]);
       const invoiceName = invoiceData?.mode === 'ticket' ? '票据' : '发票';
-      const invoiceOpenText = invoiceData?.mode === 'ticket' ? '开票据' : '开发票';
       const issuedRecords = invoiceRows().filter(item => item[1] === r[0] && !isWithdrawnRow(item[6]) && invoiceIssued(item[6]));
-      const invoiceAction = issuedRecords.length
-          ? `<button class="btn-text" onclick="openInvoiceFiles('${r[0]}')">查看${invoiceName}</button>`
-          : invoiceStatus === '处理中'
-            ? `<button class="btn-text" onclick="showInvoiceApplication('${r[0]}')">查看开票申请</button>`
-            : `<button class="btn-text" onclick="openOrderInvoice('${r[0]}')">${invoiceOpenText}</button>`;
-      actions.push(invoiceAction);
+      // 开票入口已下线：操作列只保留「查看发票/查看票据」和「查看开票申请」，不再提供开发票、开票据
+      if (issuedRecords.length) {
+        actions.push(`<button class="btn-text" onclick="openInvoiceFiles('${r[0]}')">查看${invoiceName}</button>`);
+      } else if (invoiceStatus === '处理中') {
+        actions.push(`<button class="btn-text" onclick="showInvoiceApplication('${r[0]}')">查看开票申请</button>`);
+      }
       return actions.join('');
     }
     function invoiceOrderData(id) {
