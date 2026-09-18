@@ -66,14 +66,31 @@
 
 .profile-password-value { display: flex; align-items: center; gap: 10px; }
 
-/* 资料行默认是纯文本外观，悬停/聚焦才显出输入框边框 */
-.profile-input { width: 100%; height: 36px; margin-left: -10px; padding: 0 10px; border: 1px solid transparent; border-radius: 4px; background: transparent; color: var(--as-text-main); outline: none; }
+/* 个人信息默认是只读展示（无输入框），点「编辑资料」加上 .is-editing 后才显出输入框 */
+.profile-input { display: none; width: 100%; height: 36px; margin-left: -10px; padding: 0 10px; border: 1px solid transparent; border-radius: 4px; background: transparent; color: var(--as-text-main); outline: none; }
 
 .profile-input:hover { border-color: var(--as-border); background: #fff; }
 
 .profile-input:focus { border-color: var(--as-primary); background: #fff; box-shadow: 0 0 0 3px var(--as-primary-soft); }
 
 .profile-input.has-error { border-color: var(--as-danger); background: #fff; }
+
+/* 个人信息的资料行是展示型表单：不加行分隔线（账号安全的资料行仍保留） */
+.profile-rows.is-form .profile-row { border-bottom: 0; }
+
+.profile-actions { display: flex; align-items: center; gap: 10px; }
+
+.profile-save-btn, .profile-cancel-btn { display: none; }
+
+.profile-card.is-editing .profile-edit-btn { display: none; }
+
+.profile-card.is-editing .profile-save-btn, .profile-card.is-editing .profile-cancel-btn { display: inline-flex; }
+
+/* 编辑态：输入框直接显出边框（不用 hover 才显形），宽度收在 320px 内避免满行拉通 */
+.profile-card.is-editing .profile-input { display: block; max-width: 320px; border-color: var(--as-border); background: #fff; }
+
+/* 只隐藏「有输入框」的行（用户名/手机号）；登录账号没有输入框，两态都显示文本 */
+.profile-card.is-editing .profile-text[data-text-for] { display: none; }
 
 .avatar-upload { display: flex; align-items: center; gap: 22px; }
 

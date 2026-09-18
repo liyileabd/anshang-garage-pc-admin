@@ -30,6 +30,30 @@
       current = 'profile'; garageSubpage = 'list'; userSubpage = 'list'; orderSubpage = 'list'; passageSubpage = 'list'; refundSubpage = 'list'; invoiceSubpage = 'list'; settlementSubpage = 'list';
       render();
     }
+    // 个人中心的个人信息区默认是只读展示，点「编辑资料」才把用户名/手机号变成输入框（登录账号始终不可改）
+    function startProfileEdit() {
+      const section = document.getElementById('profileInfoSection');
+      if (!section) return;
+      const error = document.getElementById('profileError');
+      if (error) error.textContent = '';
+      section.querySelectorAll('.profile-input.has-error').forEach(input => input.classList.remove('has-error'));
+      // 输入框以当前展示值起编，避免残留上一次未保存的脏值
+      section.querySelectorAll('.profile-text[data-text-for]').forEach(node => {
+        const input = document.getElementById(node.getAttribute('data-text-for'));
+        if (input) input.value = node.textContent === '未填写' ? '' : node.textContent;
+      });
+      section.classList.add('is-editing');
+      const firstInput = section.querySelector('.profile-input');
+      if (firstInput) firstInput.focus();
+    }
+    function cancelProfileEdit() {
+      const section = document.getElementById('profileInfoSection');
+      if (!section) return;
+      const error = document.getElementById('profileError');
+      if (error) error.textContent = '';
+      section.querySelectorAll('.profile-input.has-error').forEach(input => input.classList.remove('has-error'));
+      section.classList.remove('is-editing');
+    }
     function saveProfile() {
       const profile = profileOf(currentLoginName);
       const error = document.getElementById('profileError');
@@ -45,6 +69,13 @@
       Object.assign(profile, values);
       const nameNode = document.getElementById('profileName');
       if (nameNode) nameNode.textContent = profile.nickname || currentLoginName;
+      const section = document.getElementById('profileInfoSection');
+      if (section) {
+        section.querySelectorAll('.profile-text[data-text-for]').forEach(node => {
+          node.textContent = values[node.getAttribute('data-text-for')] || '未填写';
+        });
+        section.classList.remove('is-editing');
+      }
       showModal('资料已保存', '<div class="modal-tip">个人信息已更新。登录账号由系统分配，不支持修改。</div>');
       const confirmButton = document.getElementById('modalConfirmButton');
       if (confirmButton) { confirmButton.textContent = '完成'; confirmButton.onclick = hideModal; }
