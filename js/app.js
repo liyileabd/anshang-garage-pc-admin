@@ -441,6 +441,12 @@
         title: '导出开票记录', noun: '开票记录', fileLabel: '开票管理',
         fields: ['开票记录编号','订单号','申请用户','小区项目','发票类型','开票金额','开票状态','申请时间'],
         rows: () => filteredInvoiceRows(),
+        // 票据类型单选：全部 / 票据 / 发票（只收窄导出范围，不动列表筛选）
+        typeFilter: {
+          label: '票据类型',
+          options: [['', '全部'], ['ticket', '票据'], ['invoice', '发票']],
+          match: (row, value) => !value || (value === 'ticket') === /票据/.test(row[4])
+        },
         value(row, field) {
           if (field === '开票金额') return exportPlainAmount(row[5]);
           if (field === '开票状态') return invoiceRowStatus(row[6]);
@@ -451,6 +457,22 @@
     };
     function exportPickerBoxes(key) { return Array.prototype.slice.call(document.querySelectorAll(`.${key}-export-field`)); }
     function exportPickerPicked(key) { return exportPickers[key].fields.filter(field => exportPickerBoxes(key).some(box => box.dataset.field === field && box.checked)); }
+    function exportPickerTypeValue(key) {
+      const box = document.querySelector(`.${key}-export-type:checked`);
+      return box ? box.value : '';
+    }
+    // 弹窗内「票据类型」单选之后的可导出行；没有 typeFilter 的页（台账 / 退款）返回全量
+    function exportPickerRows(key) {
+      const config = exportPickers[key];
+      const rows = config.rows();
+      if (!config.typeFilter) return rows;
+      const value = exportPickerTypeValue(key);
+      return rows.filter(row => config.typeFilter.match(row, value));
+    }
+    function syncExportPickerType(key) {
+      const count = document.getElementById(`${key}ExportCount`);
+      if (count) count.textContent = exportPickerRows(key).length;
+    }
     function syncExportPickerAll(key) {
       const all = document.getElementById(`${key}ExportAll`);
       const boxes = exportPickerBoxes(key);
@@ -469,7 +491,7 @@
       const rows = config.rows();
       const boxStyle = 'width:15px;height:15px;accent-color:var(--as-primary)';
       const fieldBox = field => `<label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" class="${key}-export-field" data-field="${field}" checked onchange="syncExportPickerAll('${key}')" style="${boxStyle}"> ${field}</label>`;
-      showModal(config.title, `<div class="modal-tip">勾选需要导出的字段，CSV 只包含勾选列。当前筛选结果共 <strong>${rows.length}</strong> 条。</div><label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;padding-bottom:10px;margin-bottom:14px;border-bottom:1px solid var(--as-border-light);cursor:pointer"><input id="${key}ExportAll" type="checkbox" checked onchange="toggleExportPickerAll('${key}', this)" style="${boxStyle}"> 全选字段</label><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px">${config.fields.map(fieldBox).join('')}</div><div id="${key}ExportError" class="approval-error"></div>`);
+      showModal(config.title, `<div class="modal-tip">勾选需要导出的字段，CSV 只包含勾选列。当前筛选结果共 <strong id="${key}ExportCount">${rows.length}</strong> 条。</div>${config.typeFilter ? `<div style="display:flex;align-items:center;gap:22px;font-size:14px;margin-bottom:14px"><span style="color:var(--as-text-sub)">${config.typeFilter.label}</span>${config.typeFilter.options.map(([value, label], index) => `<label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="radio" name="${key}ExportType" class="${key}-export-type" value="${value}" ${index === 0 ? 'checked' : ''} onchange="syncExportPickerType('${key}')" style="${boxStyle}"> ${label}</label>`).join('')}</div>` : ''}<label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;padding-bottom:10px;margin-bottom:14px;border-bottom:1px solid var(--as-border-light);cursor:pointer"><input id="${key}ExportAll" type="checkbox" checked onchange="toggleExportPickerAll('${key}', this)" style="${boxStyle}"> 全选字段</label><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px">${config.fields.map(fieldBox).join('')}</div><div id="${key}ExportError" class="approval-error"></div>`);
       const cancelButton = document.getElementById('modalCancelButton');
       const confirmButton = document.getElementById('modalConfirmButton');
       if (cancelButton) { cancelButton.textContent = '取消'; cancelButton.onclick = hideModal; }
@@ -481,7 +503,8 @@
       const picked = exportPickerPicked(key);
       const error = document.getElementById(`${key}ExportError`);
       if (!picked.length) { if (error) error.textContent = '请至少勾选一个字段'; return; }
-      const rows = config.rows();
+      const rows = exportPickerRows(key);
+      if (!rows.length) { if (error) error.textContent = '当前条件下没有可导出的记录'; return; }
       const fileName = `${config.fileLabel}_${exportDateStamp()}.csv`;
       const csvCell = value => { const text = String(value == null ? '' : value); return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text; };
       const lines = [picked.join(',')].concat(rows.map(row => picked.map(field => csvCell(config.value(row, field))).join(',')));
