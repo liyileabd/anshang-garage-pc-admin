@@ -114,11 +114,14 @@
       const upload = invoiceUploads[row[0]];
       return `${innerPageHead(title, 'backToInvoices()')}<section class="detail-page-section"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><h3 class="detail-page-title" style="margin:0">${noun}信息</h3><button class="btn-text" onclick="openSingleInvoice('${row[0]}')">查看${noun}</button></div><div class="detail-info-grid">${infoItem('开票记录编号', row[0])}${infoItem('开票状态', tag(row[6]))}${infoItem(`${noun}类型`, type)}${infoItem('申请时间', row[7])}${infoItem('申请用户', row[2])}${infoItem('小区项目', row[3])}${infoItem('开票抬头', application?.title || row[2])}${infoItem('联系手机号', application?.phone || '暂无')}${infoItem('统一社会信用代码', application?.taxNo || '暂无')}${infoItem('上传时间', upload?.uploadedAt || '暂无')}</div></section><section class="detail-page-section"><h3 class="detail-page-title">关联订单</h3><div class="detail-info-grid">${infoItem('订单号', row[1])}${infoItem('订单金额', order?.[8] || `¥${(invoiceRows().filter(item => item[1] === row[1]).reduce((sum, item) => sum + Math.round(Number(String(item[5]).replace(/[^\d.]/g, '')) * 100), 0) / 100).toFixed(2)}`)}${infoItem('订单类型', order?.[4] || '月租订单')}${infoItem('办理车辆', order?.[3] || '暂无')}${infoItem('月租周期', '以订单详情为准')}${infoItem('开票金额', row[5])}</div></section>`;
     }
-    function filterInvoices() {
+    function filteredInvoiceRows() {
       const keyword = document.getElementById('invoiceKeyword')?.value.trim().toLowerCase() || '';
       const type = document.getElementById('invoiceTypeFilter')?.dataset.value || '';
       const status = document.getElementById('invoiceStatusFilter')?.dataset.value || '';
-      const rows = invoiceRows().filter(row => (!keyword || row.slice(0, 4).some(value => String(value).toLowerCase().includes(keyword))) && (!status || row[6] === status) && (!type || type === 'all' || (type === 'ticket') === /票据/.test(row[4])));
+      return invoiceRows().filter(row => (!keyword || row.slice(0, 4).some(value => String(value).toLowerCase().includes(keyword))) && (!status || row[6] === status) && (!type || type === 'all' || (type === 'ticket') === /票据/.test(row[4])));
+    }
+    function filterInvoices() {
+      const rows = filteredInvoiceRows();
       const target = document.getElementById('invoiceTable');
       if (target) target.innerHTML = invoiceTableHtml(rows);
     }
@@ -330,12 +333,12 @@
         return pageShell('支付与清分', '', `${filters([['select','清分状态',['全部','已清分','清分处理中','清分异常']]], '', 'filter-bar garage-filter-bar finance-filter-bar')}<section class="panel garage-table-panel">${table([['业务订单号','180px'],['支付流水号','190px'],['小区项目','150px'],['支付金额','130px'],['清分金额','130px'],['清分日期','150px'],['清分状态','130px'],['操作','110px']], rows, settlementActions)}</section>`);
       },
       refund() {
-        return pageShell('退款审批', '', `${filters([['input','退款单/原订单/车主/车牌','', 'refundKeyword', 'filterRefunds'],['select','退款状态',['全部','待审批','待用户确认','已通过','已驳回'], 'refundStatusFilter', 'filterRefunds']], '', 'filter-bar garage-filter-bar finance-filter-bar', { query: 'filterRefunds', reset: 'resetRefundFilters' })}<section class="panel garage-table-panel refund-table-panel"><div id="refundTable">${refundTableHtml(refunds)}</div></section>`);
+        return pageShell('退款审批', '', `${filters([['input','退款单/原订单/车主/车牌','', 'refundKeyword', 'filterRefunds'],['select','退款状态',['全部','待审批','待用户确认','已通过','已驳回'], 'refundStatusFilter', 'filterRefunds']], '<button class="btn btn-primary" onclick="openExportPicker(\'refunds\')">导出退款单</button>', 'filter-bar garage-filter-bar finance-filter-bar', { query: 'filterRefunds', reset: 'resetRefundFilters' })}<section class="panel garage-table-panel refund-table-panel"><div id="refundTable">${refundTableHtml(refunds)}</div></section>`);
       },
       invoices() {
         if (invoiceSubpage === 'detail') return invoiceDetailPage();
         const rows = invoiceRows();
-        return pageShell('开票管理', '', `<div class="filter-bar garage-filter-bar finance-filter-bar invoice-filter-bar"><input id="invoiceKeyword" class="input" type="search" placeholder="开票记录编号/订单号/车主" autocomplete="off"><div id="invoiceTypeFilter" class="filter-dropdown" data-filter-label="票据类型" data-filter-action="filterInvoices"><button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleFilterDropdown(event, 'invoiceTypeFilter')"><span>全部票据类型</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="select-menu" role="listbox"><button type="button" class="select-option active" data-value="" onclick="selectFilterOption(event, 'invoiceTypeFilter')">全部票据类型</button><button type="button" class="select-option" data-value="ticket" onclick="selectFilterOption(event, 'invoiceTypeFilter')">非税票据</button><button type="button" class="select-option" data-value="invoice" onclick="selectFilterOption(event, 'invoiceTypeFilter')">发票</button></div></div><div id="invoiceStatusFilter" class="filter-dropdown" data-filter-label="开票状态" data-filter-action="filterInvoices"><button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleFilterDropdown(event, 'invoiceStatusFilter')"><span>全部开票状态</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div id="invoiceStatusMenu" class="select-menu" role="listbox"><button type="button" class="select-option active" data-value="" onclick="selectFilterOption(event, 'invoiceStatusFilter')">全部开票状态</button><button type="button" class="select-option" data-value="未开" onclick="selectFilterOption(event, 'invoiceStatusFilter')">未开</button><button type="button" class="select-option" data-value="已开" onclick="selectFilterOption(event, 'invoiceStatusFilter')">已开</button><button type="button" class="select-option" data-value="已撤回" onclick="selectFilterOption(event, 'invoiceStatusFilter')">已撤回</button></div></div><button class="btn btn-primary" onclick="filterInvoices()">查询</button><button class="btn" onclick="resetInvoiceFilters()">重置</button><button class="btn" onclick="openBatchInvoiceUpload()">批量上传发票</button></div><section class="panel garage-table-panel"><div id="invoiceTable">${invoiceTableHtml(rows)}</div></section>`);
+        return pageShell('开票管理', '', `<div class="filter-bar garage-filter-bar finance-filter-bar invoice-filter-bar"><input id="invoiceKeyword" class="input" type="search" placeholder="开票记录编号/订单号/车主" autocomplete="off"><div id="invoiceTypeFilter" class="filter-dropdown" data-filter-label="票据类型" data-filter-action="filterInvoices"><button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleFilterDropdown(event, 'invoiceTypeFilter')"><span>全部票据类型</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="select-menu" role="listbox"><button type="button" class="select-option active" data-value="" onclick="selectFilterOption(event, 'invoiceTypeFilter')">全部票据类型</button><button type="button" class="select-option" data-value="ticket" onclick="selectFilterOption(event, 'invoiceTypeFilter')">非税票据</button><button type="button" class="select-option" data-value="invoice" onclick="selectFilterOption(event, 'invoiceTypeFilter')">发票</button></div></div><div id="invoiceStatusFilter" class="filter-dropdown" data-filter-label="开票状态" data-filter-action="filterInvoices"><button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleFilterDropdown(event, 'invoiceStatusFilter')"><span>全部开票状态</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div id="invoiceStatusMenu" class="select-menu" role="listbox"><button type="button" class="select-option active" data-value="" onclick="selectFilterOption(event, 'invoiceStatusFilter')">全部开票状态</button><button type="button" class="select-option" data-value="未开" onclick="selectFilterOption(event, 'invoiceStatusFilter')">未开</button><button type="button" class="select-option" data-value="已开" onclick="selectFilterOption(event, 'invoiceStatusFilter')">已开</button><button type="button" class="select-option" data-value="已撤回" onclick="selectFilterOption(event, 'invoiceStatusFilter')">已撤回</button></div></div><button class="btn btn-primary" onclick="filterInvoices()">查询</button><button class="btn" onclick="resetInvoiceFilters()">重置</button><button class="btn" onclick="openBatchInvoiceUpload()">批量上传发票</button><button class="btn btn-primary" onclick="openExportPicker(\'invoices\')">导出开票记录</button></div><section class="panel garage-table-panel"><div id="invoiceTable">${invoiceTableHtml(rows)}</div></section>`);
       },
       systemUsers() {
         const accountRowsWithAvatar = systemAccounts.map(a => [`__html__${accountAvatarHtml(a[0], 'account-avatar')}`, a[0], a[1], a[2], a[3]]);
@@ -345,7 +348,7 @@
         return pageShell('操作日志', '', `${filters([['input','操作人/编号'],['select','操作模块',['全部','支付与清分','退款处理','开票管理','项目管理','订单管理','用户管理','系统管理']]], '', 'filter-bar garage-filter-bar')}<section class="panel garage-table-panel log-table-panel"><div>${table([['操作人','120px'],['操作模块','130px'],['操作类型','120px'],['操作对象','150px'],['操作内容摘要','240px'],['结果','80px'],['操作时间','150px'],['操作','90px']], operationLogs, null, (r,i)=>`<button class="btn-text" onclick="showLogDetail(${i})">查看</button>`, [5])}</div></section>`);
       },
       ledger() {
-        return pageShell('业务台账', '', `${filters([['input','业务订单号/车主/车牌','', 'ledgerKeyword', 'filterLedger'],['select','小区项目',['全部小区','锦绣安置房','文庭商房','荣和家园'], 'ledgerProjectFilter', 'filterLedger'],['select','资金动作',['全部动作','收款','退款'], 'ledgerActionFilter', 'filterLedger'],['select','状态',['全部状态','已入账','待审批','已退款'], 'ledgerStatusFilter', 'filterLedger']], '<button class="btn btn-primary" onclick="openLedgerExportModal()">导出台账</button>', 'filter-bar garage-filter-bar finance-filter-bar', { query: 'filterLedger', reset: 'resetLedgerFilters' })}${ledgerSummaryHtml(ledgerRecords())}<section class="panel garage-table-panel"><div id="ledgerTable">${ledgerTableHtml(ledgerRecords())}</div></section>`);
+        return pageShell('业务台账', '', `${filters([['input','业务订单号/车主/车牌','', 'ledgerKeyword', 'filterLedger'],['select','小区项目',['全部小区','锦绣安置房','文庭商房','荣和家园'], 'ledgerProjectFilter', 'filterLedger'],['select','资金动作',['全部动作','收款','退款'], 'ledgerActionFilter', 'filterLedger'],['select','状态',['全部状态','已入账','待审批','已退款'], 'ledgerStatusFilter', 'filterLedger']], '<button class="btn btn-primary" onclick="openExportPicker(\'ledger\')">导出台账</button>', 'filter-bar garage-filter-bar finance-filter-bar', { query: 'filterLedger', reset: 'resetLedgerFilters' })}${ledgerSummaryHtml(ledgerRecords())}<section class="panel garage-table-panel"><div id="ledgerTable">${ledgerTableHtml(ledgerRecords())}</div></section>`);
       }
     };
 
@@ -406,55 +409,91 @@
       ['ledgerProjectFilter','ledgerActionFilter','ledgerStatusFilter'].forEach(resetFilterDropdown);
       filterLedger();
     }
-    function ledgerDateStamp() { const now = new Date(); const pad = n => String(n).padStart(2, '0'); return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`; }
-    // 导出台账：先选字段（复选框），CSV 只输出勾选的列
-    const ledgerExportFields = ['发生时间','业务订单号','小区项目','资金动作','去向账户','金额','状态'];
-    function ledgerExportValue(row, field) {
-      if (field === '去向账户') return Array.isArray(row[4]) ? row[4].map(item => `${item[0]} ${item[1]}`).join('、') : row[4];
-      if (field === '金额') return String(row[5]).replace(/[+,]/g, '');
-      const index = { '发生时间': 0, '业务订单号': 1, '小区项目': 2, '资金动作': 3, '状态': 6 }[field];
-      return index === undefined ? '' : String(row[index]);
-    }
-    function ledgerExportBoxes() { return Array.prototype.slice.call(document.querySelectorAll('.ledger-export-field')); }
-    function ledgerExportPicked() { return ledgerExportFields.filter(field => ledgerExportBoxes().some(box => box.dataset.field === field && box.checked)); }
-    function syncLedgerExportAll() {
-      const all = document.getElementById('ledgerExportAll');
-      const boxes = ledgerExportBoxes();
+    function exportDateStamp() { const now = new Date(); const pad = n => String(n).padStart(2, '0'); return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`; }
+    const exportPlainAmount = value => String(value == null ? '' : value).replace(/[¥￥+,\s]/g, '');
+    // 列表导出：先勾选字段（复选框），CSV 只输出勾选的列。
+    // 业务台账 / 退款处理 / 开票管理共用这一套弹窗 —— 各页只登记「字段顺序 + 取行函数 + 取值函数 + 文件名」。
+    // key 同时用作弹窗内元素的类名/ID 前缀（如 ledger → .ledger-export-field / #ledgerExportAll）。
+    const exportPickers = {
+      ledger: {
+        title: '导出台账', noun: '资金流水', fileLabel: '业务台账',
+        fields: ['发生时间','业务订单号','小区项目','资金动作','去向账户','金额','状态'],
+        rows: () => ledgerRecords(),
+        value(row, field) {
+          if (field === '去向账户') return Array.isArray(row[4]) ? row[4].map(item => `${item[0]} ${item[1]}`).join('、') : row[4];
+          if (field === '金额') return exportPlainAmount(row[5]);
+          const index = { '发生时间': 0, '业务订单号': 1, '小区项目': 2, '资金动作': 3, '状态': 6 }[field];
+          return index === undefined ? '' : String(row[index]);
+        }
+      },
+      refunds: {
+        title: '导出退款单', noun: '退款申请', fileLabel: '退款处理',
+        fields: ['退款单号','原订单号','小区项目','退款车辆','退款原因','预计退款','核定退款','申请时间','状态'],
+        rows: () => filteredRefundRecords(),
+        value(row, field) {
+          if (field === '预计退款') return exportPlainAmount(row[6]);
+          if (field === '核定退款') { const approved = refundRequestDetails[row[0]]?.approvedAmount; return approved == null ? '' : Number(approved).toFixed(2); }
+          const index = { '退款单号': 0, '原订单号': 1, '小区项目': 2, '退款车辆': 4, '退款原因': 9, '申请时间': 10, '状态': 7 }[field];
+          return index === undefined ? '' : String(row[index]);
+        }
+      },
+      invoices: {
+        title: '导出开票记录', noun: '开票记录', fileLabel: '开票管理',
+        fields: ['开票记录编号','订单号','申请用户','小区项目','发票类型','开票金额','开票状态','申请时间'],
+        rows: () => filteredInvoiceRows(),
+        value(row, field) {
+          if (field === '开票金额') return exportPlainAmount(row[5]);
+          if (field === '开票状态') return invoiceRowStatus(row[6]);
+          const index = { '开票记录编号': 0, '订单号': 1, '申请用户': 2, '小区项目': 3, '发票类型': 4, '申请时间': 7 }[field];
+          return index === undefined ? '' : String(row[index]);
+        }
+      }
+    };
+    function exportPickerBoxes(key) { return Array.prototype.slice.call(document.querySelectorAll(`.${key}-export-field`)); }
+    function exportPickerPicked(key) { return exportPickers[key].fields.filter(field => exportPickerBoxes(key).some(box => box.dataset.field === field && box.checked)); }
+    function syncExportPickerAll(key) {
+      const all = document.getElementById(`${key}ExportAll`);
+      const boxes = exportPickerBoxes(key);
       if (!all || !boxes.length) return;
       const checked = boxes.filter(box => box.checked).length;
       all.checked = checked === boxes.length;
       all.indeterminate = checked > 0 && checked < boxes.length;
     }
-    function toggleLedgerExportAll(input) {
-      ledgerExportBoxes().forEach(box => { box.checked = input.checked; });
+    function toggleExportPickerAll(key, input) {
+      exportPickerBoxes(key).forEach(box => { box.checked = input.checked; });
       input.indeterminate = false;
     }
-    function openLedgerExportModal() {
-      const rows = ledgerRecords();
+    function openExportPicker(key) {
+      const config = exportPickers[key];
+      if (!config) return;
+      const rows = config.rows();
       const boxStyle = 'width:15px;height:15px;accent-color:var(--as-primary)';
-      const fieldBox = field => `<label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" class="ledger-export-field" data-field="${field}" checked onchange="syncLedgerExportAll()" style="${boxStyle}"> ${field}</label>`;
-      showModal('导出台账', `<div class="modal-tip">勾选需要导出的字段，CSV 只包含勾选列。当前筛选结果共 <strong>${rows.length}</strong> 条。</div><label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;padding-bottom:10px;margin-bottom:14px;border-bottom:1px solid var(--as-border-light);cursor:pointer"><input id="ledgerExportAll" type="checkbox" checked onchange="toggleLedgerExportAll(this)" style="${boxStyle}"> 全选字段</label><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px">${ledgerExportFields.map(fieldBox).join('')}</div><div id="ledgerExportError" class="approval-error"></div>`);
+      const fieldBox = field => `<label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" class="${key}-export-field" data-field="${field}" checked onchange="syncExportPickerAll('${key}')" style="${boxStyle}"> ${field}</label>`;
+      showModal(config.title, `<div class="modal-tip">勾选需要导出的字段，CSV 只包含勾选列。当前筛选结果共 <strong>${rows.length}</strong> 条。</div><label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;padding-bottom:10px;margin-bottom:14px;border-bottom:1px solid var(--as-border-light);cursor:pointer"><input id="${key}ExportAll" type="checkbox" checked onchange="toggleExportPickerAll('${key}', this)" style="${boxStyle}"> 全选字段</label><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px">${config.fields.map(fieldBox).join('')}</div><div id="${key}ExportError" class="approval-error"></div>`);
       const cancelButton = document.getElementById('modalCancelButton');
       const confirmButton = document.getElementById('modalConfirmButton');
       if (cancelButton) { cancelButton.textContent = '取消'; cancelButton.onclick = hideModal; }
-      if (confirmButton) { confirmButton.textContent = '导出'; confirmButton.onclick = exportLedger; }
+      if (confirmButton) { confirmButton.textContent = '导出'; confirmButton.onclick = () => runExportPicker(key); }
     }
-    function exportLedger() {
-      const picked = ledgerExportPicked();
-      const error = document.getElementById('ledgerExportError');
+    function runExportPicker(key) {
+      const config = exportPickers[key];
+      if (!config) return;
+      const picked = exportPickerPicked(key);
+      const error = document.getElementById(`${key}ExportError`);
       if (!picked.length) { if (error) error.textContent = '请至少勾选一个字段'; return; }
-      const rows = ledgerRecords();
+      const rows = config.rows();
+      const fileName = `${config.fileLabel}_${exportDateStamp()}.csv`;
       const csvCell = value => { const text = String(value == null ? '' : value); return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text; };
-      const lines = [picked.join(',')].concat(rows.map(row => picked.map(field => csvCell(ledgerExportValue(row, field))).join(',')));
+      const lines = [picked.join(',')].concat(rows.map(row => picked.map(field => csvCell(config.value(row, field))).join(',')));
       const blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = `业务台账_${ledgerDateStamp()}.csv`;
+      link.download = fileName;
       document.body.appendChild(link);
       link.click();
       link.remove();
       setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-      showModal('导出完成', `<div class="modal-tip">已按当前筛选条件导出 ${rows.length} 条资金流水、${picked.length} 个字段，文件名为 业务台账_${ledgerDateStamp()}.csv，可直接用 Excel 打开。</div>`);
+      showModal('导出完成', `<div class="modal-tip">已按当前筛选条件导出 ${rows.length} 条${config.noun}、${picked.length} 个字段，文件名为 ${fileName}，可直接用 Excel 打开。</div>`);
     }
 
     const leafPages = {
