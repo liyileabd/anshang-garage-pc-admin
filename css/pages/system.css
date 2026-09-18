@@ -24,6 +24,9 @@
 .account-table-panel .account-checkbox,
 .account-table-panel #selectAllCheckbox { width: 14px; height: 14px; margin: 0; vertical-align: middle; accent-color: var(--as-primary); }
 
+/* 账号管理：头像列的头像比全站通用头像（.avatar 30px）放大一档，与 56px 行高更协调 */
+.account-table-panel .avatar.account-avatar { width: 40px; height: 40px; font-size: 16px; }
+
 /* 个人中心：头部资料卡 + 个人信息 / 账号安全两个分区 */
 .profile-card { background: #fff; border: 1px solid #dbe5f2; border-radius: 10px; box-shadow: 0 10px 26px rgba(39, 79, 143, .06); margin-bottom: 18px; overflow: hidden; }
 
