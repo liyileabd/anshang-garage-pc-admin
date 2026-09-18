@@ -5,7 +5,7 @@
       background: #fff;
     }
 
-/* 左侧：深蓝品牌区（蓝白国企风） */
+/* 左侧：浅蓝白品牌区（蓝白国企风，以白为主，蓝色只做点缀） */
 .login-brand {
       position: relative;
       overflow: hidden;
@@ -13,19 +13,20 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      color: #fff;
-      background: linear-gradient(150deg, #2b7ff2 0%, #1556c9 55%, #0e3f9e 100%);
+      color: var(--as-text-main);
+      background: linear-gradient(160deg, #fbfdff 0%, #f3f8ff 46%, #e9f2ff 100%);
+      border-right: 1px solid #e8f0fb;
     }
 
-/* 装饰：右上天光 + 左下光斑 + 细斜纹 */
+/* 装饰：右上天光 + 左下光斑 + 细斜纹（都很淡） */
 .login-brand::before {
       content: '';
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(circle at 86% 10%, rgba(255, 255, 255, .10) 0, rgba(255, 255, 255, 0) 36%),
-        radial-gradient(circle at -10% 110%, rgba(255, 255, 255, .07) 0, rgba(255, 255, 255, 0) 44%),
-        repeating-linear-gradient(115deg, rgba(255, 255, 255, .028) 0 2px, transparent 2px 26px);
+        radial-gradient(circle at 88% 6%, rgba(64, 158, 255, .14) 0, rgba(64, 158, 255, 0) 42%),
+        radial-gradient(circle at -12% 108%, rgba(64, 158, 255, .10) 0, rgba(64, 158, 255, 0) 46%),
+        repeating-linear-gradient(115deg, rgba(64, 158, 255, .04) 0 2px, transparent 2px 26px);
       pointer-events: none;
     }
 
@@ -33,9 +34,9 @@
 
 .login-brand-top { display: flex; align-items: center; gap: 14px; margin-bottom: 56px; }
 
-.login-brand-logo { flex: none; width: 44px; height: 44px; border-radius: 10px; background: #fff; color: var(--as-primary); display: grid; place-items: center; font-size: 19px; font-weight: 700; box-shadow: 0 6px 16px rgba(8, 30, 86, .3); }
+.login-brand-logo { flex: none; width: 44px; height: 44px; border-radius: 10px; background: var(--as-primary); color: #fff; display: grid; place-items: center; font-size: 19px; font-weight: 700; box-shadow: 0 8px 18px rgba(64, 158, 255, .28); }
 
-.login-brand-name { font-size: 15px; letter-spacing: 3px; color: rgba(255, 255, 255, .94); }
+.login-brand-name { font-size: 15px; letter-spacing: 3px; color: #2c4a70; }
 
 .login-brand h1 {
       margin: 0 0 18px;
@@ -43,7 +44,7 @@
       line-height: 1.42;
       letter-spacing: 1.5px;
       font-weight: 700;
-      color: #fff;
+      color: #1a2b45;
     }
 
 .login-brand p {
@@ -51,14 +52,14 @@
       max-width: 520px;
       font-size: 15px;
       line-height: 2;
-      color: rgba(255, 255, 255, .72);
+      color: #6b7c93;
     }
 
 .login-points { margin: 46px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 14px 30px; }
 
-.login-points li { display: flex; align-items: center; gap: 9px; font-size: 14px; letter-spacing: 1px; color: rgba(255, 255, 255, .9); }
+.login-points li { display: flex; align-items: center; gap: 9px; font-size: 14px; letter-spacing: 1px; color: #40566f; }
 
-.login-points li::before { content: ''; width: 7px; height: 7px; border-radius: 2px; background: #8fbcff; }
+.login-points li::before { content: ''; width: 7px; height: 7px; border-radius: 2px; background: var(--as-primary); }
 
 /* 右侧：白底 + 居中登录卡 */
 .login-panel-wrap { display: flex; align-items: center; justify-content: center; padding: 40px; background: #fff; }
@@ -68,7 +69,7 @@
       background: #fff;
       border: 1px solid var(--as-border-light);
       border-radius: 10px;
-      box-shadow: 0 18px 48px rgba(20, 60, 140, .10);
+      box-shadow: 0 18px 44px rgba(20, 60, 140, .07);
       padding: 38px 36px 36px;
     }
 
