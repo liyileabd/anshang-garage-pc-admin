@@ -65,16 +65,25 @@
 .login-panel-wrap { display: flex; align-items: center; justify-content: center; padding: 40px; background: #fff; }
 
 .login-panel {
-      width: min(400px, 100%);
+      width: min(480px, 100%);
       background: #fff;
       border: 1px solid var(--as-border-light);
-      border-radius: 10px;
-      box-shadow: 0 18px 44px rgba(20, 60, 140, .07);
-      padding: 38px 36px 36px;
+      border-radius: 12px;
+      box-shadow: 0 22px 52px rgba(20, 60, 140, .08);
+      padding: 48px 46px 44px;
     }
 
-.login-panel-logo { width: 44px; height: 44px; border-radius: 10px; background: var(--as-primary); color: #fff; display: grid; place-items: center; font-size: 19px; font-weight: 700; margin-bottom: 22px; }
+.login-panel-logo { width: 54px; height: 54px; border-radius: 12px; background: var(--as-primary); color: #fff; display: grid; place-items: center; font-size: 23px; font-weight: 700; margin-bottom: 28px; }
 
-.login-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.login-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
 
-.login-sub { color: var(--as-text-muted); margin-bottom: 28px; }
+.login-sub { font-size: 15px; color: var(--as-text-muted); margin-bottom: 34px; }
+
+/* 登录卡内的表单整体放大：只作用于登录页，common.css 的通用尺寸不动 */
+.login-panel .form-item { margin-bottom: 24px; }
+
+.login-panel .form-label { font-size: 15px; margin-bottom: 10px; }
+
+.login-panel .form-control { height: 48px; font-size: 15px; border-radius: 6px; padding: 0 14px; }
+
+.login-panel .btn { font-size: 16px; }
