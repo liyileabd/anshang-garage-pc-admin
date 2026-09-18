@@ -385,9 +385,10 @@
       const fmt = value => `¥${Math.abs(value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       return `<span>收款合计 <strong style="color:var(--as-text-main)">${fmt(income)}</strong></span><span>分账合计 <strong style="color:var(--as-text-main)">${fmt(split)}</strong></span><span>退款合计 <strong style="color:var(--as-text-main)">${fmt(refund)}</strong></span><span>待分账结存 <strong style="color:var(--as-primary)">${fmt(income + split)}</strong></span>`;
     }
-    // 合计条是独立的一行，不属于列表面板：无底色、无边框，与列表只靠间距相邻
+    // 合计条是独立的一行，不属于列表面板：无底色、无边框，与列表只靠间距相邻。
+    // padding-left 20px = 面板边框 1px + 表格边框 1px + th 左内边距 18px，让「收款合计」与表头首列文字左对齐。
     function ledgerSummaryHtml(rows) {
-      return `<div id="ledgerSummary" style="display:flex;flex-wrap:wrap;gap:12px 32px;margin:0 0 12px;font-size:13px;color:var(--as-text-muted)">${ledgerSummarySpans(rows)}</div>`;
+      return `<div id="ledgerSummary" style="display:flex;flex-wrap:wrap;gap:12px 32px;margin:0 0 12px;padding-left:20px;font-size:13px;color:var(--as-text-muted)">${ledgerSummarySpans(rows)}</div>`;
     }
     function ledgerTableHtml(rows) {
       const dataRows = rows.map(row => [row[0], row[1], row[2], ledgerActionTag(row[3]), ledgerTargetCell(row[4]), ledgerAmountCell(row[5]), ledgerStatusTag(row[6])]);
