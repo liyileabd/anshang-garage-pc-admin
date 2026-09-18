@@ -345,12 +345,12 @@
         return pageShell('操作日志', '', `${filters([['input','操作人/编号'],['select','操作模块',['全部','支付与清分','退款处理','开票管理','项目管理','订单管理','用户管理','系统管理']]], '', 'filter-bar garage-filter-bar')}<section class="panel garage-table-panel log-table-panel"><div>${table([['操作人','120px'],['操作模块','130px'],['操作类型','120px'],['操作对象','150px'],['操作内容摘要','240px'],['结果','80px'],['操作时间','150px'],['操作','90px']], operationLogs, null, (r,i)=>`<button class="btn-text" onclick="showLogDetail(${i})">查看</button>`, [5])}</div></section>`);
       },
       ledger() {
-        return pageShell('业务台账', '', `${filters([['input','业务订单号/车主/车牌','', 'ledgerKeyword', 'filterLedger'],['select','小区项目',['全部小区','锦绣安置房','文庭商房','荣和家园'], 'ledgerProjectFilter', 'filterLedger'],['select','资金动作',['全部动作','收款','分账','退款'], 'ledgerActionFilter', 'filterLedger'],['select','状态',['全部状态','已入账','已到账','分账处理中','分账异常','待审批','已退款'], 'ledgerStatusFilter', 'filterLedger']], '<button class="btn btn-primary" onclick="exportLedger()">导出台账</button>', 'filter-bar garage-filter-bar finance-filter-bar', { query: 'filterLedger', reset: 'resetLedgerFilters' })}${ledgerSummaryHtml(ledgerRecords())}<section class="panel garage-table-panel"><div id="ledgerTable">${ledgerTableHtml(ledgerRecords())}</div></section>`);
+        return pageShell('业务台账', '', `${filters([['input','业务订单号/车主/车牌','', 'ledgerKeyword', 'filterLedger'],['select','小区项目',['全部小区','锦绣安置房','文庭商房','荣和家园'], 'ledgerProjectFilter', 'filterLedger'],['select','资金动作',['全部动作','收款','退款'], 'ledgerActionFilter', 'filterLedger'],['select','状态',['全部状态','已入账','待审批','已退款'], 'ledgerStatusFilter', 'filterLedger']], '<button class="btn btn-primary" onclick="exportLedger()">导出台账</button>', 'filter-bar garage-filter-bar finance-filter-bar', { query: 'filterLedger', reset: 'resetLedgerFilters' })}${ledgerSummaryHtml(ledgerRecords())}<section class="panel garage-table-panel"><div id="ledgerTable">${ledgerTableHtml(ledgerRecords())}</div></section>`);
       }
     };
 
     // 业务台账：资金流水（一行 = 一笔资金动作）
-    const ledgerHeaders = [['发生时间','150px'],['业务订单号','150px'],['小区项目','110px'],['资金动作','80px'],['去向账户 / 分账明细','210px'],['金额','110px'],['状态','115px'],['操作','85px']];
+    const ledgerHeaders = [['发生时间','150px'],['业务订单号','150px'],['小区项目','110px'],['资金动作','80px'],['去向账户','210px'],['金额','110px'],['状态','115px'],['操作','85px']];
     function ledgerFilterValue(id) { const el = document.getElementById(id); if (!el) return ''; return el.dataset && el.dataset.value ? el.dataset.value : (el.value || ''); }
     function ledgerRecords() {
       const keyword = ledgerFilterValue('ledgerKeyword').trim();
@@ -378,12 +378,11 @@
     function ledgerAmountCell(amount) { return `__html__<span style="font-variant-numeric:tabular-nums;color:${amount.charAt(0) === '+' ? 'var(--as-primary)' : 'var(--as-text-main)'}">${amount}</span>`; }
     function ledgerSummarySpans(rows) {
       const toNumber = amount => Number(String(amount).replace(/[+,]/g, '')) || 0;
-      const total = action => rows.filter(row => row[3] === action && row[6].indexOf('异常') === -1).reduce((sum, row) => sum + toNumber(row[5]), 0);
+      const total = action => rows.filter(row => row[3] === action).reduce((sum, row) => sum + toNumber(row[5]), 0);
       const income = total('收款');
-      const split = total('分账');
       const refund = total('退款');
       const fmt = value => `¥${Math.abs(value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      return `<span>收款合计 <strong style="color:var(--as-text-main)">${fmt(income)}</strong></span><span>分账合计 <strong style="color:var(--as-text-main)">${fmt(split)}</strong></span><span>退款合计 <strong style="color:var(--as-text-main)">${fmt(refund)}</strong></span><span>待分账结存 <strong style="color:var(--as-primary)">${fmt(income + split)}</strong></span>`;
+      return `<span>收款合计 <strong style="color:var(--as-text-main)">${fmt(income)}</strong></span><span>退款合计 <strong style="color:var(--as-text-main)">${fmt(refund)}</strong></span>`;
     }
     // 合计条是独立的一行，不属于列表面板：无底色、无边框，与列表只靠间距相邻。
     // padding-left 20px = 面板边框 1px + 表格边框 1px + th 左内边距 18px，让「收款合计」与表头首列文字左对齐。
@@ -412,7 +411,7 @@
       const rows = ledgerRecords();
       const csvCell = value => { const text = String(value == null ? '' : value); return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text; };
       const targetText = target => Array.isArray(target) ? target.map(item => `${item[0]} ${item[1]}`).join('、') : target;
-      const lines = [['发生时间','业务订单号','小区项目','资金动作','去向账户 / 分账明细','金额','状态'].join(',')].concat(rows.map(row => [row[0], row[1], row[2], row[3], targetText(row[4]), String(row[5]).replace(/[+,]/g, ''), row[6]].map(csvCell).join(',')));
+      const lines = [['发生时间','业务订单号','小区项目','资金动作','去向账户','金额','状态'].join(',')].concat(rows.map(row => [row[0], row[1], row[2], row[3], targetText(row[4]), String(row[5]).replace(/[+,]/g, ''), row[6]].map(csvCell).join(',')));
       const blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
