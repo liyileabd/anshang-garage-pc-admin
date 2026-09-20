@@ -364,6 +364,91 @@
       }
     }
 
+    // ===== 账号管理：批量导入（弹窗样式与 CSV 解析写法沿用开票管理的「批量上传发票」）=====
+    const accountBatchFields = [
+      ['用户名', '登录账号，必填，4-20 位字母 / 数字 / 下划线，不可重复', 'finance02'],
+      ['账号类型', '超级管理员 / 普通账号，留空默认普通账号', '普通账号'],
+      ['状态', '启用 / 停用，留空默认启用', '启用']
+    ];
+    function accountBatchBody() {
+      return `<div class="invoice-upload-form"><div class="invoice-upload-title has-sample-link"><span>导入字段说明：</span><a class="invoice-sample-link" href="javascript:;" onclick="downloadAccountBatchSample()">点击下载文件示例</a></div><table class="invoice-field-table"><thead><tr><th style="width:96px">字段</th><th>说明</th><th style="width:150px">示例</th></tr></thead><tbody>${accountBatchFields.map(([name, desc, sample]) => `<tr><td>${name}</td><td>${desc}</td><td class="invoice-field-sample">${sample}</td></tr>`).join('')}</tbody></table><div class="modal-tip">导入的账号统一使用初始密码 ${DEFAULT_INITIAL_PASSWORD}。一次最多导入 50 个；用户名重复或字段不合法的行会被跳过，其余照常导入。</div><label class="create-upload"><input id="accountBatchFile" type="file" accept=".csv" onchange="document.getElementById('accountUploadName').textContent = this.files.length ? this.files[0].name : '未选择文件'"><button type="button" class="btn" onclick="document.getElementById('accountBatchFile').click()">选择文件</button><span id="accountUploadName" class="create-upload-name">未选择文件</span></label></div>`;
+    }
+    function downloadAccountBatchSample() {
+      const header = accountBatchFields.map(([name]) => name);
+      const sampleRows = [['finance02', '普通账号', '启用'], ['property02', '普通账号', '启用'], ['ops03', '普通账号', '停用']];
+      const lines = [header, ...sampleRows].map(row => row.map(cell => (/[",\n]/.test(cell) ? csvCell(cell) : cell)).join(','));
+      downloadCsv('批量导入账号-文件示例.csv', lines, '\r\n');
+    }
+    function parseAccountBatchCsv(text) {
+      const lines = String(text ?? '').replace(/^\uFEFF/, '').split(/\r?\n/).map(line => line.trim()).filter(line => line.length);
+      if (!lines.length) return { error: 'CSV 文件内容为空，请按字段说明准备文件' };
+      const splitCells = line => {
+        const out = []; let value = ''; let quoted = false;
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          if (quoted) {
+            if (char === '"' && line[i + 1] === '"') { value += '"'; i++; }
+            else if (char === '"') quoted = false;
+            else value += char;
+          } else if (char === '"') quoted = true;
+          else if (char === ',') { out.push(value.trim()); value = ''; }
+          else value += char;
+        }
+        out.push(value.trim());
+        return out;
+      };
+      const rows = [];
+      const skipped = [];
+      for (let index = 0; index < lines.length; index++) {
+        const values = splitCells(lines[index]);
+        const lineNo = index + 1;
+        if (index === 0 && /用户名|账号|username/i.test(values[0] || '')) continue;
+        const name = values[0] || '';
+        const type = values[1] || '普通账号';
+        const status = values[2] || '启用';
+        if (!name) { skipped.push(`第 ${lineNo} 行用户名为空`); continue; }
+        if (!/^[A-Za-z0-9_]{4,20}$/.test(name)) { skipped.push(`第 ${lineNo} 行用户名「${name}」格式不合法`); continue; }
+        if (!['超级管理员', '普通账号'].includes(type)) { skipped.push(`第 ${lineNo} 行账号类型「${type}」不合法`); continue; }
+        if (!['启用', '停用'].includes(status)) { skipped.push(`第 ${lineNo} 行状态「${status}」不合法`); continue; }
+        if (systemAccounts.some(account => account[0] === name) || rows.some(row => row[0] === name)) { skipped.push(`第 ${lineNo} 行用户名「${name}」已存在`); continue; }
+        if (rows.length >= 50) { skipped.push(`第 ${lineNo} 行超出单次 50 个上限`); continue; }
+        rows.push([name, type, status, '从未登录']);
+      }
+      if (!rows.length) {
+        if (!skipped.length) return { error: 'CSV 中没有可导入的数据行' };
+        return { error: `没有可导入的账号：${skipped.slice(0, 3).join('；')}${skipped.length > 3 ? ` 等 ${skipped.length} 处问题` : ''}` };
+      }
+      return { rows, skipped };
+    }
+    function openBatchImportAccounts() {
+      showModal('批量导入账号', accountBatchBody() + '<div id="accountImportError" class="approval-error"></div>');
+      const confirmButton = document.getElementById('modalConfirmButton');
+      if (!confirmButton) return;
+      confirmButton.textContent = '确认导入';
+      confirmButton.onclick = () => {
+        const file = document.getElementById('accountBatchFile')?.files?.[0];
+        const error = document.getElementById('accountImportError');
+        if (!file) { if (error) error.textContent = '请先选择 CSV 文件'; return; }
+        if (!/\.csv$/i.test(file.name)) { if (error) error.textContent = '仅支持 CSV 文件'; return; }
+        const reader = new FileReader();
+        reader.onerror = () => { if (error) error.textContent = '文件读取失败，请重新选择'; };
+        reader.onload = () => {
+          const result = parseAccountBatchCsv(reader.result);
+          if (result.error) { if (error) error.textContent = result.error; return; }
+          result.rows.forEach(row => systemAccounts.push(row));
+          hideModal();
+          const skippedTip = result.skipped.length
+            ? `<div class="modal-tip">已跳过 ${result.skipped.length} 行：${result.skipped.slice(0, 4).join('；')}${result.skipped.length > 4 ? ' 等' : ''}</div>`
+            : '';
+          showModal('批量导入完成', `<div class="modal-tip">已导入 <strong>${result.rows.length}</strong> 个账号，初始密码 ${DEFAULT_INITIAL_PASSWORD}，请提醒工作人员首次登录后及时修改。</div>${skippedTip}`);
+          const doneButton = document.getElementById('modalConfirmButton');
+          if (doneButton) { doneButton.textContent = '完成'; doneButton.onclick = hideModal; }
+          render();
+        };
+        reader.readAsText(file, 'utf-8');
+      };
+    }
+
     function showLogDetail(index) {
       const log = operationLogs[index];
       if (!log) return;
