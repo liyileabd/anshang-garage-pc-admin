@@ -46,7 +46,7 @@
       const password = document.getElementById('loginPassword')?.value || '';
       const account = systemAccounts.find(item => item[0] === loginName && item[2] === '启用');
       const error = document.getElementById('loginError');
-      if (!account || password !== currentPassword) {
+      if (!account || password !== passwordOf(loginName)) {
         if (error) error.textContent = '用户名或密码错误';
         return;
       }
@@ -164,8 +164,10 @@
       hideModal();
       render();
     }
+    let passwordChangeTarget = '';
     function openChangePasswordModal(loginName = '') {
-      const scopeTip = loginName ? `账号 <strong>${loginName}</strong>：` : '';
+      passwordChangeTarget = loginName || currentLoginName || '';
+      const scopeTip = passwordChangeTarget ? `账号 <strong>${passwordChangeTarget}</strong>：` : '';
       showModal('修改登录密码', `<div class="modal-tip">${scopeTip}修改后立即生效，下次登录请使用新密码。</div><div class="modal-form-row"><label for="profileOldPassword">当前密码</label><input id="profileOldPassword" class="form-control" type="password" placeholder="请输入当前密码"></div><div class="modal-form-row"><label for="profileNewPassword">新密码</label><input id="profileNewPassword" class="form-control" type="password" placeholder="至少 6 位字符"></div><div class="modal-form-row"><label for="profileConfirmPassword">确认新密码</label><input id="profileConfirmPassword" class="form-control" type="password" placeholder="请再次输入新密码"></div><div id="profilePasswordError" class="approval-error"></div>`);
       const cancelButton = document.getElementById('modalCancelButton');
       const confirmButton = document.getElementById('modalConfirmButton');
@@ -179,13 +181,13 @@
       const error = document.getElementById('profilePasswordError');
       const fail = message => { if (error) error.textContent = message; };
       if (!oldPassword) return fail('请输入当前密码');
-      if (oldPassword !== currentPassword) return fail('当前密码不正确');
+      if (oldPassword !== passwordOf(passwordChangeTarget)) return fail('当前密码不正确');
       if (newPassword.length < 6) return fail('新密码长度不能少于 6 位');
-      if (newPassword === currentPassword) return fail('新密码不能与当前密码相同');
+      if (newPassword === passwordOf(passwordChangeTarget)) return fail('新密码不能与当前密码相同');
       if (newPassword !== confirmPassword) return fail('两次输入的新密码不一致');
-      currentPassword = newPassword;
+      setAccountPassword(passwordChangeTarget, newPassword);
       const loginInput = document.getElementById('loginPassword');
-      if (loginInput) loginInput.value = currentPassword;
+      if (loginInput) loginInput.value = passwordOf(passwordChangeTarget);
       hideModal();
       showModal('密码修改成功', '<div class="modal-tip">新密码已生效，请使用新密码登录。</div>');
       const confirmButton = document.getElementById('modalConfirmButton');
@@ -222,11 +224,11 @@
       if (newPassword.length < 6) return fail('新密码长度不能少于 6 位');
       if (newPassword === DEFAULT_INITIAL_PASSWORD) return fail('新密码不能与初始密码相同');
       if (newPassword !== confirmPassword) return fail('两次输入的新密码不一致');
-      currentPassword = newPassword;
+      setAccountPassword(forcedPasswordAccount, newPassword);
+      const loginInput = document.getElementById('loginPassword');
+      if (loginInput) loginInput.value = passwordOf(forcedPasswordAccount);
       firstLoginAccounts.delete(forcedPasswordAccount);
       forcedPasswordAccount = '';
-      const loginInput = document.getElementById('loginPassword');
-      if (loginInput) loginInput.value = currentPassword;
       hideModal();
       enterBackend();
     }
@@ -320,6 +322,7 @@
         if (error) error.textContent = '密码长度不能少于 6 位';
         return;
       }
+      setAccountPassword(username, newPwd);
       hideModal();
       showModal('密码重置成功', `账号 <strong>${username}</strong> 的密码已重置。请将新密码通知工作人员，下次登录时使用新密码。`);
       const confirmButton = document.getElementById('modalConfirmButton');
@@ -366,16 +369,16 @@
 
     // ===== 账号管理：批量导入（弹窗样式与 CSV 解析写法沿用开票管理的「批量上传发票」）=====
     const accountBatchFields = [
-      ['用户名', '登录账号，必填，4-20 位字母 / 数字 / 下划线，不可重复', 'finance02'],
-      ['账号类型', '超级管理员 / 普通账号，留空默认普通账号', '普通账号'],
-      ['状态', '启用 / 停用，留空默认启用', '启用']
+      ['用户名', '必填，2-20 个字符，支持中文、字母、数字和下划线，不可重复', '张三'],
+      ['登录密码', '选填，至少 6 位；留空默认使用初始密码 ' + DEFAULT_INITIAL_PASSWORD, 'zhangsan2026'],
+      ['状态', '选填，启用 / 停用；留空默认启用', '启用']
     ];
     function accountBatchBody() {
-      return `<div class="invoice-upload-form"><div class="invoice-upload-title has-sample-link"><span>导入字段说明：</span><a class="invoice-sample-link" href="javascript:;" onclick="downloadAccountBatchSample()">点击下载文件示例</a></div><table class="invoice-field-table"><thead><tr><th style="width:96px">字段</th><th>说明</th><th style="width:150px">示例</th></tr></thead><tbody>${accountBatchFields.map(([name, desc, sample]) => `<tr><td>${name}</td><td>${desc}</td><td class="invoice-field-sample">${sample}</td></tr>`).join('')}</tbody></table><div class="modal-tip">导入的账号统一使用初始密码 ${DEFAULT_INITIAL_PASSWORD}。一次最多导入 50 个；用户名重复或字段不合法的行会被跳过，其余照常导入。</div><label class="create-upload"><input id="accountBatchFile" type="file" accept=".csv" onchange="document.getElementById('accountUploadName').textContent = this.files.length ? this.files[0].name : '未选择文件'"><button type="button" class="btn" onclick="document.getElementById('accountBatchFile').click()">选择文件</button><span id="accountUploadName" class="create-upload-name">未选择文件</span></label></div>`;
+      return `<div class="invoice-upload-form"><div class="invoice-upload-title has-sample-link"><span>导入字段说明：</span><a class="invoice-sample-link" href="javascript:;" onclick="downloadAccountBatchSample()">点击下载文件示例</a></div><table class="invoice-field-table"><thead><tr><th style="width:96px">字段</th><th>说明</th><th style="width:150px">示例</th></tr></thead><tbody>${accountBatchFields.map(([name, desc, sample]) => `<tr><td>${name}</td><td>${desc}</td><td class="invoice-field-sample">${sample}</td></tr>`).join('')}</tbody></table><div class="modal-tip">导入的账号一律为普通账号（系统仅保留 admin 一个超级管理员）。一次最多导入 50 个；用户名重复或字段不合法的行会被跳过，其余照常导入。</div><label class="create-upload"><input id="accountBatchFile" type="file" accept=".csv" onchange="document.getElementById('accountUploadName').textContent = this.files.length ? this.files[0].name : '未选择文件'"><button type="button" class="btn" onclick="document.getElementById('accountBatchFile').click()">选择文件</button><span id="accountUploadName" class="create-upload-name">未选择文件</span></label></div>`;
     }
     function downloadAccountBatchSample() {
       const header = accountBatchFields.map(([name]) => name);
-      const sampleRows = [['finance02', '普通账号', '启用'], ['property02', '普通账号', '启用'], ['ops03', '普通账号', '停用']];
+      const sampleRows = [['张三', '', '启用'], ['李小明', 'lxm2026abc', '启用'], ['ops03', '', '停用']];
       const lines = [header, ...sampleRows].map(row => row.map(cell => (/[",\n]/.test(cell) ? csvCell(cell) : cell)).join(','));
       downloadCsv('批量导入账号-文件示例.csv', lines, '\r\n');
     }
@@ -399,26 +402,28 @@
       };
       const rows = [];
       const skipped = [];
+      const passwords = [];
       for (let index = 0; index < lines.length; index++) {
         const values = splitCells(lines[index]);
         const lineNo = index + 1;
         if (index === 0 && /用户名|账号|username/i.test(values[0] || '')) continue;
         const name = values[0] || '';
-        const type = values[1] || '普通账号';
+        const password = values[1] || '';
         const status = values[2] || '启用';
         if (!name) { skipped.push(`第 ${lineNo} 行用户名为空`); continue; }
-        if (!/^[A-Za-z0-9_]{4,20}$/.test(name)) { skipped.push(`第 ${lineNo} 行用户名「${name}」格式不合法`); continue; }
-        if (!['超级管理员', '普通账号'].includes(type)) { skipped.push(`第 ${lineNo} 行账号类型「${type}」不合法`); continue; }
+        if (!/^[A-Za-z0-9_\u4e00-\u9fa5]{2,20}$/.test(name)) { skipped.push(`第 ${lineNo} 行用户名「${name}」格式不合法（2-20 个字符，仅限中文、字母、数字、下划线）`); continue; }
+        if (password && password.length < 6) { skipped.push(`第 ${lineNo} 行「${name}」的密码少于 6 位`); continue; }
         if (!['启用', '停用'].includes(status)) { skipped.push(`第 ${lineNo} 行状态「${status}」不合法`); continue; }
         if (systemAccounts.some(account => account[0] === name) || rows.some(row => row[0] === name)) { skipped.push(`第 ${lineNo} 行用户名「${name}」已存在`); continue; }
         if (rows.length >= 50) { skipped.push(`第 ${lineNo} 行超出单次 50 个上限`); continue; }
-        rows.push([name, type, status, '从未登录']);
+        rows.push([name, '普通账号', status, '从未登录']);
+        passwords.push([name, password]);
       }
       if (!rows.length) {
         if (!skipped.length) return { error: 'CSV 中没有可导入的数据行' };
         return { error: `没有可导入的账号：${skipped.slice(0, 3).join('；')}${skipped.length > 3 ? ` 等 ${skipped.length} 处问题` : ''}` };
       }
-      return { rows, skipped };
+      return { rows, skipped, passwords };
     }
     function openBatchImportAccounts() {
       showModal('批量导入账号', accountBatchBody() + '<div id="accountImportError" class="approval-error"></div>');
@@ -436,11 +441,13 @@
           const result = parseAccountBatchCsv(reader.result);
           if (result.error) { if (error) error.textContent = result.error; return; }
           result.rows.forEach(row => systemAccounts.push(row));
+          (result.passwords || []).forEach(([name, password]) => { if (password) setAccountPassword(name, password); });
+          const customCount = (result.passwords || []).filter(item => item[1]).length;
           hideModal();
           const skippedTip = result.skipped.length
             ? `<div class="modal-tip">已跳过 ${result.skipped.length} 行：${result.skipped.slice(0, 4).join('；')}${result.skipped.length > 4 ? ' 等' : ''}</div>`
             : '';
-          showModal('批量导入完成', `<div class="modal-tip">已导入 <strong>${result.rows.length}</strong> 个账号，初始密码 ${DEFAULT_INITIAL_PASSWORD}，请提醒工作人员首次登录后及时修改。</div>${skippedTip}`);
+          showModal('批量导入完成', `<div class="modal-tip">已导入 <strong>${result.rows.length}</strong> 个账号，均为普通账号。${customCount ? `${customCount} 个账号使用文件中填写的密码；` : ''}其余账号初始密码为 ${DEFAULT_INITIAL_PASSWORD}，请提醒工作人员首次登录后及时修改。</div>${skippedTip}`);
           const doneButton = document.getElementById('modalConfirmButton');
           if (doneButton) { doneButton.textContent = '完成'; doneButton.onclick = hideModal; }
           render();

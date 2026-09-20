@@ -221,6 +221,10 @@
     ];
     // 个人中心：账号资料（登录账号不可改，其余可在个人中心维护）、登录密码、头像
     let currentPassword = DEFAULT_INITIAL_PASSWORD;
+    // 各账号自己的密码（键 = 用户名）：批量导入可指定、重置密码/修改密码后按账号保存；没有单独设置时用统一初始密码
+    const accountPasswords = {};
+    function passwordOf(loginName) { return accountPasswords[loginName] || currentPassword; }
+    function setAccountPassword(loginName, password) { if (loginName) accountPasswords[loginName] = password; }
     // 首次登录：仍在使用初始密码的账号，登录后必须先改密才能进入后台（改完即移出，刷新复位）
     const firstLoginAccounts = new Set(['ops01']);
     const userProfiles = {
