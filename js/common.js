@@ -53,6 +53,14 @@
       if (error) error.textContent = '';
       currentAccountType = account?.[1] || '普通账号';
       currentLoginName = loginName;
+      // 首次登录（还在用初始密码）：先不进入后台，强制改密成功后才进
+      if (firstLoginAccounts.has(loginName)) {
+        openFirstLoginPasswordModal(loginName);
+        return;
+      }
+      enterBackend();
+    }
+    function enterBackend() {
       current = 'projects'; garageSubpage = 'list'; userSubpage = 'list'; orderSubpage = 'list'; passageSubpage = 'list'; refundSubpage = 'list';
       document.getElementById('login').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
@@ -193,6 +201,34 @@
       const confirmButton = document.getElementById('modalConfirmButton');
       if (cancelButton) cancelButton.style.display = 'none';
       if (confirmButton) { confirmButton.textContent = '知道了'; confirmButton.onclick = hideModal; }
+    }
+    // ===== 首次登录：必须设置新密码才能进入后台（无当前密码字段）=====
+    let forcedPasswordAccount = '';
+    function openFirstLoginPasswordModal(loginName) {
+      forcedPasswordAccount = loginName;
+      showModal('首次登录，请修改密码', `<div class="modal-tip">账号 <strong>${loginName}</strong> 正在使用初始密码登录。为保证账号安全，请先设置新密码，设置成功后进入后台。</div><div class="modal-form-row"><label for="firstLoginNewPassword">新密码</label><input id="firstLoginNewPassword" class="form-control" type="password" placeholder="至少 6 位字符"></div><div class="modal-form-row"><label for="firstLoginConfirmPassword">确认新密码</label><input id="firstLoginConfirmPassword" class="form-control" type="password" placeholder="请再次输入新密码"></div><div id="firstLoginPasswordError" class="approval-error"></div>`);
+      const cancelButton = document.getElementById('modalCancelButton');
+      const confirmButton = document.getElementById('modalConfirmButton');
+      if (cancelButton) cancelButton.style.display = 'none';
+      if (confirmButton) { confirmButton.textContent = '确认修改并进入后台'; confirmButton.onclick = saveFirstLoginPassword; }
+      setTimeout(() => document.getElementById('firstLoginNewPassword')?.focus(), 0);
+    }
+    function saveFirstLoginPassword() {
+      const newPassword = document.getElementById('firstLoginNewPassword')?.value || '';
+      const confirmPassword = document.getElementById('firstLoginConfirmPassword')?.value || '';
+      const error = document.getElementById('firstLoginPasswordError');
+      const fail = message => { if (error) error.textContent = message; };
+      if (!newPassword) return fail('请输入新密码');
+      if (newPassword.length < 6) return fail('新密码长度不能少于 6 位');
+      if (newPassword === DEFAULT_INITIAL_PASSWORD) return fail('新密码不能与初始密码相同');
+      if (newPassword !== confirmPassword) return fail('两次输入的新密码不一致');
+      currentPassword = newPassword;
+      firstLoginAccounts.delete(forcedPasswordAccount);
+      forcedPasswordAccount = '';
+      const loginInput = document.getElementById('loginPassword');
+      if (loginInput) loginInput.value = currentPassword;
+      hideModal();
+      enterBackend();
     }
     function logout() {
       closeAccountMenu();
@@ -508,7 +544,7 @@
       document.getElementById('modalMask').classList.add('open');
     }
     function hideModal() { closeDatePicker(); document.getElementById('modalMask').classList.remove('open'); }
-    function closeModal(e) { if (e.target.id === 'modalMask') hideModal(); }
+    function closeModal(e) { if (forcedPasswordAccount) return; if (e.target.id === 'modalMask') hideModal(); }
     function csvCell(value) { return `"${String(value ?? '').replace(/"/g, '""')}"`; }
     function downloadCsv(filename, lines, eol = '\n') {
       const blob = new Blob([`\uFEFF${lines.join(eol)}`], { type: 'text/csv;charset=utf-8;' });

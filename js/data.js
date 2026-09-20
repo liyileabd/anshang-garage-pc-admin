@@ -221,6 +221,8 @@
     ];
     // 个人中心：账号资料（登录账号不可改，其余可在个人中心维护）、登录密码、头像
     let currentPassword = DEFAULT_INITIAL_PASSWORD;
+    // 首次登录：仍在使用初始密码的账号，登录后必须先改密才能进入后台（改完即移出，刷新复位）
+    const firstLoginAccounts = new Set(['ops01']);
     const userProfiles = {
       admin: { company: '安商房运营公司', position: '平台管理员', name: '系统管理员', nickname: '管理员', phone: '13800138000', email: 'admin@anshangfang.com' },
       finance01: { company: '安商房运营公司', position: '财务管理员', name: '张敏', nickname: '张敏', phone: '13800138001', email: 'finance01@anshangfang.com' },
