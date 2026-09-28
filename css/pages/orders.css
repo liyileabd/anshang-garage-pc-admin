@@ -71,6 +71,22 @@
 
 .renew-order-modal .select-menu { top: calc(100% + 5px); }
 
+/* 续费时间改为手填月数 + 单位后缀（下拉已撤，上面 .filter-dropdown / .select-trigger / .select-menu 三条已无匹配元素，暂留备用） */
+.renewal-months-field { display: flex; align-items: center; gap: 8px; }
+
+.renewal-months-field .form-control { width: 140px; }
+
+.renewal-months-unit { color: var(--as-text-sub); }
+
+/* 车辆弹窗（变更 / 新增）：车牌号下拉需放开裁剪，否则选项列表被切掉 */
+.order-vehicle-modal { overflow: visible; }
+
+.order-vehicle-modal .filter-dropdown { width: 100%; min-width: 0; }
+
+.order-vehicle-modal .select-trigger { height: 38px; }
+
+.order-vehicle-modal .select-menu { top: calc(100% + 5px); }
+
 .renew-order-result-time { margin-top: 14px; color: var(--as-text-main); }
 
 .order-vehicle-manage-list { border-top: 0; }
@@ -109,6 +125,8 @@
 }
 
 .order-vehicle-current { min-height: 38px; display: flex; align-items: center; padding: 0 12px; border: 1px solid var(--as-border-light); background: #f7f8fa; color: var(--as-text-main); font-weight: 700; }
+
+.order-vehicle-current-empty { color: var(--as-text-muted); font-weight: 400; }
 
 .invoice-application-modal { width: min(560px, calc(100vw - 32px)); }
 

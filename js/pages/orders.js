@@ -21,7 +21,7 @@
       const invoiceStatus = orderInvoiceStatus[r[0]];
       const invoiceData = invoiceOrderData(r[0]);
       const invoiceName = invoiceData?.mode === 'ticket' ? '票据' : '发票';
-      const issuedRecords = invoiceRows().filter(item => item[1] === r[0] && !isWithdrawnRow(item[6]) && invoiceIssued(item[6]));
+      const issuedRecords = invoiceRows().filter(item => item[1] === r[0] && invoiceIssued(item[6]));
       // 开票入口已下线：操作列只保留「查看发票/查看票据」和「查看开票申请」，不再提供开发票、开票据
       if (issuedRecords.length) {
         actions.push(`<button class="btn-text" onclick="openInvoiceFiles('${r[0]}')">查看${invoiceName}</button>`);
@@ -220,9 +220,8 @@
     function openRenewOrder(id) {
       const order = orders.find(item => item[0] === id);
       if (!order) return;
-      const durationOptions = [1, 3, 6, 12].map(months => `<button type="button" class="select-option${months === 12 ? ' active' : ''}" data-value="${months}" onclick="selectFilterOption(event, 'renewalMonthsDropdown')">${months}个月</button>`).join('');
-      const durationDropdown = `<div id="renewalMonthsDropdown" class="filter-dropdown" data-value="12"><button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleFilterDropdown(event, 'renewalMonthsDropdown')"><span>12个月</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="select-menu" role="listbox">${durationOptions}</div></div>`;
-      showModal('续费', `<div class="modal-form-field"><label for="renewalMonthsDropdown">续费时间</label>${durationDropdown}<div id="renewalDurationError" class="modal-field-error"></div></div>`);
+      const durationField = `<div class="renewal-months-field"><input id="renewalMonths" class="form-control" type="text" inputmode="numeric" autocomplete="off" maxlength="3" value="12"><span class="renewal-months-unit">个月</span></div>`;
+      showModal('续费', `<div class="modal-form-field"><label for="renewalMonths">续费时间</label>${durationField}<div id="renewalDurationError" class="modal-field-error"></div></div>`);
       const modal = document.querySelector('#modalMask .modal');
       if (modal) modal.classList.add('renew-order-modal');
       const cancelButton = document.getElementById('modalCancelButton');
@@ -241,10 +240,10 @@
       return orderNo;
     }
     function submitRenewalOrder(id) {
-      const months = Number(document.getElementById('renewalMonthsDropdown')?.dataset.value || 0);
+      const months = Number(String(document.getElementById('renewalMonths')?.value || '').trim());
       const error = document.getElementById('renewalDurationError');
-      if (![1, 3, 6, 12].includes(months)) {
-        if (error) error.textContent = '请选择续费时间';
+      if (!Number.isInteger(months) || months < 1 || months > 36) {
+        if (error) error.textContent = '请输入 1~36 之间的整数月数';
         return;
       }
       const order = orders.find(item => item[0] === id);
@@ -501,7 +500,7 @@
       const application = orderInvoiceApplications[order[0]];
       const rows = invoiceRows().filter(item => item[1] === order[0]);
       const row = rows[0];
-      const uploads = rows.filter(item => item[6] !== '已撤回').map(item => invoiceUploads[item[0]]).filter(Boolean);
+      const uploads = rows.map(item => invoiceUploads[item[0]]).filter(Boolean);
       const hasApplication = Boolean(row || application);
       const issuedCount = rows.filter(item => invoiceIssued(item[6])).length;
       const issued = rows.length ? issuedCount === rows.length : invoiceIssued(orderInvoiceStatus[order[0]]);
@@ -533,8 +532,10 @@
         ? vehicleData.plates
         : String(order[3] || '').split('、').filter(Boolean);
       const refund = refundForOrder(orderNo, true);
-      const originalOrder = originalOrderLinks[orderNo] || '无';
-      return `${innerPageHead('订单详情', 'backToOrders()')}<section class="detail-page-section"><h3 class="detail-page-title">订单基本信息</h3><div class="detail-info-grid">${infoItem('订单号', `<strong>${orderNo}</strong>`)}${infoItem('所属项目', project)}${infoItem('申请用户', owner)}${infoItem('订单类型', tag(orderType))}${infoItem('订单状态', tag(orderStatus))}${infoItem('月租状态', tag(record?.rentStatus || '暂无状态'))}${infoItem('通行状态', tag(record?.trafficStatus || trafficStatus))}${infoItem('月租周期', record?.period || '暂无租期信息')}${infoItem('办理车辆', plates.length ? plates.join('、') : '暂无车辆')}</div></section>${orderInvoiceInfoHtml(order)}<section class="detail-page-section"><h3 class="detail-page-title">售后信息</h3><div class="detail-info-grid">${infoItem('退款状态', refund ? tag(refund[7]) : '未申请退款')}${infoItem('退款单号', refund ? refund[0] : '暂无退款单')}${infoItem('关联原订单', originalOrder)}</div></section>`;
+      const originalOrderLink = originalOrderLinks[orderNo];
+      // 是否续费：以订单类型为准，有原单关联时一并显示被续的原订单号
+      const originalOrder = orderType === '续费' ? (originalOrderLink ? `是（原单 ${originalOrderLink}）` : '是') : '否';
+      return `${innerPageHead('订单详情', 'backToOrders()')}<section class="detail-page-section"><h3 class="detail-page-title">订单基本信息</h3><div class="detail-info-grid">${infoItem('订单号', `<strong>${orderNo}</strong>`)}${infoItem('所属项目', project)}${infoItem('申请用户', owner)}${infoItem('订单类型', tag(orderType))}${infoItem('订单状态', tag(orderStatus))}${infoItem('月租状态', tag(record?.rentStatus || '暂无状态'))}${infoItem('通行状态', tag(record?.trafficStatus || trafficStatus))}${infoItem('月租周期', record?.period || '暂无租期信息')}${infoItem('办理车辆', plates.length ? plates.join('、') : '暂无车辆')}</div></section>${orderInvoiceInfoHtml(order)}<section class="detail-page-section"><h3 class="detail-page-title">售后信息</h3><div class="detail-info-grid">${infoItem('退款状态', refund ? tag(refund[7]) : '未申请退款')}${infoItem('退款单号', refund ? refund[0] : '暂无退款单')}${infoItem('续费情况', originalOrder)}</div></section>`;
     }
     function orderVehicleData(id) {
       const order = orders.find(item => item[0] === id);
@@ -584,9 +585,11 @@
       if (data.record) data.record.plates = data.order[3];
       if (data.record) data.record.trafficStatus = '已开通';
       if (previousPlate && data.ownerUser) {
+        // 变更车辆只换订单上的车；新牌来自用户已绑定的车辆时，两条车辆记录各自保留，别改写原记录（否则会出现两张同号牌）
         const vehicle = data.ownerUser.vehicles.find(item => item.plate === previousPlate);
         const replacement = plates.find(plate => !data.plates.includes(plate));
-        if (vehicle && replacement) vehicle.plate = replacement;
+        const boundAlready = data.ownerUser.vehicles.some(item => item.plate === replacement);
+        if (vehicle && replacement && !boundAlready) vehicle.plate = replacement;
       } else if (data.ownerUser) {
         plates.forEach(plate => {
           if (!data.ownerUser.vehicles.some(vehicle => vehicle.plate === plate)) {
@@ -616,16 +619,40 @@
         showModal('无法新增车辆', '一张月租订单最多绑定两辆车。');
         return;
       }
-      showModal('新增车辆', `<div class="modal-tip">新增后将更新月租车辆，并向一路停车同步车辆通行权限。</div><div class="modal-form-field"><label for="orderNewPlate">车牌号</label><input id="orderNewPlate" class="form-control" placeholder="请输入完整车牌号"><div id="orderVehicleError" class="modal-field-error"></div></div>`);
+      // 车牌号只能从该用户已绑定、且未在本订单中的车辆里选
+      const choices = (data.ownerUser?.vehicles || [])
+        .filter(vehicle => vehicle.status === '已绑定' && !data.plates.includes(vehicle.plate))
+        .map(vehicle => vehicle.plate);
+      const noChoiceTip = '该用户名下暂无其他已绑定车牌，请先为其绑定车辆。';
+      const plateOptions = choices.map(item => `<button type="button" class="select-option" data-value="${item}" onclick="selectFilterOption(event, 'orderNewPlateDropdown')">${item}</button>`).join('');
+      const platePicker = choices.length
+        ? `<div id="orderNewPlateDropdown" class="filter-dropdown" data-value=""><button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleFilterDropdown(event, 'orderNewPlateDropdown')"><span>请选择车牌号</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="select-menu" role="listbox">${plateOptions}</div></div>`
+        : `<div class="order-vehicle-current order-vehicle-current-empty">暂无可选车牌</div>`;
+      const plateLabel = `<label${choices.length ? ' for="orderNewPlateDropdown"' : ''}>车牌号</label>`;
+      showModal('新增车辆', `<div class="modal-tip">新增后将更新月租车辆，并向一路停车同步车辆通行权限。</div><div class="modal-form-field">${plateLabel}${platePicker}<div id="orderVehicleError" class="modal-field-error">${choices.length ? '' : noChoiceTip}</div></div>`);
+      const modal = document.querySelector('#modalMask .modal');
+      if (modal) modal.classList.add('order-vehicle-modal');
       const confirmButton = document.getElementById('modalConfirmButton');
-      if (confirmButton) { confirmButton.textContent = '保存并同步'; confirmButton.onclick = () => { const plate = document.getElementById('orderNewPlate')?.value.trim().toUpperCase() || ''; const error = document.getElementById('orderVehicleError'); if (!validOrderPlate(plate)) { if (error) error.textContent = '请输入正确的车牌号'; return; } if (data.plates.includes(plate)) { if (error) error.textContent = '该车辆已在订单中'; return; } saveOrderVehicles(id, [...data.plates, plate]); hideModal(); render(); showModal('车辆已新增', `车辆 ${plate} 已新增，系统将同步更新一路停车通行权限。`); }; }
+      if (confirmButton) { confirmButton.textContent = '保存并同步'; confirmButton.onclick = () => { const plate = document.getElementById('orderNewPlateDropdown')?.dataset.value || ''; const error = document.getElementById('orderVehicleError'); if (!plate) { if (error) error.textContent = choices.length ? '请选择车牌号' : noChoiceTip; return; } saveOrderVehicles(id, [...data.plates, plate]); hideModal(); render(); showModal('车辆已新增', `车辆 ${plate} 已新增，系统将同步更新一路停车通行权限。`); }; }
     }
     function openChangeOrderVehicle(id, plate) {
       const data = orderVehicleData(id);
       if (!data || !plate || !data.plates.includes(plate)) return;
-      showModal('变更车辆', `<div class="modal-tip">变更后原车辆取消该订单通行权限，新车辆继承剩余月租权益。</div><div class="modal-form-field"><label>当前车牌号</label><div class="order-vehicle-current">${plate}</div></div><div class="modal-form-field"><label for="orderChangeTo">新车牌号</label><input id="orderChangeTo" class="form-control" placeholder="请输入完整车牌号"><div id="orderVehicleError" class="modal-field-error"></div></div>`);
+      // 新车牌号只能从该用户已绑定、且未在本订单中的车辆里选
+      const choices = (data.ownerUser?.vehicles || [])
+        .filter(vehicle => vehicle.status === '已绑定' && !data.plates.includes(vehicle.plate))
+        .map(vehicle => vehicle.plate);
+      const noChoiceTip = '该用户名下暂无其他已绑定车牌，请先为其绑定车辆。';
+      const plateOptions = choices.map(item => `<button type="button" class="select-option" data-value="${item}" onclick="selectFilterOption(event, 'orderChangeToDropdown')">${item}</button>`).join('');
+      const platePicker = choices.length
+        ? `<div id="orderChangeToDropdown" class="filter-dropdown" data-value=""><button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleFilterDropdown(event, 'orderChangeToDropdown')"><span>请选择车牌号</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="select-menu" role="listbox">${plateOptions}</div></div>`
+        : `<div class="order-vehicle-current order-vehicle-current-empty">暂无可选车牌</div>`;
+      const plateLabel = `<label${choices.length ? ' for="orderChangeToDropdown"' : ''}>新车牌号</label>`;
+      showModal('变更车辆', `<div class="modal-tip">变更后原车辆取消该订单通行权限，新车辆继承剩余月租权益。</div><div class="modal-form-field"><label>当前车牌号</label><div class="order-vehicle-current">${plate}</div></div><div class="modal-form-field">${plateLabel}${platePicker}<div id="orderVehicleError" class="modal-field-error">${choices.length ? '' : noChoiceTip}</div></div>`);
+      const modal = document.querySelector('#modalMask .modal');
+      if (modal) modal.classList.add('order-vehicle-modal');
       const confirmButton = document.getElementById('modalConfirmButton');
-      if (confirmButton) { confirmButton.textContent = '保存并同步'; confirmButton.onclick = () => { const to = document.getElementById('orderChangeTo')?.value.trim().toUpperCase() || ''; const error = document.getElementById('orderVehicleError'); if (!validOrderPlate(to)) { if (error) error.textContent = '请输入正确的车牌号'; return; } if (data.plates.includes(to)) { if (error) error.textContent = '该车辆已在订单中'; return; } saveOrderVehicles(id, data.plates.map(item => item === plate ? to : item), plate); hideModal(); render(); showModal('车辆已变更', `${plate} 已变更为 ${to}，系统将同步更新一路停车通行权限。`); }; }
+      if (confirmButton) { confirmButton.textContent = '保存并同步'; confirmButton.onclick = () => { const to = document.getElementById('orderChangeToDropdown')?.dataset.value || ''; const error = document.getElementById('orderVehicleError'); if (!to) { if (error) error.textContent = choices.length ? '请选择新车牌号' : noChoiceTip; return; } saveOrderVehicles(id, data.plates.map(item => item === plate ? to : item), plate); hideModal(); render(); showModal('车辆已变更', `${plate} 已变更为 ${to}，系统将同步更新一路停车通行权限。`); }; }
     }
     function removeOrderVehicle(id, plate) {
       const data = orderVehicleData(id);

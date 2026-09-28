@@ -34,10 +34,10 @@
       return `${innerPageHead('退款详情', 'backToRefundList()')}<section class="detail-page-section"><h3 class="detail-page-title">退款申请</h3><div class="detail-info-grid">${infoItem('退款申请 ID', detail.id)}${infoItem('申请编号', detail.requestNo)}${infoItem('退款状态', tag(status))}${infoItem('原订单号', orderNo)}${infoItem('申请用户', owner)}${infoItem('退款车辆', plate)}${infoItem('预计退款金额', money(`¥${Number(detail.estimatedAmount).toFixed(2)}`))}${infoItem('提交时间', detail.submittedAt)}${infoItem('退款原因', detail.reason)}${infoItem('补充说明', detail.note)}</div></section><section class="detail-page-section"><h3 class="detail-page-title">退款账户信息</h3><div class="detail-info-grid">${infoItem('原月租周期', detail.remainingTerm)}${infoItem('原支付金额', money(`¥${Number(detail.originalPaidAmount).toFixed(2)}`))}${infoItem('收款人', refundAccountText(refundAccount.accountName))}${infoItem('开户行', refundAccountText(refundAccount.bankName))}${infoItem('收款账号', refundAccountText(refundAccount.accountNo))}${infoItem('联系电话', refundAccountText(refundAccount.accountPhone))}</div></section>${status === '待审批' ? '' : `<section class="detail-page-section"><h3 class="detail-page-title">审批情况</h3><div class="detail-info-grid">${infoItem('审批结果', tag(approvalResult))}${infoItem('核定退款金额', detail.approvedAmount == null ? '待审批' : money(`¥${Number(detail.approvedAmount).toFixed(2)}`))}${infoItem('审批人 ID', detail.approverId || '待审批')}${infoItem('审批时间', detail.approvedAt || '待审批')}${infoItem('审批意见', refundAccountText(approvalNote || '未记录'))}${detail.adjustmentReason ? infoItem('金额调整原因', refundAccountText(detail.adjustmentReason)) : ''}${detail.userConfirmationStatus ? infoItem('用户确认', tag(detail.userConfirmationStatus)) : ''}${detail.notificationStatus ? infoItem('通知状态', detail.notificationStatus) : ''}${detail.refundExecutionStatus ? infoItem('退款执行状态', tag(detail.refundExecutionStatus)) : ''}${infoItem('通行处理', tag(trafficStatus))}${infoItem('通行处理说明', trafficNote)}</div></section>`}`;
     }
     function refundTableHtml(records) {
-      const headers = [['退款单号','140px'],['原订单号','150px'],['小区项目','130px'],['退款车辆','120px'],['退款原因','180px'],['预计退款','100px'],['核定退款','100px'],['申请时间','150px'],['状态','100px'],['操作','160px']];
+      const headers = [['退款单号','140px'],['原订单号','150px'],['小区项目','130px'],['退款车辆','120px'],['退款原因','200px'],['预计退款','100px'],['核定退款','100px'],['申请时间','150px'],['状态','100px'],['操作','160px']];
       const tableRows = records.length
         ? records.map(refund => {
-            const row = [refund[0], refund[1], refund[2], refund[4], `__html__<span class="table-cell-ellipsis" title="${refund[9]}">${refund[9]}</span>`, refund[6], refundRequestDetails[refund[0]]?.approvedAmount == null ? '暂无' : `¥${Number(refundRequestDetails[refund[0]].approvedAmount).toFixed(2)}`, refund[10], refund[7]];
+            const row = [refund[0], refund[1], refund[2], refund[4], `__html__<span class="table-cell-wrap">${refund[9]}</span>`, refund[6], refundRequestDetails[refund[0]]?.approvedAmount == null ? '暂无' : `¥${Number(refundRequestDetails[refund[0]].approvedAmount).toFixed(2)}`, refund[10], refund[7]];
             return `<tr>${row.map(c => `<td>${statusCell(c)}</td>`).join('')}<td><div class="table-actions">${refundActions(refund)}</div></td></tr>`;
           }).join('')
         : `<tr><td colspan="${headers.length}"><div class="empty">暂无符合条件的数据</div></td></tr>`;
@@ -112,9 +112,8 @@
       const cents = refundAmountCents(document.getElementById('refundApprovedAmount')?.value);
       const estimated = refundAmountLimits(refund).estimated;
       const changed = cents != null && estimated != null && cents !== estimated;
-      const reduced = changed && cents < estimated;
       const hint = document.getElementById('refundAmountHint');
-      if (hint) hint.textContent = reduced ? '金额调低后进入待用户确认，确认前不终止订单、不执行退款。' : '审批通过后进入待退款处理，审批通过不代表已到账。';
+      if (hint) hint.textContent = changed ? '金额有调整需车主在小程序确认，确认前不终止订单、不执行退款。' : '审批通过后进入待退款处理，审批通过不代表已到账。';
       const button = document.getElementById('modalConfirmButton');
       if (button) button.textContent = changed ? '提交' : '通过';
     }
@@ -160,7 +159,7 @@
         reason: refund[9], note: refund[11] || '', remainingTerm: '以原订单月租周期为准',
         originalPaidAmount: maximum / 100, estimatedAmount: estimated / 100
       });
-      const reduced = cents < estimated;
+      const adjusted = cents !== estimated;
       const processedAt = new Date().toLocaleString('zh-CN', { hour12: false });
       const nextStatus = '待用户确认';
       const approvalNote = adjustmentReason ? `金额调整原因：${adjustmentReason}` : '退款审批已通过，等待用户在小程序端确认。';
@@ -174,7 +173,7 @@
       refundAuditRecords[id] = { result: nextStatus, note: approvalNote, operator: currentLoginName, time: processedAt, originalAmount: estimated / 100, approvedAmount: cents / 100 };
       hideModal();
       render();
-      showModal('核定结果已保存', `该申请已进入"待用户确认"${reduced ? '（金额已调整）' : ''}，订单及通行状态保持不变。用户在小程序确认后方可退款。`);
+      showModal('核定结果已保存', `该申请已进入"待用户确认"${adjusted ? '（金额已调整）' : ''}，订单及通行状态保持不变。用户在小程序确认后方可退款。`);
     }
     function rejectRefund(id) {
       const reasonField = document.getElementById('refundRejectReason');

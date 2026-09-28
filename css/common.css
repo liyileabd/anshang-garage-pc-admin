@@ -394,6 +394,9 @@ td:last-child { border-right: 0; }
 
 .table-cell-ellipsis { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+/* 单元格内容完整显示（不省略）：过宽时换行，不做省略号截断 */
+.table-cell-wrap { display: block; white-space: normal; overflow-wrap: anywhere; }
+
 tr:nth-child(even) td { background: var(--as-bg-table-stripe); }
 
 tr:hover td { background: #f3f6ff; }

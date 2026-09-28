@@ -480,7 +480,7 @@
 
     function tag(text, type) { return `<span class="tag tag-${type || tagType(text)}">${text}</span>`; }
     function tagType(text) {
-      if (/成功|有效|已同步|已开通|已发布|通过|正常|可办理|完成|已退款|启用|已清分|已恢复/.test(text)) return 'success';
+      if (/成功|有效|已同步|已开通|已发布|通过|正常|可办理|完成|退款申请已通过|启用|已清分|已恢复/.test(text)) return 'success';
       if (/待|未推送|确认中|草稿|申请中|处理中|暂停|未开通|待生效/.test(text)) return 'warning';
       if (/异常|失败|开通失败|驳回|已满|停用|已取消/.test(text)) return 'danger';
       if (/进行中|续费|新办|首次办理|同步中|清分中|清算中/.test(text)) return 'info';
@@ -552,7 +552,7 @@
     function statusCell(c, allowTag) {
       if (typeof c === 'string' && c.indexOf('__html__') === 0) return c.slice(8);
       if (allowTag === false) return c;
-      return /待|成功|有效|已同步|已开通|异常|失败|取消|发布|草稿|申请中|处理中|通过|驳回|完成|已退款|未推送|确认中|可办理|暂停|已满|启用|停用|新办|首次办理|已终止|已过期|已结束|通行失效|已清分/.test(c) && c.length < 10 ? tag(c) : c;
+      return /待|成功|有效|已同步|已开通|异常|失败|取消|发布|草稿|申请中|处理中|通过|驳回|完成|退款申请已通过|未推送|确认中|可办理|暂停|已满|启用|停用|新办|首次办理|已终止|已过期|已结束|通行失效|已清分/.test(c) && c.length < 10 ? tag(c) : c;
     }
     function defaultActions(r) { return `<button class="btn-text" onclick="openGeneric('${r[0]}')">查看</button><button class="btn-text" onclick="showModal('处理确认','将对 ${r[0]} 执行当前业务处理，并记录操作日志。')">处理</button>`; }
     function infoItem(label, value) {
@@ -628,7 +628,7 @@
       if (rejectButton) { rejectButton.style.display = 'none'; rejectButton.onclick = null; }
       document.getElementById('modalTitle').textContent = title;
       document.getElementById('modalBody').innerHTML = body;
-      document.querySelector('#modalMask .modal')?.classList.remove('refund-approval-modal', 'refund-application-modal', 'project-status-modal', 'project-stop-modal', 'renew-order-modal', 'invoice-application-modal', 'invoice-preview-modal');
+      document.querySelector('#modalMask .modal')?.classList.remove('refund-approval-modal', 'refund-application-modal', 'project-status-modal', 'project-stop-modal', 'renew-order-modal', 'order-vehicle-modal', 'invoice-application-modal', 'invoice-preview-modal');
       const cancelButton = document.getElementById('modalCancelButton');
       const confirmButton = document.getElementById('modalConfirmButton');
       if (cancelButton) { cancelButton.textContent = '取消'; cancelButton.className = 'btn'; cancelButton.style.display = ''; cancelButton.onclick = hideModal; }

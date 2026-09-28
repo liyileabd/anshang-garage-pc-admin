@@ -41,21 +41,19 @@
     const isTicketRow = row => /票据/.test(String(row?.[4] || ''));
     const invoiceNoun = ticket => ticket ? '票据' : '发票';
     const invoiceImportedRows = [];
-    const invoiceWithdrawals = {};
     const invoiceStamp = () => { const now = new Date(); const pad = value => String(value).padStart(2, '0'); return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`; };
     const invoiceOperator = () => currentAccountType === '超级管理员' ? '超级管理员' : currentLoginName;
-    const invoiceRowStatus = value => value === '已撤回' ? '已撤回' : invoiceIssued(value) ? '已开' : '未开';
-    const isWithdrawnRow = value => value === '已撤回';
+    const invoiceRowStatus = value => invoiceIssued(value) ? '已开' : '未开';
     const invoiceRows = () => {
       const staticRows = [['INV202609080001','AS202608280018','王敏','锦绣安置房','增值税普通发票','¥1,680.00','未开','2026-09-08'],['INV202609070006','AS202608270012','王敏','锦绣安置房','增值税普通发票','¥800.00','已开','2026-09-07'],['INV202609070007','AS202608270012','王敏','锦绣安置房','增值税普通发票','¥160.00','已开','2026-09-07'],['NS202609080002','AS202608280017','陈涛','文庭商房','非税票据','¥960.00','未开','2026-09-08'],['NS202609060003','AS202608260010','李媛','文庭商房','非税票据','¥1,080.00','未开','2026-09-06']];
       const submittedRows = Object.values(orderInvoiceApplications).map(application => [application.id, application.orderNo, application.owner, application.project, application.type, application.amount, invoiceIssued(application.status) ? '已开' : '未开', application.submittedAt.slice(0, 10)]);
-      return [...submittedRows, ...staticRows, ...invoiceImportedRows].map(row => invoiceWithdrawals[row[0]] ? [...row.slice(0, 6), '已撤回', row[7]] : invoiceUploads[row[0]] ? [...row.slice(0, 6), '已开', row[7]] : row);
+      return [...submittedRows, ...staticRows, ...invoiceImportedRows].map(row => invoiceUploads[row[0]] ? [...row.slice(0, 6), '已开', row[7]] : row);
     };
     function invoiceTableHtml(rows) {
       const normalizedRows = rows.map(row => [...row.slice(0, 6), invoiceRowStatus(row[6]), row[7]]);
-      const statusTag = status => status === '已开' ? 'success' : status === '已撤回' ? 'gray' : 'warning';
+      const statusTag = status => status === '已开' ? 'success' : 'warning';
       const displayRows = normalizedRows.map(row => [...row.slice(0, 6), `__html__${tag(row[6], statusTag(row[6]))}`, row[7]]);
-      return table([['开票记录编号','170px'],['订单号','170px'],['申请用户','100px'],['小区项目','140px'],['发票类型','160px'],['开票金额','130px'],['开票状态','100px'],['申请时间','150px'],['操作','200px']], displayRows, (r, index)=>`<button class="btn-text" onclick="openInvoiceDetail('${r[0]}')">详情</button><button class="btn-text" onclick="openInvoiceUpload('${r[0]}')">${normalizedRows[index][6] === '未开' ? '上传' : '重传'}</button>${normalizedRows[index][6] === '已开' ? `<button class="btn-text danger" onclick="openInvoiceWithdraw('${r[0]}')">撤回</button>` : ''}`);
+      return table([['开票记录编号','170px'],['订单号','170px'],['申请用户','100px'],['小区项目','140px'],['发票类型','160px'],['开票金额','130px'],['开票状态','100px'],['申请时间','150px'],['操作','200px']], displayRows, (r, index)=>`<button class="btn-text" onclick="openInvoiceDetail('${r[0]}')">详情</button><button class="btn-text" onclick="openInvoiceUpload('${r[0]}')">${normalizedRows[index][6] === '未开' ? '上传' : '重传'}</button>`);
     }
     function openInvoiceDetail(id) { selectedInvoiceId = id; invoiceSubpage = 'detail'; current = 'invoices'; render(); }
     function backToInvoices() { invoiceSubpage = 'list'; selectedInvoiceId = ''; current = 'invoices'; render(); }
@@ -91,7 +89,7 @@
       if (confirmButton) confirmButton.style.display = 'none';
     }
     function openInvoiceFiles(orderNo) {
-      const orderRows = invoiceRows().filter(row => row[1] === orderNo && !isWithdrawnRow(row[6]));
+      const orderRows = invoiceRows().filter(row => row[1] === orderNo);
       showInvoicePreview(orderRows.filter(row => invoiceUploads[row[0]]).map(row => row[0]), true, invoiceNoun(orderRows.length > 0 && orderRows.every(isTicketRow)));
     }
     function openSingleInvoice(id) {
@@ -135,7 +133,7 @@
     function openInvoiceUpload(id) {
       const row = invoiceRows().find(item => item[0] === id);
       if (!row) return;
-      const reupload = row[6] === '已开' || Boolean(invoiceWithdrawals[id]);
+      const reupload = row[6] === '已开';
       const noun = invoiceNoun(isTicketRow(row));
       showModal(reupload ? `重传${noun}` : `上传${noun}`, invoiceUploadBody(`${reupload ? '重新上传' : '上传'}申请单 ${id} 的票据文件${reupload ? '，确认后替换原票据文件' : ''}`) + '<div id="invoiceUploadError" class="approval-error"></div>');
       const confirm = document.getElementById('modalConfirmButton');
@@ -156,36 +154,10 @@
           const application = Object.values(orderInvoiceApplications).find(item => item.id === id);
           if (application) application.status = '已完成';
           orderInvoiceStatus[row[1]] = '已完成';
-          delete invoiceWithdrawals[id];
           hideModal();
           if (current === 'invoices' && invoiceSubpage === 'list') filterInvoices(); else render();
         };
       }
-    }
-    function openInvoiceWithdraw(id) {
-      const row = invoiceRows().find(item => item[0] === id);
-      if (!row || row[6] !== '已开') return;
-      const noun = invoiceNoun(isTicketRow(row));
-      showModal(`撤回${noun}`, `<div class="modal-tip">该${noun}已推送至车主小程序。撤回后车主端不再展示、不可下载，订单开票状态退回“未开”，本次撤回会记入操作日志。</div><div class="detail-info-grid invoice-withdraw-grid">${infoItem('开票记录编号', row[0])}${infoItem('订单号', row[1])}${infoItem('车主', row[2])}${infoItem('开票金额', row[5])}</div><div class="invoice-withdraw-reason"><label class="form-label" for="invoiceWithdrawReason">撤回原因</label><textarea id="invoiceWithdrawReason" class="form-control" rows="3" maxlength="200" placeholder="例如：上传时选错订单 / 选错车主"></textarea></div><div id="invoiceWithdrawError" class="approval-error"></div>`);
-      const cancelButton = document.getElementById('modalCancelButton');
-      const confirmButton = document.getElementById('modalConfirmButton');
-      if (cancelButton) { cancelButton.textContent = '取消'; cancelButton.onclick = hideModal; }
-      if (confirmButton) { confirmButton.textContent = '确认撤回'; confirmButton.onclick = () => confirmInvoiceWithdraw(id); }
-    }
-    function confirmInvoiceWithdraw(id) {
-      const row = invoiceRows().find(item => item[0] === id);
-      if (!row) return;
-      const error = document.getElementById('invoiceWithdrawError');
-      const reason = document.getElementById('invoiceWithdrawReason')?.value.trim() || '';
-      if (!reason) { if (error) error.textContent = '请填写撤回原因，便于后续追溯'; return; }
-      const noun = invoiceNoun(isTicketRow(row));
-      invoiceWithdrawals[id] = { reason, operator: invoiceOperator(), at: invoiceStamp() };
-      const application = Object.values(orderInvoiceApplications).find(item => item.id === id);
-      if (application) application.status = '待开票';
-      if (orderInvoiceStatus[row[1]] === '已完成') delete orderInvoiceStatus[row[1]];
-      operationLogs.unshift([invoiceOperator(), '开票管理', '撤回开票记录', row[0], `撤回${noun}（订单 ${row[1]} · 车主 ${row[2]} · ${row[5]}），原因：${reason}；车主小程序已同步不再展示，订单开票状态退回未开`, '成功', invoiceStamp()]);
-      hideModal();
-      if (current === 'invoices' && invoiceSubpage === 'list') filterInvoices(); else render();
     }
     const invoiceBatchFields = [['订单号','发票所属的月租订单编号，可重复，同一订单可多行','AS202608280018'],['用户名','订单对应的车主姓名','王敏'],['发票图的URL','发票图片或 PDF 的完整链接，需以 http:// 或 https:// 开头','https://example.com/invoice/1.png']];
     function invoiceBatchBody() {
@@ -259,7 +231,6 @@
       };
     }
     const operationLogs = [
-      ['admin','开票管理','撤回开票记录','IV202608280018','撤回发票（订单 AS202608280018 · 车主 王敏 · ¥1,680.00），原因：上传时选错用户；车主小程序已同步不再展示，订单开票状态退回未开','成功','2026-09-16 11:42'],
       ['finance01 / 张敏','退款处理','审批通过（调整金额）','RF202609100002','核定金额 ¥1,200.00→¥980.00，调整原因"按剩余租期折算"，转待用户确认','成功','2026-09-16 10:15'],
       ['admin','开票管理','批量导入开票记录','CSV：4 行','导入 4 条开票记录，成功 3 条、跳过 1 条（订单 AS202608260010 已开票）','成功','2026-09-16 09:58'],
       ['admin','项目管理','发布项目','锦绣安置房','车场编号 YL-PARK-330102-001 与月租车费校验通过，项目发布到小程序','成功','2026-09-15 17:20'],
@@ -338,7 +309,7 @@
       invoices() {
         if (invoiceSubpage === 'detail') return invoiceDetailPage();
         const rows = invoiceRows();
-        return pageShell('开票管理', '', `<div class="filter-bar garage-filter-bar finance-filter-bar invoice-filter-bar"><input id="invoiceKeyword" class="input" type="search" placeholder="开票记录编号/订单号/车主" autocomplete="off"><div id="invoiceTypeFilter" class="filter-dropdown" data-filter-label="票据类型" data-filter-action="filterInvoices"><button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleFilterDropdown(event, 'invoiceTypeFilter')"><span>全部票据类型</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="select-menu" role="listbox"><button type="button" class="select-option active" data-value="" onclick="selectFilterOption(event, 'invoiceTypeFilter')">全部票据类型</button><button type="button" class="select-option" data-value="ticket" onclick="selectFilterOption(event, 'invoiceTypeFilter')">非税票据</button><button type="button" class="select-option" data-value="invoice" onclick="selectFilterOption(event, 'invoiceTypeFilter')">发票</button></div></div><div id="invoiceStatusFilter" class="filter-dropdown" data-filter-label="开票状态" data-filter-action="filterInvoices"><button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleFilterDropdown(event, 'invoiceStatusFilter')"><span>全部开票状态</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div id="invoiceStatusMenu" class="select-menu" role="listbox"><button type="button" class="select-option active" data-value="" onclick="selectFilterOption(event, 'invoiceStatusFilter')">全部开票状态</button><button type="button" class="select-option" data-value="未开" onclick="selectFilterOption(event, 'invoiceStatusFilter')">未开</button><button type="button" class="select-option" data-value="已开" onclick="selectFilterOption(event, 'invoiceStatusFilter')">已开</button><button type="button" class="select-option" data-value="已撤回" onclick="selectFilterOption(event, 'invoiceStatusFilter')">已撤回</button></div></div><button class="btn btn-primary" onclick="filterInvoices()">查询</button><button class="btn" onclick="resetInvoiceFilters()">重置</button><button class="btn" onclick="openBatchInvoiceUpload()">批量上传发票</button><button class="btn btn-primary" onclick="openExportPicker(\'invoices\')">导出开票记录</button></div><section class="panel garage-table-panel"><div id="invoiceTable">${invoiceTableHtml(rows)}</div></section>`);
+        return pageShell('开票管理', '', `<div class="filter-bar garage-filter-bar finance-filter-bar invoice-filter-bar"><input id="invoiceKeyword" class="input" type="search" placeholder="开票记录编号/订单号/车主" autocomplete="off"><div id="invoiceTypeFilter" class="filter-dropdown" data-filter-label="票据类型" data-filter-action="filterInvoices"><button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleFilterDropdown(event, 'invoiceTypeFilter')"><span>全部票据类型</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="select-menu" role="listbox"><button type="button" class="select-option active" data-value="" onclick="selectFilterOption(event, 'invoiceTypeFilter')">全部票据类型</button><button type="button" class="select-option" data-value="ticket" onclick="selectFilterOption(event, 'invoiceTypeFilter')">非税票据</button><button type="button" class="select-option" data-value="invoice" onclick="selectFilterOption(event, 'invoiceTypeFilter')">发票</button></div></div><div id="invoiceStatusFilter" class="filter-dropdown" data-filter-label="开票状态" data-filter-action="filterInvoices"><button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleFilterDropdown(event, 'invoiceStatusFilter')"><span>全部开票状态</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div id="invoiceStatusMenu" class="select-menu" role="listbox"><button type="button" class="select-option active" data-value="" onclick="selectFilterOption(event, 'invoiceStatusFilter')">全部开票状态</button><button type="button" class="select-option" data-value="未开" onclick="selectFilterOption(event, 'invoiceStatusFilter')">未开</button><button type="button" class="select-option" data-value="已开" onclick="selectFilterOption(event, 'invoiceStatusFilter')">已开</button></div></div><button class="btn btn-primary" onclick="filterInvoices()">查询</button><button class="btn" onclick="resetInvoiceFilters()">重置</button><button class="btn" onclick="openBatchInvoiceUpload()">批量上传发票</button><button class="btn btn-primary" onclick="openExportPicker(\'invoices\')">导出开票记录</button></div><section class="panel garage-table-panel"><div id="invoiceTable">${invoiceTableHtml(rows)}</div></section>`);
       },
       systemUsers() {
         const accountRowsWithAvatar = systemAccounts.map(a => [`__html__${accountAvatarHtml(a[0], 'account-avatar')}`, a[0], a[1], a[2], a[3]]);
@@ -348,12 +319,12 @@
         return pageShell('操作日志', '', `${filters([['input','操作人/编号'],['select','操作模块',['全部','支付与清分','退款处理','开票管理','项目管理','订单管理','用户管理','系统管理']]], '', 'filter-bar garage-filter-bar')}<section class="panel garage-table-panel log-table-panel"><div>${table([['操作人','120px'],['操作模块','130px'],['操作类型','120px'],['操作对象','150px'],['操作内容摘要','240px'],['结果','80px'],['操作时间','150px'],['操作','90px']], operationLogs, null, (r,i)=>`<button class="btn-text" onclick="showLogDetail(${i})">查看</button>`, [5])}</div></section>`);
       },
       ledger() {
-        return pageShell('业务台账', '', `${filters([['input','业务订单号/车主/车牌','', 'ledgerKeyword', 'filterLedger'],['select','小区项目',['全部小区','锦绣安置房','文庭商房','荣和家园'], 'ledgerProjectFilter', 'filterLedger'],['select','资金动作',['全部动作','收款','退款'], 'ledgerActionFilter', 'filterLedger'],['select','状态',['全部状态','已入账','已退款'], 'ledgerStatusFilter', 'filterLedger']], '<button class="btn btn-primary" onclick="openExportPicker(\'ledger\')">导出台账</button>', 'filter-bar garage-filter-bar finance-filter-bar', { query: 'filterLedger', reset: 'resetLedgerFilters' })}${ledgerSummaryHtml(ledgerRecords())}<section class="panel garage-table-panel"><div id="ledgerTable">${ledgerTableHtml(ledgerRecords())}</div></section>`);
+        return pageShell('业务台账', '', `${filters([['input','业务订单号/车主/车牌','', 'ledgerKeyword', 'filterLedger'],['select','小区项目',['全部小区','锦绣安置房','文庭商房','荣和家园'], 'ledgerProjectFilter', 'filterLedger'],['select','资金动作',['全部动作','收款','退款'], 'ledgerActionFilter', 'filterLedger'],['select','状态',['全部状态','已入账','退款申请已通过'], 'ledgerStatusFilter', 'filterLedger']], '<button class="btn btn-primary" onclick="openExportPicker(\'ledger\')">导出台账</button>', 'filter-bar garage-filter-bar finance-filter-bar', { query: 'filterLedger', reset: 'resetLedgerFilters' })}${ledgerSummaryHtml(ledgerRecords())}<section class="panel garage-table-panel"><div id="ledgerTable">${ledgerTableHtml(ledgerRecords())}</div></section>`);
       }
     };
 
     // 业务台账：资金流水（一行 = 一笔资金动作）
-    const ledgerHeaders = [['发生时间','150px'],['业务订单号','150px'],['小区项目','110px'],['资金动作','80px'],['去向账户','210px'],['金额','110px'],['状态','115px'],['操作','85px']];
+    const ledgerHeaders = [['发生时间','150px'],['业务订单号','150px'],['小区项目','110px'],['资金动作','80px'],['去向账户','210px'],['金额','110px'],['状态','152px'],['操作','85px']];
     function ledgerFilterValue(id) { const el = document.getElementById(id); if (!el) return ''; return el.dataset && el.dataset.value ? el.dataset.value : (el.value || ''); }
     function ledgerRecords() {
       const keyword = ledgerFilterValue('ledgerKeyword').trim();
@@ -373,7 +344,7 @@
       });
     }
     function ledgerActionTag(action) { const type = action === '收款' ? 'info' : (action === '分账' ? 'success' : 'danger'); return `__html__${tag(action, type)}`; }
-    function ledgerStatusTag(status) { const map = { '已入账': 'info', '已到账': 'success', '分账处理中': 'warning', '分账异常': 'danger', '待审批': 'warning', '已退款': 'success' }; return `__html__${tag(status, map[status] || 'info')}`; }
+    function ledgerStatusTag(status) { const map = { '已入账': 'info', '已到账': 'success', '分账处理中': 'warning', '分账异常': 'danger', '待审批': 'warning', '退款申请已通过': 'success' }; return `__html__${tag(status, map[status] || 'info')}`; }
     function ledgerTargetCell(target) {
       if (!Array.isArray(target)) return `__html__${target}`;
       return `__html__${target.map((item, index) => `<div style="display:flex;justify-content:space-between;gap:10px;${index ? 'margin-top:2px;' : ''}"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item[0]}</span><span style="color:var(--as-text-muted);font-variant-numeric:tabular-nums">${item[1]}</span></div>`).join('')}`;
