@@ -64,10 +64,15 @@
       sensitiveInfoAuditLogs.push({ operator: currentLoginName === 'admin' ? '超级管理员' : currentLoginName, userId, action: '查看用户完整信息', time: new Date().toLocaleString('zh-CN', { hour12: false }) });
       render();
     }
+    function hideUserSensitiveInfo(userId) {
+      revealedSensitiveUsers.delete(userId);
+      render();
+    }
     function userDetailPage() {
       const user = rentUsers.find(item => item.name === selectedUserName) || rentUsers[0];
       const sensitive = userSensitiveInfo(user);
-      const revealAction = currentAccountType === '超级管理员' && !revealedSensitiveUsers.has(user.userId) ? `<button class="btn-text sensitive-reveal" onclick="revealUserSensitiveInfo('${user.userId}')">查看完整信息</button>` : '';
+      const revealed = revealedSensitiveUsers.has(user.userId);
+      const revealAction = currentAccountType === '超级管理员' ? `<button class="btn-text sensitive-reveal" onclick="${revealed ? 'hideUserSensitiveInfo' : 'revealUserSensitiveInfo'}('${user.userId}')">${revealed ? '收起' : '查看完整信息'}</button>` : '';
       const vehicles = user.vehicles.length
         ? user.vehicles.map(vehicle => `<div class="user-detail-vehicle">${detailFeeField('车牌号', vehicle.plate)}${detailFeeField('车辆信息', `${vehicle.color} · ${vehicle.type}`)}${detailFeeField('绑定状态', tag(vehicle.status))}</div>`).join('')
         : '<div class="user-detail-empty">暂无绑定车辆</div>';

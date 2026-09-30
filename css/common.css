@@ -240,6 +240,12 @@ button { cursor: pointer; }
 .modal.invoice-preview-modal { width: min(760px, calc(100vw - 48px)); max-height: calc(100vh - 48px); }
 .modal.invoice-preview-modal .modal-body { max-height: calc(100vh - 180px); overflow: auto; background: #f6f8fb; }
 
+.modal.notice-preview-modal { width: min(720px, calc(100vw - 48px)); max-height: calc(100vh - 48px); }
+.modal.notice-preview-modal .modal-body { max-height: calc(100vh - 180px); overflow: auto; background: #f6f8fb; padding: 18px 22px 22px; }
+.notice-preview-doc { background: #fff; border: 1px solid #e1e7f0; border-radius: 4px; box-shadow: 0 2px 8px rgba(39, 79, 143, .08); overflow: hidden; }
+.notice-preview-doc img { display: block; width: 100%; height: auto; }
+.notice-preview-caption { margin-top: 12px; text-align: center; color: var(--as-text-sub); font-size: 13px; line-height: 1.6; }
+
 .panel {
       background: #fff;
       border-radius: 10px;

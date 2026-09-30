@@ -587,7 +587,38 @@
       return `<div class="detail-fee-item">${detailFeeField('收费项', item.name)}${detailFeeField('收费金额', item.amount)}${detailFeeField('清分比例', item.split)}${detailFeeField('负责人', item.owner)}</div>`;
     }
     function detailNoticeItem(name, file) {
-      return `<div class="detail-notice-item"><div class="detail-notice-name">${name}</div><div class="detail-notice-file">${file}</div><button class="btn-text" onclick="showModal('查看告知书','${name}（${file}）已配置，可查看该项目当前使用的告知书文件。')">查看</button></div>`;
+      return `<div class="detail-notice-item"><div class="detail-notice-name">${name}</div><div class="detail-notice-file">${file}</div><button class="btn-text" onclick="openNoticePreview('${name}','${file}')">查看</button></div>`;
+    }
+    function noticeSampleDoc(name) {
+      const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+      const sections = [
+        { heading: '一、办理条件', lines: ['申请人须为本项目所在小区的业主或住户，车辆信息须与办理资料一致。'] },
+        { heading: '二、办理流程', lines: ['用户在小程序端选定车位、提交车主资料并完成支付，支付成功后月租', '生效。'] },
+        { heading: '三、使用约定', lines: ['月租期间车辆信息不可变更，如需调整请在租期结束后办理；到期前', '系统向车主推送续费提醒。'] },
+        { heading: '四、其他', lines: ['本告知书内容以项目实际上传的告知书文件为准。'] }
+      ];
+      let cursor = 212;
+      const body = sections.map(section => {
+        const heading = `<text x="92" y="${cursor}" font-size="18" font-weight="bold" fill="#2b2f36">${escape(section.heading)}</text>`;
+        cursor += 34;
+        const lines = section.lines.map(line => {
+          const row = `<text x="92" y="${cursor}" font-size="16" fill="#3c4351">${escape(line)}</text>`;
+          cursor += 30;
+          return row;
+        }).join('');
+        cursor += 18;
+        return heading + lines;
+      }).join('');
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="794" height="1123" viewBox="0 0 794 1123"><rect width="794" height="1123" fill="#ffffff"/><text x="397" y="96" text-anchor="middle" font-size="30" font-weight="bold" font-family="sans-serif" fill="#1f2430">${escape(name) || '告知书'}</text><text x="397" y="132" text-anchor="middle" font-size="14" font-family="sans-serif" fill="#7a8398">湖里国投安商房月租车位项目</text><path d="M92 158H702" stroke="#d8dee9"/><g font-family="sans-serif">${body}</g><text x="702" y="948" text-anchor="end" font-size="16" font-family="sans-serif" fill="#3c4351">安商房运营公司</text><text x="702" y="980" text-anchor="end" font-size="16" font-family="sans-serif" fill="#3c4351">2026 年 8 月 20 日</text><path d="M92 1024H702" stroke="#e6ebf2"/><text x="397" y="1068" text-anchor="middle" font-size="13" font-family="sans-serif" fill="#8a93a6">第 1 页 / 共 1 页</text><text x="702" y="1100" text-anchor="end" font-size="12" font-family="sans-serif" fill="#b3bac7">演示样张 · 非真实文件</text></svg>`;
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg).replace(/'/g, '%27');
+    }
+    function openNoticePreview(name, file) {
+      showModal('查看告知书', `<div class="notice-preview-doc"><img src="${noticeSampleDoc(name)}" alt="${name} 告知书预览"></div><div class="notice-preview-caption">${name} · ${file}</div>`);
+      document.querySelector('#modalMask .modal')?.classList.add('notice-preview-modal');
+      const cancelButton = document.getElementById('modalCancelButton');
+      const confirmButton = document.getElementById('modalConfirmButton');
+      if (cancelButton) { cancelButton.textContent = '关闭'; cancelButton.className = 'btn btn-primary'; cancelButton.onclick = hideModal; }
+      if (confirmButton) confirmButton.style.display = 'none';
     }
     function openGeneric(id) { showDrawer('业务详情', `<div class="detail-section"><div class="detail-title">基础信息</div><div class="detail-grid"><div><div class="field-label">关联编号</div><div class="field-value">${id}</div></div><div><div class="field-label">当前状态</div><div class="field-value">${tag('待处理')}</div></div></div></div>`); }
     function showDrawer(title, body) { document.getElementById('drawerTitle').textContent = title; document.getElementById('drawerBody').innerHTML = body; document.getElementById('drawerMask').classList.add('open'); }
@@ -628,7 +659,7 @@
       if (rejectButton) { rejectButton.style.display = 'none'; rejectButton.onclick = null; }
       document.getElementById('modalTitle').textContent = title;
       document.getElementById('modalBody').innerHTML = body;
-      document.querySelector('#modalMask .modal')?.classList.remove('refund-approval-modal', 'refund-application-modal', 'project-status-modal', 'project-stop-modal', 'renew-order-modal', 'order-vehicle-modal', 'invoice-application-modal', 'invoice-preview-modal');
+      document.querySelector('#modalMask .modal')?.classList.remove('refund-approval-modal', 'refund-application-modal', 'project-status-modal', 'project-stop-modal', 'renew-order-modal', 'order-vehicle-modal', 'invoice-application-modal', 'invoice-preview-modal', 'notice-preview-modal');
       const cancelButton = document.getElementById('modalCancelButton');
       const confirmButton = document.getElementById('modalConfirmButton');
       if (cancelButton) { cancelButton.textContent = '取消'; cancelButton.className = 'btn'; cancelButton.style.display = ''; cancelButton.onclick = hideModal; }

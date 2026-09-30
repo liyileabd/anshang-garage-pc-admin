@@ -1,8 +1,8 @@
 .dashboard-page { min-width: 0; color: var(--as-text-main); font-size: 14px; }
 
-.dashboard-page-head { display: flex; align-items: center; justify-content: space-between; min-height: 42px; margin-bottom: 18px; padding: 0 4px; }
+.dashboard-page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
 
-.dashboard-page-title { margin: 0; font-size: 18px; line-height: 1.3; font-weight: 400; color: #22324a; }
+.dashboard-page-title { margin: 0; font-size: 24px; line-height: 1.25; font-weight: 700; color: var(--as-text-main); }
 
 .dashboard-page-title strong { font-weight: 400; }
 
