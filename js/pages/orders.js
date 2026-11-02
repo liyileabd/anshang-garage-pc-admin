@@ -6,10 +6,10 @@
       const actions = [`<button class="btn-text" onclick="openOrder('${r[0]}')">详情</button>`];
       const activeRefund = refundForOrder(r[0]);
       const pendingRefund = activeRefund?.[7] === '待审批';
-      if (orderStatus === '退款申请中' && activeRefund?.[7] === '待审批') {
+      if (orderStatus === '售后中' && activeRefund?.[7] === '待审批') {
         actions.push(`<button class="btn-text danger" onclick="revokeRefundApplication('${r[0]}')">撤销退款</button>`);
       }
-      const canOperatePaidOrder = ['月租有效', '月租待生效'].includes(orderStatus) && rentStatus !== '月租已终止';
+      const canOperatePaidOrder = orderStatus === '已支付' && rentStatus !== '月租已终止';
       if (canOperatePaidOrder && vehicleData?.plates.length) {
         actions.push(`<button class="btn-text" onclick="openOrderVehicleManage('${r[0]}')">变更车辆</button>`);
       }
@@ -170,17 +170,17 @@
     function revokeRefundApplication(orderNo) {
       const refund = refunds.find(item => item[1] === orderNo && item[7] === '待审批');
       if (!refund) return;
-      showModal('撤销退款申请', `确认撤销订单 ${orderNo} 的退款申请吗？撤销后订单恢复为“月租有效”，可继续使用续费、开发票和退款功能。`);
+      showModal('撤销退款申请', `确认撤销订单 ${orderNo} 的退款申请吗？撤销后订单恢复为“已支付”，可继续使用续费、开发票和退款功能。`);
       const confirmButton = document.getElementById('modalConfirmButton');
       if (confirmButton) {
         confirmButton.textContent = '确认撤销';
         confirmButton.onclick = () => {
           refund[7] = '已撤销';
           const order = orders.find(item => item[0] === orderNo);
-          if (order) order[5] = '月租有效';
+          if (order) order[5] = '已支付';
           hideModal();
           render();
-          showModal('已撤销退款申请', `订单 ${orderNo} 已恢复为“月租有效”，现在可以继续办理开发票、续费或重新申请退款。`);
+          showModal('已撤销退款申请', `订单 ${orderNo} 已恢复为“已支付”，现在可以继续办理开发票、续费或重新申请退款。`);
         };
       }
     }
@@ -256,7 +256,7 @@
       const renewalAmountValue = renewalAmount(order, record, months);
       const renewalAmountText = renewalMoney(renewalAmountValue);
       const createdAt = '2026-09-10 10:00';
-      orders.unshift([renewalNo, order[1], order[2], plates, '续费', '月租待生效', '月租待生效', '已开通', renewalAmountText, order[9]]);
+      orders.unshift([renewalNo, order[1], order[2], plates, '续费', '已支付', '月租待生效', '已开通', renewalAmountText, order[9]]);
       originalOrderLinks[renewalNo] = id;
       if (ownerUser) {
         ownerUser.records.unshift({

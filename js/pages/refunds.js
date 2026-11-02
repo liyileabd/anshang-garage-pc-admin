@@ -198,7 +198,7 @@
       refund[8] = '通行已恢复';
       const order = orders.find(item => item[0] === refund[1]);
       if (order) {
-        order[5] = '月租有效';
+        order[5] = '已支付';
         order[7] = '已开通';
       }
       rentUsers.forEach(user => user.records.filter(record => record.orderNo === refund[1]).forEach(record => { record.trafficStatus = '已恢复'; }));
