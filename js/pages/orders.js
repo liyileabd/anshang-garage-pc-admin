@@ -512,7 +512,7 @@
       return `<section class="detail-page-section"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><h3 class="detail-page-title" style="margin:0">${noun}信息</h3>${uploads.length ? `<button class="btn-text" onclick="openInvoiceFiles('${order[0]}')">查看${noun}</button>` : ''}</div><div class="detail-info-grid">
         ${infoItem('开票状态', tag(status, issued ? 'success' : status === '未开' ? 'warning' : 'gray'))}
         ${infoItem('开票记录编号', text(rows.map(item => item[0]).join('、')))}
-        ${infoItem(`${noun}张数`, `${uploads.length} 张`)}
+        ${infoItem(`${noun}张数`, `${uploads.reduce((sum, item) => sum + Math.max(invoiceUploadFiles(item).length, 1), 0)} 张`)}
         ${infoItem(`${noun}类型`, text(application?.type || row?.[4]))}
         ${infoItem('开票抬头', text(application?.title || row?.[2]))}
         ${infoItem('开票金额合计', rows.length ? `¥${totalAmount.toFixed(2)}` : '暂无')}

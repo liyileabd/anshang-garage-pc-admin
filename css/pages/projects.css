@@ -7,3 +7,23 @@
 .garage-filter-bar .btn { padding-left: 13px; padding-right: 13px; }
 
 .garage-table-panel { background: #fff; }
+
+.modal.service-config-modal { width: 560px; }
+
+.service-config-body { padding: 2px 2px 0; }
+
+.service-qrcode-row { display: flex; align-items: flex-start; gap: 16px; }
+
+.service-qrcode-img { width: 132px; height: 132px; flex: 0 0 132px; border: 1px solid var(--as-border); border-radius: 4px; background: #fff; object-fit: contain; }
+
+.service-qrcode-info { flex: 1; min-width: 0; }
+
+.service-qrcode-name { margin-bottom: 10px; color: var(--as-text-main); font-size: 13px; line-height: 1.6; word-break: break-all; }
+
+.service-qrcode-picker { display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border: 1px solid var(--as-border); border-radius: 4px; color: var(--as-text-main); font-size: 13px; cursor: pointer; }
+
+.service-qrcode-picker:hover { border-color: var(--as-primary); color: var(--as-primary); }
+
+.service-qrcode-picker input { display: none; }
+
+.service-qrcode-hint { margin-top: 10px; color: var(--as-text-sub); font-size: 12px; line-height: 1.6; }

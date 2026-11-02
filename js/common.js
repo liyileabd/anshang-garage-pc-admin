@@ -654,12 +654,52 @@
       if (rows.length <= 1) return;
       button.closest('.push-config-day-row')?.remove();
     }
+    function serviceQrcodeSample() {
+      const cells = [];
+      for (let row = 0; row < 21; row += 1) {
+        for (let col = 0; col < 21; col += 1) {
+          if ((row < 8 && col < 8) || (row < 8 && col > 12) || (row > 12 && col < 8)) continue;
+          if ((row * 7 + col * 3 + row * col) % 5 < 2) cells.push(`<rect x="${24 + col * 16}" y="${24 + row * 16}" width="16" height="16"/>`);
+        }
+      }
+      const finder = (x, y) => `<rect x="${x}" y="${y}" width="112" height="112" fill="none" stroke="#1f2430" stroke-width="16"/><rect x="${x + 32}" y="${y + 32}" width="48" height="48"/>`;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="384" height="384" viewBox="0 0 384 384"><rect width="384" height="384" fill="#ffffff"/><g fill="#1f2430">${cells.join('')}${finder(24, 24)}${finder(248, 24)}${finder(24, 248)}</g><text x="192" y="362" text-anchor="middle" font-size="15" font-family="sans-serif" fill="#8a93a6">演示样张</text></svg>`;
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    }
+    function openServiceConfigModal() {
+      showModal('客服配置', `<div class="service-config-body">
+        <div class="modal-tip">客服信息全局唯一，所有小区项目共用这一套，不按项目区分。</div>
+        <div class="form-item"><label class="form-label" for="servicePhone">客服电话</label><input id="servicePhone" class="form-control" type="text" value="0592-8800 6600"></div>
+        <div class="form-item"><label class="form-label">客服二维码</label><div class="service-qrcode-row"><img id="serviceQrcodeImg" class="service-qrcode-img" src="${serviceQrcodeSample()}" alt="客服二维码"><div class="service-qrcode-info"><div id="serviceQrcodeName" class="service-qrcode-name">客服二维码.png</div><label class="service-qrcode-picker"><input id="serviceQrcodeInput" type="file" accept="image/png,image/jpeg" onchange="changeServiceQrcode(this)"><span>更换二维码</span></label><div class="service-qrcode-hint">支持 JPG / PNG，建议 500 × 500 以上，不超过 2MB</div></div></div></div>
+      </div>`);
+      document.querySelector('#modalMask .modal')?.classList.add('service-config-modal');
+      const confirmButton = document.getElementById('modalConfirmButton');
+      if (confirmButton) {
+        confirmButton.textContent = '保存配置';
+        confirmButton.onclick = () => {
+          hideModal();
+          showModal('配置已保存', '客服信息已更新，小程序端「联系客服」将统一展示该电话与二维码。');
+        };
+      }
+    }
+    function changeServiceQrcode(input) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const image = document.getElementById('serviceQrcodeImg');
+        if (image) image.src = String(reader.result);
+        const name = document.getElementById('serviceQrcodeName');
+        if (name) name.textContent = file.name;
+      };
+      reader.readAsDataURL(file);
+    }
     function showModal(title, body) {
       const rejectButton = document.getElementById('modalRejectButton');
       if (rejectButton) { rejectButton.style.display = 'none'; rejectButton.onclick = null; }
       document.getElementById('modalTitle').textContent = title;
       document.getElementById('modalBody').innerHTML = body;
-      document.querySelector('#modalMask .modal')?.classList.remove('refund-approval-modal', 'refund-application-modal', 'project-status-modal', 'project-stop-modal', 'renew-order-modal', 'order-vehicle-modal', 'invoice-application-modal', 'invoice-preview-modal', 'notice-preview-modal');
+      document.querySelector('#modalMask .modal')?.classList.remove('refund-approval-modal', 'refund-application-modal', 'project-status-modal', 'project-stop-modal', 'renew-order-modal', 'order-vehicle-modal', 'invoice-application-modal', 'invoice-preview-modal', 'notice-preview-modal', 'service-config-modal');
       const cancelButton = document.getElementById('modalCancelButton');
       const confirmButton = document.getElementById('modalConfirmButton');
       if (cancelButton) { cancelButton.textContent = '取消'; cancelButton.className = 'btn'; cancelButton.style.display = ''; cancelButton.onclick = hideModal; }

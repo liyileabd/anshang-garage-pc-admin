@@ -53,34 +53,53 @@
       const normalizedRows = rows.map(row => [...row.slice(0, 6), invoiceRowStatus(row[6]), row[7]]);
       const statusTag = status => status === '已开' ? 'success' : 'warning';
       const displayRows = normalizedRows.map(row => [...row.slice(0, 6), `__html__${tag(row[6], statusTag(row[6]))}`, row[7]]);
-      return table([['开票记录编号','170px'],['订单号','170px'],['申请用户','100px'],['小区项目','140px'],['发票类型','160px'],['开票金额','130px'],['开票状态','100px'],['申请时间','150px'],['操作','200px']], displayRows, (r, index)=>`<button class="btn-text" onclick="openInvoiceDetail('${r[0]}')">详情</button><button class="btn-text" onclick="openInvoiceUpload('${r[0]}')">${normalizedRows[index][6] === '未开' ? '上传' : '重传'}</button>`);
+      return table([['开票记录编号','170px'],['订单号','170px'],['申请用户','100px'],['小区项目','140px'],['发票类型','160px'],['开票金额','130px'],['开票状态','100px'],['申请时间','150px'],['操作','230px']], displayRows, (r, index)=>{
+        const pending = normalizedRows[index][6] === '未开';
+        return `<button class="btn-text" onclick="openInvoiceDetail('${r[0]}')">详情</button><button class="btn-text" onclick="openInvoiceUpload('${r[0]}')">${pending ? '上传' : '重传'}</button>${pending ? '' : `<button class="btn-text" onclick="openInvoiceUpload('${r[0]}', 'append')">追加</button>`}`;
+      });
     }
     function openInvoiceDetail(id) { selectedInvoiceId = id; invoiceSubpage = 'detail'; current = 'invoices'; render(); }
     function backToInvoices() { invoiceSubpage = 'list'; selectedInvoiceId = ''; current = 'invoices'; render(); }
     const invoiceText = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
-    let invoicePreview = { ids: [], index: 0, orderMode: false };
+    const invoiceUploadFiles = upload => {
+      if (!upload) return [];
+      if (Array.isArray(upload.files) && upload.files.length) return upload.files;
+      if (upload.url) return [{ name: upload.names?.[0] || '发票文件', url: upload.url, kind: upload.kind || 'image' }];
+      return [];
+    };
+    let invoicePreview = { entries: [], index: 0, orderMode: false };
     function sampleInvoiceImage(row) {
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620"><rect width="1000" height="620" fill="#fffdf8"/><g font-family="sans-serif" fill="#80554d"><text x="500" y="65" text-anchor="middle" font-size="30">电子发票（普通发票）</text><text x="500" y="99" text-anchor="middle" font-size="16">演示样票 · 非真实发票 · 不可报销</text><path d="M45 120H955 M45 126H955" stroke="#b28c7e"/><text x="55" y="160" font-size="17">记录编号：${invoiceText(row[0])}</text><text x="55" y="198" font-size="17">关联订单：${invoiceText(row[1])}</text><rect x="45" y="223" width="910" height="288" fill="none" stroke="#b28c7e"/><path d="M45 313H955 M45 359H955 M45 451H955 M510 223V313" stroke="#b28c7e"/><text x="65" y="257" font-size="18">购买方：${invoiceText(row[2])}</text><text x="65" y="289" font-size="16">项目：${invoiceText(row[3])}</text><text x="530" y="257" font-size="18">销售方：安商房运营公司（演示）</text><text x="65" y="343" font-size="17">项目名称</text><text x="590" y="343" font-size="17">数量</text><text x="790" y="343" font-size="17">金额</text><text x="65" y="406" font-size="19">停车月租服务费</text><text x="605" y="406" font-size="19">1</text><text x="790" y="406" font-size="19">${invoiceText(row[5])}</text><text x="65" y="489" font-size="20">价税合计</text><text x="790" y="489" font-size="23">${invoiceText(row[5])}</text><text x="55" y="555" font-size="17">开票日期：${invoiceText(row[7])}</text><text x="955" y="590" text-anchor="end" font-size="14">仅用于原型预览</text></g></svg>`;
       return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg).replace(/'/g, '%27');
     }
     function invoicePreviewHtml() {
-      const { ids, index, orderMode } = invoicePreview;
-      const row = invoiceRows().find(item => item[0] === ids[index]);
+      const { entries, index, orderMode } = invoicePreview;
+      const entry = entries[index];
+      const row = entry && invoiceRows().find(item => item[0] === entry.id);
       const upload = row && invoiceUploads[row[0]];
       const noun = invoiceNoun(invoicePreview.ticket);
       if (!row || !upload) return `<div class="empty">暂无${noun}</div>`;
-      const src = upload.sample ? sampleInvoiceImage(row) : upload.url;
-      const image = upload.sample || upload.kind === 'image';
+      const files = invoiceUploadFiles(upload);
+      const file = files[entry.file || 0];
+      const src = upload.sample ? sampleInvoiceImage(row) : (file && file.url);
+      const image = upload.sample || (file && file.kind === 'image');
       const content = !src ? `<div class="empty">暂无可预览${noun}文件，请重新上传</div>` : image
         ? `<img src="${invoiceText(src)}" alt="${invoiceText(row[0])} ${noun}" style="display:block;width:100%;height:auto;max-height:50vh;object-fit:contain">`
         : `<object data="${invoiceText(src)}" type="application/pdf" style="width:100%;height:50vh"><p>浏览器不支持内嵌预览，<a href="${invoiceText(src)}" target="_blank" rel="noopener">打开PDF</a></p></object>`;
-      const nav = orderMode && ids.length > 1 ? `<div style="display:flex;align-items:center;justify-content:center;gap:24px;margin-top:16px"><button class="btn-text" onclick="changeInvoicePreview(-1)" ${index === 0 ? 'disabled style="opacity:.4;cursor:default"' : ''}>上一张</button><span>${index + 1} / ${ids.length}</span><button class="btn-text" onclick="changeInvoicePreview(1)" ${index === ids.length - 1 ? 'disabled style="opacity:.4;cursor:default"' : ''}>下一张</button></div>` : '';
-      return `<div>${content}${nav}</div>`;
+      const caption = files.length > 1 && file ? `<div class="invoice-file-caption">${invoiceText(file.name)}　第 ${(entry.file || 0) + 1} / ${files.length} 张</div>` : '';
+      const showNav = entries.length > 1 && (orderMode || files.length > 1);
+      const nav = showNav ? `<div style="display:flex;align-items:center;justify-content:center;gap:24px;margin-top:16px"><button class="btn-text" onclick="changeInvoicePreview(-1)" ${index === 0 ? 'disabled style="opacity:.4;cursor:default"' : ''}>上一张</button><span>${index + 1} / ${entries.length}</span><button class="btn-text" onclick="changeInvoicePreview(1)" ${index === entries.length - 1 ? 'disabled style="opacity:.4;cursor:default"' : ''}>下一张</button></div>` : '';
+      return `<div>${content}${caption}${nav}</div>`;
     }
     function showInvoicePreview(ids, orderMode, fallbackNoun) {
       const selected = invoiceRows().filter(item => ids.includes(item[0]));
       const ticket = selected.length ? selected.every(isTicketRow) : fallbackNoun === '票据';
-      invoicePreview = { ids, index: 0, orderMode, ticket };
+      const entries = ids.reduce((list, id) => {
+        const count = Math.max(invoiceUploadFiles(invoiceUploads[id]).length, 1);
+        for (let file = 0; file < count; file += 1) list.push({ id, file });
+        return list;
+      }, []);
+      invoicePreview = { entries, index: 0, orderMode, ticket };
       showModal(`查看${invoiceNoun(ticket)}`, invoicePreviewHtml());
       document.querySelector('#modalMask .modal')?.classList.add('invoice-preview-modal');
       const cancelButton = document.getElementById('modalCancelButton');
@@ -97,7 +116,7 @@
     }
     function changeInvoicePreview(step) {
       const next = invoicePreview.index + step;
-      if (next < 0 || next >= invoicePreview.ids.length) return;
+      if (next < 0 || next >= invoicePreview.entries.length) return;
       invoicePreview.index = next;
       document.getElementById('modalBody').innerHTML = invoicePreviewHtml();
     }
@@ -129,28 +148,69 @@
       resetFilterDropdown('invoiceTypeFilter');
       filterInvoices();
     }
-    function invoiceUploadBody(title, multiple = false) { return `<div class="invoice-upload-form"><div class="invoice-upload-title">${title}</div><label class="create-upload"><input id="invoiceUploadFile" type="file" accept=".pdf,.jpg,.jpeg,.png" ${multiple ? 'multiple' : ''} onchange="document.getElementById('invoiceUploadName').textContent = this.files.length ? Array.from(this.files).map(file => file.name).join('、') : '未选择文件'"><button type="button" class="btn" onclick="document.getElementById('invoiceUploadFile').click()">选择文件</button><span id="invoiceUploadName" class="create-upload-name">未选择文件</span></label></div>`; }
-    function openInvoiceUpload(id) {
+    let pendingInvoiceFiles = [];
+    function invoiceUploadBody(title, multiple = false) { return `<div class="invoice-upload-form"><div class="invoice-upload-title">${title}</div><div class="invoice-upload-actions"><label class="create-upload"><input id="invoiceUploadFile" type="file" accept=".pdf,.jpg,.jpeg,.png" ${multiple ? 'multiple' : ''} onchange="pickInvoiceFiles(this)"><button type="button" class="btn" onclick="document.getElementById('invoiceUploadFile').click()">选择文件</button></label><span id="invoiceUploadName" class="create-upload-name">未选择文件</span></div><div id="invoiceUploadList" class="invoice-upload-list"></div></div>`; }
+    function pickInvoiceFiles(input) {
+      const picked = Array.from(input.files || []);
+      const exists = new Set(pendingInvoiceFiles.map(file => `${file.name}|${file.size}`));
+      picked.forEach(file => {
+        const key = `${file.name}|${file.size}`;
+        if (!exists.has(key)) { exists.add(key); pendingInvoiceFiles.push(file); }
+      });
+      input.value = '';
+      renderPendingInvoiceFiles();
+    }
+    function renderPendingInvoiceFiles() {
+      const list = document.getElementById('invoiceUploadList');
+      const label = document.getElementById('invoiceUploadName');
+      if (list) list.innerHTML = pendingInvoiceFiles.map((file, index) => `<div class="invoice-upload-item"><span class="invoice-upload-file">${invoiceText(file.name)}</span><button type="button" class="invoice-upload-remove" onclick="removePendingInvoiceFile(${index})" aria-label="移除">×</button></div>`).join('');
+      if (label) label.textContent = pendingInvoiceFiles.length ? `已选 ${pendingInvoiceFiles.length} 个文件` : '未选择文件';
+    }
+    function removePendingInvoiceFile(index) {
+      pendingInvoiceFiles.splice(index, 1);
+      renderPendingInvoiceFiles();
+    }
+    function openInvoiceUpload(id, mode) {
       const row = invoiceRows().find(item => item[0] === id);
       if (!row) return;
-      const reupload = row[6] === '已开';
+      const append = mode === 'append';
+      const reupload = !append && row[6] === '已开';
       const noun = invoiceNoun(isTicketRow(row));
-      showModal(reupload ? `重传${noun}` : `上传${noun}`, invoiceUploadBody(`${reupload ? '重新上传' : '上传'}申请单 ${id} 的票据文件${reupload ? '，确认后替换原票据文件' : ''}`) + '<div id="invoiceUploadError" class="approval-error"></div>');
+      const existingFiles = append ? invoiceUploadFiles(invoiceUploads[id]) : [];
+      pendingInvoiceFiles = [];
+      const tip = append
+        ? `为申请单 ${id} 追加${noun}文件，已有 ${existingFiles.length} 个，新文件排在原有文件之后`
+        : `${reupload ? '重新上传' : '上传'}申请单 ${id} 的票据文件${reupload ? '，确认后替换原票据文件' : ''}，可一次选择多个文件`;
+      showModal(append ? `追加${noun}` : reupload ? `重传${noun}` : `上传${noun}`, invoiceUploadBody(tip, true) + '<div id="invoiceUploadError" class="approval-error"></div>');
       const confirm = document.getElementById('modalConfirmButton');
       if (confirm) {
-        confirm.textContent = reupload ? '确认重传' : '确认上传';
+        confirm.textContent = append ? '确认追加' : reupload ? '确认重传' : '确认上传';
         confirm.onclick = () => {
-          const files = Array.from(document.getElementById('invoiceUploadFile')?.files || []);
+          const files = pendingInvoiceFiles.slice();
           const error = document.getElementById('invoiceUploadError');
-          if (files.length !== 1 || files.some(file => !/\.(pdf|jpe?g|png)$/i.test(file.name))) {
-            if (error) error.textContent = !files.length ? '请先选择票据文件' : files.length !== 1 ? '每条开票记录只能上传一张发票' : '仅支持 PDF、JPG、JPEG、PNG 文件';
+          const invalid = files.find(file => !/\.(pdf|jpe?g|png)$/i.test(file.name));
+          if (!files.length || invalid) {
+            if (error) error.textContent = !files.length ? '请先选择票据文件' : `不支持的文件格式：${invalid.name}，仅支持 PDF、JPG、JPEG、PNG`;
             return;
           }
-          const file = files[0];
-          const url = URL.createObjectURL(file);
-          const previousUrl = invoiceUploads[id]?.url;
-          invoiceUploads[id] = { names: [file.name], url, kind: /\.pdf$/i.test(file.name) ? 'pdf' : 'image', uploadedAt: new Date().toLocaleString('zh-CN', { hour12: false }) };
-          if (previousUrl?.startsWith('blob:')) URL.revokeObjectURL(previousUrl);
+          const previous = invoiceUploads[id];
+          const picked = files.map(file => ({ name: file.name, url: URL.createObjectURL(file), kind: /\.pdf$/i.test(file.name) ? 'pdf' : 'image' }));
+          let items = picked;
+          if (append) {
+            const exists = new Set(existingFiles.map(item => `${item.name}|${item.kind}`));
+            const added = picked.filter(item => !exists.has(`${item.name}|${item.kind}`));
+            if (!added.length) {
+              picked.forEach(item => URL.revokeObjectURL(item.url));
+              if (error) error.textContent = '所选文件已在票据列表中，请选择其他文件';
+              return;
+            }
+            items = [...existingFiles, ...added];
+          } else {
+            existingFiles.forEach(item => { if (item.url?.startsWith('blob:')) URL.revokeObjectURL(item.url); });
+            if (previous?.url?.startsWith('blob:')) URL.revokeObjectURL(previous.url);
+          }
+          invoiceUploads[id] = { files: items, names: items.map(item => item.name), url: items[0].url, kind: items[0].kind, uploadedAt: new Date().toLocaleString('zh-CN', { hour12: false }) };
+          pendingInvoiceFiles = [];
           const application = Object.values(orderInvoiceApplications).find(item => item.id === id);
           if (application) application.status = '已完成';
           orderInvoiceStatus[row[1]] = '已完成';
@@ -258,7 +318,7 @@
       projects() {
         if (garageSubpage === 'detail') return garageDetailPage();
         if (garageSubpage === 'edit') return garageEditPage();
-        return pageShell('小区项目', '', `<div class="filter-bar garage-filter-bar"><input id="garageKeyword" class="input" type="search" placeholder="小区名称" autocomplete="off" oninput="filterGarages()"><div id="garageProjectDropdown" class="filter-dropdown"><button id="garageProjectTrigger" class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleGarageProjectMenu(event)"><span id="garageProjectTypeLabel">全部项目类型</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div id="garageProjectMenu" class="select-menu" role="listbox"><button type="button" class="select-option active" data-value="" onclick="selectGarageProject('', '全部项目类型')">全部项目类型</button><button type="button" class="select-option" data-value="公司自营项目" onclick="selectGarageProject('公司自营项目', '公司自营项目')">公司自营项目</button><button type="button" class="select-option" data-value="区财政代管项目" onclick="selectGarageProject('区财政代管项目', '区财政代管项目')">区财政代管项目</button></div></div><div id="garagePublishStatusDropdown" class="filter-dropdown"><button id="garagePublishStatusTrigger" class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleGaragePublishStatusMenu(event)"><span id="garagePublishStatusLabel">全部发布状态</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div id="garagePublishStatusMenu" class="select-menu" role="listbox"><button type="button" class="select-option active" data-value="" onclick="selectGaragePublishStatus('', '全部发布状态')">全部发布状态</button><button type="button" class="select-option" data-value="已发布" onclick="selectGaragePublishStatus('已发布', '已发布')">已发布</button><button type="button" class="select-option" data-value="草稿" onclick="selectGaragePublishStatus('草稿', '草稿')">草稿</button></div></div><button class="btn btn-primary" onclick="filterGarages()">查询</button><button class="btn" onclick="resetGarageFilters()">重置</button><button class="btn btn-primary" onclick="openCreateGarage()">新增小区项目</button></div><section class="panel garage-table-panel"><div id="garageTable">${garageTableHtml(garages)}</div></section>`);
+        return pageShell('小区项目', '', `<div class="filter-bar garage-filter-bar"><input id="garageKeyword" class="input" type="search" placeholder="小区名称" autocomplete="off" oninput="filterGarages()"><div id="garageProjectDropdown" class="filter-dropdown"><button id="garageProjectTrigger" class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleGarageProjectMenu(event)"><span id="garageProjectTypeLabel">全部项目类型</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div id="garageProjectMenu" class="select-menu" role="listbox"><button type="button" class="select-option active" data-value="" onclick="selectGarageProject('', '全部项目类型')">全部项目类型</button><button type="button" class="select-option" data-value="公司自营项目" onclick="selectGarageProject('公司自营项目', '公司自营项目')">公司自营项目</button><button type="button" class="select-option" data-value="区财政代管项目" onclick="selectGarageProject('区财政代管项目', '区财政代管项目')">区财政代管项目</button></div></div><div id="garagePublishStatusDropdown" class="filter-dropdown"><button id="garagePublishStatusTrigger" class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" onclick="toggleGaragePublishStatusMenu(event)"><span id="garagePublishStatusLabel">全部发布状态</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div id="garagePublishStatusMenu" class="select-menu" role="listbox"><button type="button" class="select-option active" data-value="" onclick="selectGaragePublishStatus('', '全部发布状态')">全部发布状态</button><button type="button" class="select-option" data-value="已发布" onclick="selectGaragePublishStatus('已发布', '已发布')">已发布</button><button type="button" class="select-option" data-value="草稿" onclick="selectGaragePublishStatus('草稿', '草稿')">草稿</button></div></div><button class="btn btn-primary" onclick="filterGarages()">查询</button><button class="btn" onclick="resetGarageFilters()">重置</button><button class="btn" onclick="openServiceConfigModal()">客服配置</button><button class="btn btn-primary" onclick="openCreateGarage()">新增小区项目</button></div><section class="panel garage-table-panel"><div id="garageTable">${garageTableHtml(garages)}</div></section>`);
       },
       spaces() {
         const rows = [['锦绣安置房','320','246','8','66','可办理'],['文庭商房','186','171','3','12','可办理'],['荣和家园','240','0','0','0','暂停办理'],['江南新寓','150','150','0','0','已满']];
