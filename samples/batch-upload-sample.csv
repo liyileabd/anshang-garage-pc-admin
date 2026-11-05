@@ -1,0 +1,8 @@
+﻿orderNo,documentName,fileUrl,IssuedDate,remark
+AS202611051151304727680714,invoice-001.png,https://liyileabd.github.io/anshang-garage-pc-admin/samples/invoice-sample.png,2026-11-05,第一张票据
+AS2026110509175764476292761,invoice-002.png,https://liyileabd.github.io/anshang-garage-pc-admin/samples/invoice-sample.png,2026-11-05,
+AS2026110415022118594181619,invoice-003.png,https://liyileabd.github.io/anshang-garage-pc-admin/samples/invoice-sample.png,2026-11-04,拍照上传
+AS2026110409373720982937829,invoice-004.png,https://liyileabd.github.io/anshang-garage-pc-admin/samples/invoice-sample.png,2026-11-04,
+AS2026110317440963664012719,invoice-005.png,https://liyileabd.github.io/anshang-garage-pc-admin/samples/invoice-sample.png,2026-11-03,分两张开票，这是第 1 张
+AS2026110317440963664012719,invoice-006.png,https://liyileabd.github.io/anshang-garage-pc-admin/samples/invoice-sample.png,2026-11-03,分两张开票，这是第 2 张
+O20261029144524687866256,invoice-007.png,https://liyileabd.github.io/anshang-garage-pc-admin/samples/invoice-sample.png,2026-10-29,旧订单号格式也能导入
