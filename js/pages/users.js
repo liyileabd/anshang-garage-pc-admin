@@ -68,13 +68,43 @@
       revealedSensitiveUsers.delete(userId);
       render();
     }
+    let previewReturnVehicleId = '';
+    function openVehicleDetail(vehicleId) {
+      const owner = rentUsers.find(user => user.vehicles.some(vehicle => vehicle.id === vehicleId));
+      const vehicle = owner?.vehicles.find(item => item.id === vehicleId);
+      if (!vehicle) return;
+      previewReturnVehicleId = vehicleId;
+      const plateColorText = { '蓝牌': '蓝色车牌', '新能源': '绿色车牌' }[vehicle.color] || vehicle.color || '未填写';
+      const photos = Number(vehicle.photos) || 0;
+      const photoNames = Array.from({ length: photos }, (_, index) => `车辆照片${index + 1}.jpg`);
+      const photoItems = photos
+        ? photoNames.map(name => `<div class="vehicle-photo-row"><span class="vehicle-photo-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2"></rect><circle cx="8.5" cy="9.5" r="1.5"></circle><path d="M4 17l4.5-4.5L12 16l3-3 5 5"></path></svg></span><span class="vehicle-photo-name">${name}</span><button class="btn-text" onclick="previewVehiclePhoto('${name}')">查看</button></div>`).join('')
+        : '<div class="vehicle-photo-empty">该车辆未上传照片</div>';
+      const body = `<div class="detail-info-grid vehicle-detail-grid">${infoItem('车牌号', vehicle.plate)}${infoItem('车牌颜色', plateColorText)}${infoItem('车辆大小类型', vehicle.type || '未填写')}${infoItem('车辆外观颜色', vehicle.appearance || '未填写')}${infoItem('所属用户', owner.name)}${infoItem('绑定状态', tag(vehicle.status))}</div><div class="vehicle-detail-photos-wrap"><div class="vehicle-detail-subtitle">车辆照片（${photos} 张）</div><div class="vehicle-detail-photos">${photoItems}</div></div>`;
+      showModal('车辆信息', body);
+      const modal = document.querySelector('#modalMask .modal');
+      if (modal) modal.classList.add('vehicle-detail-modal');
+      const cancelButton = document.getElementById('modalCancelButton');
+      if (cancelButton) cancelButton.style.display = 'none';
+      const confirmButton = document.getElementById('modalConfirmButton');
+      if (confirmButton) { confirmButton.textContent = '关闭'; confirmButton.onclick = hideModal; }
+    }
+    function previewVehiclePhoto(name) {
+      showModal(name, '<div class="vehicle-photo-preview"><span class="vehicle-photo-preview-tip">图片预览</span></div>');
+      const modal = document.querySelector('#modalMask .modal');
+      if (modal) modal.classList.add('vehicle-photo-preview-modal');
+      const cancelButton = document.getElementById('modalCancelButton');
+      if (cancelButton) cancelButton.style.display = 'none';
+      const confirmButton = document.getElementById('modalConfirmButton');
+      if (confirmButton) { confirmButton.textContent = '返回'; confirmButton.onclick = () => openVehicleDetail(previewReturnVehicleId); }
+    }
     function userDetailPage() {
       const user = rentUsers.find(item => item.name === selectedUserName) || rentUsers[0];
       const sensitive = userSensitiveInfo(user);
       const revealed = revealedSensitiveUsers.has(user.userId);
       const revealAction = currentAccountType === '超级管理员' ? `<button class="btn-text sensitive-reveal" onclick="${revealed ? 'hideUserSensitiveInfo' : 'revealUserSensitiveInfo'}('${user.userId}')">${revealed ? '收起' : '查看完整信息'}</button>` : '';
       const vehicles = user.vehicles.length
-        ? user.vehicles.map(vehicle => `<div class="user-detail-vehicle">${detailFeeField('车牌号', vehicle.plate)}${detailFeeField('车辆信息', `${vehicle.color} · ${vehicle.type}`)}${detailFeeField('绑定状态', tag(vehicle.status))}</div>`).join('')
+        ? user.vehicles.map(vehicle => `<div class="user-detail-vehicle">${detailFeeField('车牌号', vehicle.plate)}${detailFeeField('车辆信息', `${vehicle.color} · ${vehicle.type}`)}${detailFeeField('绑定状态', tag(vehicle.status))}<div class="detail-fee-field user-vehicle-action"><div class="detail-fee-label">&nbsp;</div><div class="detail-fee-value"><button class="btn-text" onclick="openVehicleDetail('${vehicle.id}')">查看</button></div></div></div>`).join('')
         : '<div class="user-detail-empty">暂无绑定车辆</div>';
       const rentRecords = user.records.length
         ? `<table class="user-rent-record-table"><thead><tr><th style="width:160px">订单号</th><th style="width:140px">小区项目</th><th style="width:190px">办理车辆</th><th style="width:250px">租期</th><th style="width:120px">月租状态</th><th style="width:110px">缴费金额</th><th style="width:100px">操作</th></tr></thead><tbody>${user.records.map(record => {

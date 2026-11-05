@@ -715,7 +715,182 @@
       return innerPageHead(`${garage[0]}详情`) + `<section class="detail-page-section"><h3 class="detail-page-title">基本信息</h3><div class="detail-info-grid">${infoItem('小区名称', garage[0])}${infoItem('项目类型', garage[1])}${infoItem('地理位置', form.location || '未配置')}${infoItem('一路停车车场编号', garage[2])}${infoItem('清分市场编号', form.marketId || '未配置')}${infoItem('发布状态', tag(garage[5]))}${infoItem('办理状态', tag(garage[4]))}${infoItem('总车位数', totalSpaces)}${infoItem('已租车位数', rentedSpaces)}${infoItem('维修中车位数', maintenance)}${infoItem('可办理数量', availableSpaces)}${infoItem('最后编辑', '超级管理员 · 2026-08-28 13:40')}</div></section><section class="detail-page-section"><h3 class="detail-page-title">收费与结算</h3><div class="detail-fee-list">${feeRows.map(detailFeeItem).join('')}</div></section><section class="detail-page-section"><h3 class="detail-page-title">项目告知书</h3><div class="detail-notice-list">${notices.map(item => detailNoticeItem(item.name, item.file)).join('')}</div></section>`;
     }
 
-    function garageEditPage() {
-      const garage = selectedGarage();
+    function garageEditPage() {      const garage = selectedGarage();
       return `${innerPageHead(`${garage[0]}编辑`)}<section class="create-flow edit-create-flow"><div class="create-step-panel edit-create-panel"><div class="create-info"><div>编辑项目基础信息、车位数据、收费规则和告知书，保存前会校验所有必填项及数据格式。</div></div><h3 class="create-section-title">项目基础信息</h3><div class="create-form-grid create-basic-info-grid">${createInput('communityName','小区名称',{required:true,placeholder:'请输入小区名称'})}${createSelect('projectType','项目类型',['公司自营项目','区财政代管项目'],{required:true})}${createInput('parkCode','一路停车车场编号',{required:true,placeholder:'请输入一路停车平台提供的车场编号'})}${createInput('marketId','清分市场编号',{required:true,placeholder:'请输入清分平台提供的市场编号'})}${createSelect('location','地理位置',['厦门市湖里区','厦门市思明区'],{required:true})}${createInput('totalSpaces','总车位数',{required:true,type:'number',placeholder:'请输入总车位数'})}${createInput('rentedSpaces','已租车位数',{required:true,type:'number',placeholder:'请输入已租车位数'})}${createInput('maintenanceSpaces','维修中车位数',{required:true,type:'number',placeholder:'请输入维修中车位数'})}${createInput('availableSpaces','可办理数量',{type:'number',id:'createAvailableSpaces',help:'系统按总车位数 - 已租车位数 - 维修中车位数自动带出，手动修改后以修改值为准。'})}</div><h3 class="create-section-title edit-module-title">收费规则</h3>${createFeeGrid()}<h3 class="create-section-title edit-module-title">告知书配置</h3><div class="create-info"><div>用户进入月租办理流程后，会按顺序查看并确认这里配置的全部告知书。</div></div>${createNoticeGrid()}</div><div class="create-flow-foot"><button class="btn" onclick="backToGarage()">取消</button><span class="foot-spacer"></span><button class="btn btn-primary" onclick="saveEditedGarage()">保存</button></div></section>`;
+    }
+
+    // ===== 广告配置（小程序首页底部广告位，全平台共用，不按小区区分）=====
+    const ADVERT_TODAY = '2026-11-04';
+    let advertDraftImage = '';
+
+    function advertThumb(name, tone) {
+      const palette = {
+        blue: ['#e8f1ff', '#2f6df6'],
+        green: ['#e7f7ee', '#1f9d55'],
+        orange: ['#fff2e2', '#d98219'],
+        gray: ['#f0f2f6', '#6b7385']
+      };
+      const [bg, fg] = palette[tone] || palette.blue;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="120" viewBox="0 0 300 120"><rect width="300" height="120" fill="${bg}"/><text x="150" y="54" text-anchor="middle" font-size="19" font-family="sans-serif" fill="${fg}">${name}</text><text x="150" y="82" text-anchor="middle" font-size="12" font-family="sans-serif" fill="${fg}" opacity="0.65">广告图 750 × 300</text></svg>`;
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    }
+
+    function advertState(advert) {
+      if (!advert.enabled) return { label: '已停用', type: 'gray' };
+      if (ADVERT_TODAY < advert.start) return { label: '未生效', type: 'info' };
+      if (ADVERT_TODAY > advert.end) return { label: '已过期', type: 'gray' };
+      return { label: '展示中', type: 'success' };
+    }
+
+    function advertThumbOf(advert) {
+      return advert.image || advertThumb(advert.name, advert.tone);
+    }
+
+    function openAdvertConfigPage() {
+      garageSubpage = 'advert';
+      current = 'projects';
+      render();
+    }
+
+    function advertConfigPage() {
+      const sorted = adverts.slice().sort((a, b) => (Number(a.sort) || 0) - (Number(b.sort) || 0));
+      const rows = sorted.map(advert => {
+        const state = advertState(advert);
+        const linkText = advert.linkType === '不跳转' ? '不跳转' : `${advert.linkType}<br><span class="advert-link">${advert.link}</span>`;
+        return [
+          advert.id,
+          `__html__<img class="advert-thumb" src="${advertThumbOf(advert)}" alt="${advert.name}">`,
+          advert.name,
+          `__html__${linkText}`,
+          `__html__${advert.start}<br>${advert.end}`,
+          String(advert.sort),
+          `__html__${tag(state.label, state.type)}`
+        ];
+      });
+      const body = `<section class="detail-page-section advert-section">
+        <div class="advert-config-head">
+          <div class="advert-config-meta">
+            <div class="advert-config-meta-item"><span class="advert-config-label">展示位置</span><strong>小程序首页底部</strong></div>
+            <div class="advert-config-meta-item"><span class="advert-config-label">适用范围</span><strong>全平台共用，不按小区区分</strong></div>
+            <div class="advert-config-meta-item"><span class="advert-config-label">轮播规则</span><strong>按排序从小到大，仅展示生效期内且启用的广告</strong></div>
+          </div>
+          <button class="btn btn-primary" onclick="openAdvertEditor('')">新增广告</button>
+        </div>
+        ${table([['广告编号','168px'],['预览','126px'],['广告名称','152px'],['跳转','170px'],['生效时间','190px'],['排序','70px'],['状态','90px'],['操作','170px']], rows, (r) => {
+          const advert = adverts.find(item => item.id === r[0]) || {};
+          const toggleLabel = advert.enabled ? '停用' : '启用';
+          return `<button class="btn-text" onclick="openAdvertEditor('${r[0]}')">编辑</button><button class="btn-text" onclick="toggleAdvert('${r[0]}')">${toggleLabel}</button><button class="btn-text danger" onclick="deleteAdvert('${r[0]}')">删除</button>`;
+        })}
+      </section>`;
+      return innerPageHead('广告配置') + body;
+    }
+
+    function openAdvertEditor(id) {
+      const advert = adverts.find(item => item.id === id);
+      const editing = Boolean(advert);
+      advertDraftImage = editing ? (advert.image || '') : '';
+      const values = advert || { name: '', image: '', tone: 'blue', linkType: '不跳转', link: '', start: '2026-11-04', end: '2026-12-31', sort: String(adverts.length + 1), enabled: true };
+      const linkTypes = ['不跳转', '站内页面', '外链 H5', '小程序页面'];
+      const body = `<div class="advert-editor-body">
+        <div class="modal-tip">小程序首页底部只放这一组广告，全平台共用；多张按排序轮播，只有一张时不轮播。</div>
+        <div class="advert-editor-grid">
+          <div class="form-item"><label class="form-label" for="advertName">广告名称</label><input id="advertName" class="form-control" type="text" value="${values.name}" placeholder="仅后台识别用，不展示给用户"></div>
+          <div class="form-item"><label class="form-label" for="advertSort">排序</label><input id="advertSort" class="form-control" type="number" min="1" value="${values.sort}" placeholder="数字越小越靠前"></div>
+          <div class="form-item"><label class="form-label" for="advertLinkType">跳转类型</label><select id="advertLinkType" class="form-control">${linkTypes.map(type => `<option value="${type}"${type === values.linkType ? ' selected' : ''}>${type}</option>`).join('')}</select></div>
+          <div class="form-item"><label class="form-label" for="advertLink">跳转地址</label><input id="advertLink" class="form-control" type="text" value="${values.link}" placeholder="页面路径或链接，不跳转可留空"></div>
+          <div class="form-item"><label class="form-label" for="advertStart">开始时间</label><input id="advertStart" class="form-control" type="date" value="${values.start}"></div>
+          <div class="form-item"><label class="form-label" for="advertEnd">结束时间</label><input id="advertEnd" class="form-control" type="date" value="${values.end}"></div>
+        </div>
+        <div class="form-item"><label class="form-label">广告图片</label><div class="advert-image-row"><img id="advertImagePreview" class="advert-image-preview" src="${values.image || advertThumb(values.name || '广告图', values.tone)}" alt="广告图片"><div class="advert-image-info"><label class="advert-image-picker"><input id="advertImageInput" type="file" accept="image/png,image/jpeg" onchange="changeAdvertImage(this)"><span>${values.image ? '更换图片' : '上传图片'}</span></label><div class="advert-image-hint">支持 JPG / PNG，建议 750 × 300，不超过 2MB</div></div></div></div>
+        <div class="form-item"><label class="form-label">状态</label><label class="advert-switch"><input id="advertEnabled" type="checkbox"${values.enabled ? ' checked' : ''}><span>启用</span></label></div>
+      </div>`;
+      showModal(editing ? '编辑广告' : '新增广告', body);
+      document.querySelector('#modalMask .modal')?.classList.add('advert-editor-modal');
+      const confirmButton = document.getElementById('modalConfirmButton');
+      if (confirmButton) {
+        confirmButton.textContent = '保存';
+        confirmButton.onclick = () => saveAdvert(id);
+      }
+    }
+
+    function changeAdvertImage(input) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        advertDraftImage = String(reader.result);
+        const preview = document.getElementById('advertImagePreview');
+        if (preview) preview.src = advertDraftImage;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveAdvert(id) {
+      const name = (document.getElementById('advertName')?.value || '').trim();
+      const linkType = document.getElementById('advertLinkType')?.value || '不跳转';
+      const link = (document.getElementById('advertLink')?.value || '').trim();
+      const start = document.getElementById('advertStart')?.value || '';
+      const end = document.getElementById('advertEnd')?.value || '';
+      const sort = Number(document.getElementById('advertSort')?.value || 0);
+      const enabled = Boolean(document.getElementById('advertEnabled')?.checked);
+      if (!name) { advertToast('请填写广告名称'); return; }
+      if (!start || !end) { advertToast('请选择开始时间和结束时间'); return; }
+      if (start > end) { advertToast('结束时间不能早于开始时间'); return; }
+      if (linkType !== '不跳转' && !link) { advertToast('选择跳转类型后需要填写跳转地址'); return; }
+      const record = id ? adverts.find(item => item.id === id) : null;
+      if (record) {
+        Object.assign(record, { name, linkType, link, start, end, sort: sort || 1, enabled });
+        if (advertDraftImage) record.image = advertDraftImage;
+      } else {
+        adverts.push({
+          id: `AD${ADVERT_TODAY.replace(/-/g, '')}${String(adverts.length + 1).padStart(4, '0')}`,
+          name,
+          image: advertDraftImage,
+          tone: 'blue',
+          linkType,
+          link,
+          start,
+          end,
+          sort: sort || 1,
+          enabled
+        });
+      }
+      hideModal();
+      render();
+      advertToast(id ? '广告已更新' : '广告已新增');
+    }
+
+    function toggleAdvert(id) {
+      const advert = adverts.find(item => item.id === id);
+      if (!advert) return;
+      advert.enabled = !advert.enabled;
+      render();
+      advertToast(advert.enabled ? '广告已启用' : '广告已停用');
+    }
+
+    function deleteAdvert(id) {
+      const advert = adverts.find(item => item.id === id);
+      if (!advert) return;
+      showModal('删除广告', `<div class="modal-tip">删除后小程序首页底部不再展示「${advert.name}」。</div>`);
+      const confirmButton = document.getElementById('modalConfirmButton');
+      if (confirmButton) {
+        confirmButton.textContent = '确认删除';
+        confirmButton.onclick = () => {
+          adverts = adverts.filter(item => item.id !== id);
+          hideModal();
+          render();
+          advertToast('广告已删除');
+        };
+      }
+    }
+
+    function advertToast(message) {
+      const existing = document.getElementById('advertToast');
+      if (existing) existing.remove();
+      const toast = document.createElement('div');
+      toast.id = 'advertToast';
+      toast.className = 'advert-toast';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 1800);
     }

@@ -110,7 +110,7 @@
       {
         userId: 'USR-王敏-001', loginType: 'wechat', openid: 'wx-openid-demo-001', status: 'active',
         name: '王敏', nickname: '敏敏', phone: '138****2028', idCard: '330102********4521', login: '微信登录', createdAt: '2026-03-18 10:20', updatedAt: '2026-08-28 09:24',
-        vehicles: [{ id: 'VEH-王敏-浙A8P62K', userId: 'USR-王敏-001', plate: '浙A8P62K', color: '蓝牌', type: '小型车', status: '已绑定' }, { id: 'VEH-王敏-浙AD91F8', userId: 'USR-王敏-001', plate: '浙AD91F8', color: '蓝牌', type: '小型车', status: '已绑定' }],
+        vehicles: [{ id: 'VEH-王敏-浙A8P62K', userId: 'USR-王敏-001', plate: '浙A8P62K', color: '蓝牌', type: '小型车', appearance: '白色', photos: 5, status: '已绑定' }, { id: 'VEH-王敏-浙AD91F8', userId: 'USR-王敏-001', plate: '浙AD91F8', color: '蓝牌', type: '小型车', appearance: '黑色', photos: 4, status: '已绑定' }],
         refundAccount: { accountType: '银行卡', bankName: '中国建设银行厦门湖里支行', accountNo: '6217 **** **** 2028', accountPhone: '138****2028', isDefault: true, updatedAt: '2026-08-20 15:12' },
         records: [
           { project: '锦绣安置房', orderNo: 'AS202608280018', type: '新办', plates: '浙A8P62K、浙AD91F8', period: '2026-09-01 至 2027-08-31', rentStatus: '月租有效', trafficStatus: '已开通', amount: '¥1,680.00', syncAt: '2026-08-28 09:26', exception: '无' },
@@ -121,21 +121,21 @@
       {
         userId: 'USR-陈涛-002', loginType: 'sms', openid: null, status: 'active',
         name: '陈涛', nickname: '涛哥', phone: '139****8841', idCard: '330106********1108', login: '验证码登录', createdAt: '2026-04-06 14:16', updatedAt: '2026-08-28 11:08',
-        vehicles: [{ id: 'VEH-陈涛-浙A36M2Q', userId: 'USR-陈涛-002', plate: '浙A36M2Q', color: '蓝牌', type: '小型车', status: '已绑定' }],
+        vehicles: [{ id: 'VEH-陈涛-浙A36M2Q', userId: 'USR-陈涛-002', plate: '浙A36M2Q', color: '蓝牌', type: '小型车', appearance: '银灰色', photos: 6, status: '已绑定' }],
         refundAccount: null,
         records: [{ project: '文庭商房', orderNo: 'AS202608280017', type: '续费', plates: '浙A36M2Q', period: '2026-09-01 至 2027-08-31', rentStatus: '月租待生效', trafficStatus: '开通失败', amount: '¥960.00', syncAt: '2026-08-28 11:30', exception: '一路停车平台返回失败，系统待重试' }]
       },
       {
         userId: 'USR-林静-003', loginType: 'wechat', openid: 'wx-openid-demo-003', status: 'active',
         name: '林静', nickname: '静待花开', phone: '136****7209', idCard: '330104********0927', login: '微信登录', createdAt: '2026-05-12 09:42', updatedAt: '2026-08-28 10:12',
-        vehicles: [{ id: 'VEH-林静-浙A7H21D', userId: 'USR-林静-003', plate: '浙A7H21D', color: '新能源', type: '小型车', status: '已绑定' }],
+        vehicles: [{ id: 'VEH-林静-浙A7H21D', userId: 'USR-林静-003', plate: '浙A7H21D', color: '新能源', type: '小型车', appearance: '白色', photos: 5, status: '已绑定' }],
         refundAccount: { accountType: '银行卡', bankName: '招商银行厦门分行', accountNo: '6214 **** **** 7209', accountPhone: '136****7209', isDefault: true, updatedAt: '2026-08-22 09:30' },
         records: [{ project: '荣和家园', orderNo: 'AS202608280016', type: '新办', plates: '浙A7H21D', period: '2026-09-01 至 2027-08-31', rentStatus: '月租待生效', trafficStatus: '已开通', amount: '¥1,200.00', syncAt: '2026-08-28 10:14', exception: '无' }]
       },
       {
         userId: 'USR-周伟-004', loginType: 'wechat', openid: 'wx-openid-demo-004', status: 'active',
         name: '周伟', nickname: '周先生', phone: '135****6610', idCard: '330102********6730', login: '微信登录', createdAt: '2026-02-21 16:08', updatedAt: '2026-08-28 13:40',
-        vehicles: [{ id: 'VEH-周伟-浙A92Q8L', userId: 'USR-周伟-004', plate: '浙A92Q8L', color: '蓝牌', type: '小型车', status: '已绑定' }, { id: 'VEH-周伟-浙AF32C1', userId: 'USR-周伟-004', plate: '浙AF32C1', color: '蓝牌', type: '小型车', status: '已绑定' }],
+        vehicles: [{ id: 'VEH-周伟-浙A92Q8L', userId: 'USR-周伟-004', plate: '浙A92Q8L', color: '蓝牌', type: '小型车', appearance: '黑色', photos: 5, status: '已绑定' }, { id: 'VEH-周伟-浙AF32C1', userId: 'USR-周伟-004', plate: '浙AF32C1', color: '蓝牌', type: '小型车', appearance: '灰色', photos: 3, status: '已绑定' }],
         refundAccount: { accountType: '银行卡', bankName: '中国工商银行厦门湖里支行', accountNo: '6212 **** **** 6610', accountPhone: '135****6610', isDefault: true, updatedAt: '2026-08-25 14:18' },
         records: [
           { project: '锦绣安置房', orderNo: 'AS202608280015', type: '续费', plates: '浙A92Q8L、浙AF32C1', period: '2026-09-01 至 2027-08-31', rentStatus: '月租有效', trafficStatus: '已开通', amount: '¥2,400.00', syncAt: '2026-08-28 13:42', exception: '无' },
@@ -145,14 +145,14 @@
       {
         userId: 'USR-赵宁-005', loginType: 'wechat', openid: 'wx-openid-demo-005', status: 'disabled',
         name: '赵宁', nickname: '赵小宁', phone: '137****5142', idCard: '330105********3614', login: '微信登录', createdAt: '2026-06-09 11:35', updatedAt: '2026-08-28 12:06', cancelledAt: '2026-08-20 16:30',
-        vehicles: [{ id: 'VEH-赵宁-浙A5K20P', userId: 'USR-赵宁-005', plate: '浙A5K20P', color: '蓝牌', type: '小型车', status: '已绑定' }],
+        vehicles: [{ id: 'VEH-赵宁-浙A5K20P', userId: 'USR-赵宁-005', plate: '浙A5K20P', color: '蓝牌', type: '小型车', appearance: '白色', photos: 5, status: '已绑定' }],
         refundAccount: null,
         records: []
       },
       {
         userId: 'USR-何悦-006', loginType: 'wechat', openid: 'wx-openid-demo-006', status: 'active',
         name: '何悦', nickname: '悦悦', phone: '136****9234', idCard: '暂未填写', login: '微信登录', createdAt: '2026-08-27 17:36', updatedAt: '2026-08-27 17:36',
-        vehicles: [{ id: 'VEH-何悦-浙A1X38E', userId: 'USR-何悦-006', plate: '浙A1X38E', color: '蓝牌', type: '小型车', status: '已绑定' }],
+        vehicles: [{ id: 'VEH-何悦-浙A1X38E', userId: 'USR-何悦-006', plate: '浙A1X38E', color: '蓝牌', type: '小型车', appearance: '银色', photos: 4, status: '已绑定' }],
         refundAccount: null,
         records: []
       },
@@ -194,6 +194,13 @@
     };
     let selectedGarageName = garages[0][0];
     let garageSubpage = 'list';
+    // 首页小程序广告位：全平台共用一套，不按小区区分，按 sort 从小到大轮播
+    let adverts = [
+      { id: 'AD202611040001', name: '月租续费优惠活动', image: '', tone: 'blue', linkType: '站内页面', link: 'pages/rent/index', start: '2026-11-01', end: '2026-12-31', sort: 1, enabled: true },
+      { id: 'AD202611040002', name: '物业服务公告', image: '', tone: 'green', linkType: '不跳转', link: '', start: '2026-11-01', end: '2027-01-31', sort: 2, enabled: true },
+      { id: 'AD202609010001', name: '中秋车位活动', image: '', tone: 'orange', linkType: '外链 H5', link: 'https://example.com/promo', start: '2026-09-01', end: '2026-09-30', sort: 3, enabled: true }
+    ];
+    let selectedAdvertId = '';
     let selectedGaragePublishStatus = '';
     let selectedUserName = rentUsers[0].name;
     let userSubpage = 'list';

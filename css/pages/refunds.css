@@ -105,6 +105,10 @@
 
 .approval-summary-value { color: var(--as-text-main); }
 
+.approval-summary-item--wide { grid-column: 1 / -1; }
+
+.approval-summary-item--wide .approval-summary-value { line-height: 1.6; overflow-wrap: anywhere; }
+
 .approval-reject-label { display: block; margin-bottom: 8px; color: var(--as-text-main); font-weight: 600; }
 
 .approval-reject-label::after { content: '（驳回时必填）'; margin-left: 4px; color: var(--as-text-muted); font-weight: 400; }

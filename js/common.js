@@ -699,7 +699,7 @@
       if (rejectButton) { rejectButton.style.display = 'none'; rejectButton.onclick = null; }
       document.getElementById('modalTitle').textContent = title;
       document.getElementById('modalBody').innerHTML = body;
-      document.querySelector('#modalMask .modal')?.classList.remove('refund-approval-modal', 'refund-application-modal', 'project-status-modal', 'project-stop-modal', 'renew-order-modal', 'order-vehicle-modal', 'invoice-application-modal', 'invoice-preview-modal', 'notice-preview-modal', 'service-config-modal');
+      document.querySelector('#modalMask .modal')?.classList.remove('refund-approval-modal', 'refund-application-modal', 'project-status-modal', 'project-stop-modal', 'renew-order-modal', 'order-vehicle-modal', 'invoice-application-modal', 'invoice-preview-modal', 'notice-preview-modal', 'service-config-modal', 'vehicle-detail-modal', 'vehicle-photo-preview-modal');
       const cancelButton = document.getElementById('modalCancelButton');
       const confirmButton = document.getElementById('modalConfirmButton');
       if (cancelButton) { cancelButton.textContent = '取消'; cancelButton.className = 'btn'; cancelButton.style.display = ''; cancelButton.onclick = hideModal; }

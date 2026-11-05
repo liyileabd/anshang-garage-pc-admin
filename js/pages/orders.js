@@ -14,7 +14,7 @@
         actions.push(`<button class="btn-text" onclick="openOrderVehicleManage('${r[0]}')">变更车辆</button>`);
       }
       if (canOperatePaidOrder && !activeRefund) {
-        if (rentStatus === '月租有效') actions.push(`<button class="btn-text" onclick="openRenewOrder('${r[0]}')">续费</button>`);
+        if (rentStatus === '月租有效' || rentStatus === '月租待生效') actions.push(`<button class="btn-text" onclick="openRenewOrder('${r[0]}')">续费</button>`);
         if (trafficStatus === '开通失败') actions.push(`<button class="btn-text" onclick="syncOrderTraffic('${r[0]}')">重新开通</button>`);
         actions.push(`<button class="btn-text" onclick="openOrderRefund('${r[0]}')">退款</button>`);
       }
